@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
+import android.util.Log;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -27,6 +28,7 @@ import java.util.Map;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.controllers.NowerMap;
+import castofo_nower.com.co.nower.controllers.PromoCardAnimator;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 
 
@@ -60,6 +62,10 @@ public class HttpHandler {
     public JSONObject getResponse() {
         String url = DOMAIN + nameSpace + action + urlParams;
 
+        HttpGet httpGet = null;
+        HttpPost httpPost = null;
+        HttpPut httpPut = null;
+
         HttpClient httpClient = new DefaultHttpClient();
         JSONObject jsonToSend = createJsonObject(action, params);
 
@@ -68,34 +74,50 @@ public class HttpHandler {
         // Se selecciona el código de error del servidor por defecto.
         int responseStatusCode = SERVER_INTERNAL_ERROR;
         InputStream inputStream = null;
+        // Contendrá el JSON de respuesta.
         String jsonString = "";
         JSONObject responseJson = new JSONObject();
 
-        httpRequest.setHeader("Accept", "application/json");
-        httpRequest.setHeader("Content-type", "application/json");
-
-        //Se prepara la petición con los parámetros en caso de ser necesarios.
+        //Se prepara la petición según su tipo y se adicionan los parámetros
+        // en caso de ser necesarios.
         if (httpRequest instanceof HttpGet) {
-            httpRequest  = new HttpGet(url);
-        } else if (httpRequest instanceof HttpPost) {
-            httpRequest = new HttpPost(url);
+            httpGet = new HttpGet(url);
+            httpGet.setHeader("Accept", "application/json");
+            httpGet.setHeader("Content-type", "application/json");
+        }
+        else if (httpRequest instanceof HttpPost) {
+            httpPost = new HttpPost(url);
+            httpPost.setHeader("Accept", "application/json");
+            httpPost.setHeader("Content-type", "application/json");
             try {
-                ((HttpPost) httpRequest).setEntity(new StringEntity(jsonToSend.toString()));
+                httpPost.setEntity(new StringEntity(jsonToSend.toString()));
             } catch (UnsupportedEncodingException e) {
 
             }
-        } else if (httpRequest instanceof HttpPut) {
-            httpRequest = new HttpPut(url);
+        }
+        else if (httpRequest instanceof HttpPut) {
+            httpPut = new HttpPut(url);
+            httpPut.setHeader("Accept", "application/json");
+            httpPut.setHeader("Content-type", "application/json");
             try {
-                ((HttpPut) httpRequest).setEntity(new StringEntity(jsonToSend.toString()));
+                httpPut.setEntity(new StringEntity(jsonToSend.toString()));
             } catch (UnsupportedEncodingException e) {
 
             }
         }
 
-        //Se ejecuta la petición y se traduce la respuesta a String.
+        //Se ejecuta la petición dependiendo de su tipo y se traduce la respuesta a String.
         try {
-            httpResponse = httpClient.execute((HttpUriRequest) httpRequest);
+            if (httpRequest instanceof HttpGet) {
+                httpResponse = httpClient.execute(httpGet);
+            }
+            else if (httpRequest instanceof HttpPost) {
+                httpResponse = httpClient.execute(httpPost);
+            }
+            else if (httpRequest instanceof HttpPut) {
+                httpResponse = httpClient.execute(httpPut);
+            }
+            // Se captura el código de respuesta a la petición.
             responseStatusCode = httpResponse.getStatusLine().getStatusCode();
             inputStream = httpResponse.getEntity().getContent();
             if (inputStream != null) jsonString = convertInputStreamToString(inputStream);
@@ -104,8 +126,8 @@ public class HttpHandler {
 
         }
 
-        // Se convierte el String de la respuesta a un JSONObject y se adiciona el estado de
-        // la respuesta HTTP.
+        // Se convierte el String de la respuesta a un JSONObject y se le adiciona el código
+        // del estado de la respuesta a la petición HTTP.
         try {
             responseJson = new JSONObject(jsonString);
             responseJson.put(HTTP_STATUS, responseStatusCode);
@@ -134,16 +156,16 @@ public class HttpHandler {
         try {
             // Servicio a ejecutar según el parámetro action.
             switch (action) {
-                case "/auth":
-                    internJson.put("username", params.get("username"));
-                    internJson.put("password", params.get("password"));
-                    json.put("user", internJson);
+                case PromoCardAnimator.ACTION_NOW:
+                    json.put("promo_id", params.get("promo_id"));
+                    json.put("user_id", params.get("user_id"));
                     break;
             }
         } catch (JSONException e) {
 
         }
 
+        Log.i("responseJson", "JSON enviado: " + json.toString());
         return json;
     }
 
@@ -201,6 +223,9 @@ public class HttpHandler {
             switch (action) {
                 case NowerMap.ACTION_PROMOS:
                     progressDialog.setMessage(context.getString(R.string.loading_promos));
+                    break;
+                case PromoCardAnimator.ACTION_NOW:
+                    progressDialog.setMessage(context.getString(R.string.obtaining_promo_code));
                     break;
             }
 
