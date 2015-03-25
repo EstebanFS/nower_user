@@ -12,5 +12,8 @@
     <string name="internet_connection_required">Necesitas conexión a Internet para acceder a las promociones.</string>
     <string name="loading_promos">Cargando promociones</string>
     <string name="you_are_here">¡Estás aquí!</string>
+    <string name="title_activity_promo_card">PromoCard</string>
+    <string name="title_activity_promo_card_animation">PromoCardAnimation</string>
+    <string name="obtaining_promo_code">Obteniendo código de promoción</string>
 
 </resources>

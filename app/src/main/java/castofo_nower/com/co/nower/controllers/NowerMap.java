@@ -29,6 +29,7 @@ import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.GeolocationInterface;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
+import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.support.Geolocation;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
@@ -36,7 +37,8 @@ import castofo_nower.com.co.nower.models.Promo;
 
 public class NowerMap extends FragmentActivity implements SubscribedActivities,
                                                           GeolocationInterface,
-                                                          GoogleMap.OnMarkerClickListener{
+                                                          GoogleMap.OnMarkerClickListener,
+                                                          GoogleMap.OnInfoWindowClickListener {
 
     private GoogleMap map;
     private int ZOOM_LEVEL = 14;
@@ -48,6 +50,9 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     private Map<String, String> params = new HashMap<String, String>();
 
     public static final int OP_SUCCEEDED = 0;
+
+    private Map<Marker, Branch> branchesMap = new HashMap<>();
+    private Map<Integer, ArrayList<Promo>> promosMap = new HashMap<>();
 
 
     @Override
@@ -67,6 +72,7 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
 
         if (map != null) {
             setUpMap();
+            setMapListeners();
             verifyLocationProviders();
             getCurrentPromos();
         }
@@ -83,6 +89,11 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
         map.getUiSettings().setCompassEnabled(true);
         // Se activa la geolocalización del usuario.
         map.setMyLocationEnabled(true);
+    }
+
+    public void setMapListeners() {
+        map.setOnMarkerClickListener(this);
+        map.setOnInfoWindowClickListener(this);
     }
 
     public void verifyLocationProviders() {
@@ -113,8 +124,9 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     public void putUserMarker(double latitude, double longitude) {
         userMarker = map.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
                                    .title(getResources().getString(R.string.you_are_here))
-                                    .icon(BitmapDescriptorFactory.fromResource
-                                          (R.drawable.user_marker)));
+                                   .icon(BitmapDescriptorFactory.fromResource
+                                           (R.drawable.user_marker))
+                                  );
         userMarker.showInfoWindow();
     }
 
@@ -167,15 +179,20 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
                 Log.i("responseJson", responseJson.toString());
                 if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
                     ArrayList<Promo> promoList = new ArrayList<>();
+                    branchesMap.clear();
+                    promosMap.clear();
+
                     JSONArray locations = responseJson.getJSONArray("locations");
                     // Se recorren todas las promociones obtenidas para dibujarlas en el mapa.
                     for (int i = 0; i < locations.length(); ++i) {
                         promoList.clear();
+
                         JSONObject internLocation = locations.getJSONObject(i);
                         int id = internLocation.getInt("id");
                         double latitude = internLocation.getDouble("latitude");
                         double longitude = internLocation.getDouble("longitude");
                         int storeId = internLocation.getInt("store_id");
+                        String storeName = internLocation.getString("store_name");
 
                         JSONArray promos = internLocation.getJSONArray("promos");
                         for (int j = 0; j < promos.length(); ++j) {
@@ -190,8 +207,13 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
                             promoList.add(p);
 
                         }
-                        putMarkerAndSavePromoList(id, latitude, longitude, storeId, promoList);
+                        putMarkerAndSavePromoList(id, latitude, longitude, storeId, storeName,
+                                                  promoList);
                     }
+                    // Se envían al modelo MapData para que puedan ser accedidos
+                    // desde otras actividades.
+                    MapData.setBranchesMap(branchesMap);
+                    MapData.setPromosMap(promosMap);
                 }
             }
         } catch (JSONException e) {
@@ -201,20 +223,44 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
 
     // Este método se encarga de poner todas las promociones en el mapa y guardarlas localmente.
     public void putMarkerAndSavePromoList(int id, double latitude,double longitude, int storeId,
-                                          ArrayList<Promo> promoList) {
-        Marker locationMarker = map.addMarker(new MarkerOptions()
-                                              .position(new LatLng(latitude, longitude))
-                                              .title(String.valueOf(id))
-                                              .snippet(String.valueOf(storeId))
-                                              .icon(BitmapDescriptorFactory.fromResource
-                                              (R.drawable.nower_marker)));
+                                          String storeName, ArrayList<Promo> promoList) {
 
-        MapData.addPromoListToMarker(locationMarker, promoList);
+        Branch branch = new Branch(id, latitude, longitude, storeId, storeName);
+
+        Marker locationMarker = map.addMarker(new MarkerOptions()
+                        .position(new LatLng(latitude, longitude))
+                        .title(storeName)
+                        .icon(BitmapDescriptorFactory.fromResource
+                                (R.drawable.nower_marker))
+        );
+
+        branchesMap.put(locationMarker, branch);
+        // Se debe clonar el objeto promoList para que al limpiarlo no se pierda el contenido.
+        // Esto se debe a que se genera una referencia al objeto y no se guarda como valor.
+        promosMap.put(id, new ArrayList<Promo>(promoList));
     }
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        if (marker != userMarker) {
+            if (marker.isInfoWindowShown()) {
+                marker.hideInfoWindow();
+                return true;
+            }
+            return false;
+        }
         return false;
+    }
+
+    @Override
+    public void onInfoWindowClick(Marker marker) {
+        // Se activa el detector de gestos para animar las tarjetas de promociones.
+        if (marker != userMarker) {
+            int branchId = MapData.getBranch(marker).getId();
+            Intent showPromos = new Intent(NowerMap.this, PromoCardAnimator.class);
+            showPromos.putExtra("branch_id", branchId);
+            startActivity(showPromos);
+        }
     }
 
     @Override
