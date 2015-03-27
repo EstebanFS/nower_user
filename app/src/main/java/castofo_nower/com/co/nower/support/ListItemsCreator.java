@@ -15,7 +15,9 @@ import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.controllers.BranchesList;
 import castofo_nower.com.co.nower.controllers.UserPromoList;
 import castofo_nower.com.co.nower.models.Branch;
+import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
+import castofo_nower.com.co.nower.models.Redemption;
 
 
 public class ListItemsCreator extends ArrayAdapter<Object> {
@@ -50,11 +52,12 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         switch (action) {
             case UserPromoList.LIST_USER_PROMOS:
                 // Se obtiene el título de la promoción actual.
-                Promo p = (Promo) listData.get(position);
-                titleText = p.getTitle();
-                // Se le pone el ID de la promoción para poder gestionarla al ser presionada
-                // por el usuario.
-                item.setId(p.getId());
+                Redemption r = (Redemption) listData.get(position);
+                int promoId = r.getPromoId();
+                titleText = MapData.getPromo(promoId).getTitle();
+                // Se le pone el código para redimir la promoción con el fin de poder gestionarla
+                // al ser presionada por el usuario.
+                item.setId(Integer.parseInt(r.getCode(), 16));
                 break;
             case BranchesList.LIST_BRANCHES:
                 // Se obtiene el nombre del establecimiento actual.

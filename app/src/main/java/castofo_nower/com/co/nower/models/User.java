@@ -1,7 +1,8 @@
 package castofo_nower.com.co.nower.models;
 
+import java.util.HashMap;
+import java.util.Map;
 
-import java.util.ArrayList;
 
 public class User {
 
@@ -12,7 +13,7 @@ public class User {
     public static String birthday;
     public static String password;
 
-    public static ArrayList<Redemption> obtainedPromos = new ArrayList<>();
+    public static Map<String, Redemption> obtainedPromos = new HashMap<>();
 
     public void setUserData(int idToSet, String emailToSet, String nameToSet, boolean genderToSet,
                             String birthdayToSet, String passwordToSet) {
@@ -24,7 +25,7 @@ public class User {
         password = passwordToSet;
     }
 
-    public static void addPromoToRedeem(Redemption r) {
-        obtainedPromos.add(r);
+    public static void addPromoToRedeem(String code, Redemption r) {
+        obtainedPromos.put(code, r);
     }
 }

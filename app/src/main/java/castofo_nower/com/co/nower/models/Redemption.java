@@ -1,6 +1,5 @@
 package castofo_nower.com.co.nower.models;
 
-
 public class Redemption {
 
     private String code;

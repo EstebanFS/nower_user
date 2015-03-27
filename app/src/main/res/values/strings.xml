@@ -25,6 +25,17 @@
     <string name="promo_now_in_list">Ahora puedes encontrar esta promoción en tu lista de promociones.</string>
     <string name="ok">OK</string>
     <string name="title_activity_user_promo_list">UserPromoList</string>
-    <string name="title_activity_promo_list">PromoList</string>
+    <string name="title_activity_branches_list">BranchesList</string>
+    <string name="title_activity_redemption_process">RedemptionProcess</string>
+    <string name="title_activity_tab_handler">TabHandler</string>
+
+    <string-array name="tabs_names">
+        <item>Mapa</item>
+        <item>Tiendas</item>
+        <item>Mis promociones</item>
+    </string-array>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_nower_map1">NowerMap1</string>
 
 </resources>

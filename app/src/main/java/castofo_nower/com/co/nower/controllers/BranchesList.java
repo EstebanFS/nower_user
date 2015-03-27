@@ -16,7 +16,6 @@ import java.util.Map;
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
-
 import castofo_nower.com.co.nower.support.ListItemsCreator;
 
 
@@ -29,7 +28,7 @@ public class BranchesList extends ListActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_promo_list);
+        setContentView(R.layout.activity_branches_list);
         branchesListToShow = new ListItemsCreator(this, R.layout.promo_item, generateData(),
                                                   LIST_BRANCHES);
 
@@ -57,7 +56,7 @@ public class BranchesList extends ListActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_promo_list, menu);
+        getMenuInflater().inflate(R.menu.menu_branches_list, menu);
         return true;
     }
 

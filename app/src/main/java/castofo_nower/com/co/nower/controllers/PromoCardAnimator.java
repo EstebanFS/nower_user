@@ -1,9 +1,9 @@
 package castofo_nower.com.co.nower.controllers;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.support.v4.view.GestureDetectorCompat;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
@@ -37,11 +39,12 @@ import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.AlertDialogCreator;
 
+import com.manuelpeinado.fadingactionbar.FadingActionBarHelper;
 
-public class PromoCardAnimator extends ActionBarActivity implements SubscribedActivities,
-                                                                    AlertDialogsResponses,
-                                                                    GestureDetector
-                                                                    .OnGestureListener {
+
+public class PromoCardAnimator extends Activity implements SubscribedActivities,
+                                                           AlertDialogsResponses,
+                                                           GestureDetector.OnGestureListener {
 
     private GestureDetectorCompat gestureDetector;
     private ViewFlipper promosFlipper;
@@ -70,9 +73,10 @@ public class PromoCardAnimator extends ActionBarActivity implements SubscribedAc
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_promo_card_animator);
+        //setContentView(R.layout.activity_promo_card_animator);
+        initView();
         gestureDetector = new GestureDetectorCompat(this, this);
-        promosFlipper = (ViewFlipper) findViewById(R.id.promos_flipper);
+
 
         // Se indica al HttpHandler la actividad que estará esperando la respuesta a la petición.
         httpHandler.addListeningActivity(this);
@@ -85,6 +89,21 @@ public class PromoCardAnimator extends ActionBarActivity implements SubscribedAc
         capturePromos();
         setPromosIdsList();
         getPromosDescriptionsAndTerms();
+    }
+
+    public void initView() {
+
+        FadingActionBarHelper helper = new FadingActionBarHelper()
+                                       .actionBarBackground(R.drawable.ab_background)
+                                       .headerLayout(R.layout.header)
+                                       .contentLayout(R.layout.activity_promo_card_animator);
+        setContentView(helper.createView(this));
+        ImageView headerImage = ((ImageView) findViewById(R.id.header_image));
+        headerImage.setImageResource(R.drawable.promo);
+        helper.initActionBar(this);
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+
+        promosFlipper = (ViewFlipper) findViewById(R.id.promos_flipper);
     }
 
     public void setFlipperAnimation() {
@@ -257,7 +276,7 @@ public class PromoCardAnimator extends ActionBarActivity implements SubscribedAc
 
                         Redemption r = new Redemption(code, promoId, redeemed);
                         // Se adiciona la promoción a la lista de promociones del usuario.
-                        User.addPromoToRedeem(r);
+                        User.addPromoToRedeem(code, r);
                         showObtainedPromo();
                         // TODO deshabilitarle el botón al usuario para que no la trate de volver a tomarla
                     }
@@ -269,6 +288,12 @@ public class PromoCardAnimator extends ActionBarActivity implements SubscribedAc
         } catch (JSONException e) {
 
         }
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        super.dispatchTouchEvent(event);
+        return gestureDetector.onTouchEvent(event);
     }
 
     @Override
@@ -341,6 +366,10 @@ public class PromoCardAnimator extends ActionBarActivity implements SubscribedAc
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            return true;
+        }
+        if (id == android.R.id.home) {
+            finish();
             return true;
         }
 
