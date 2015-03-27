@@ -1,45 +1,42 @@
 package castofo_nower.com.co.nower.controllers;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import castofo_nower.com.co.nower.R;
+import castofo_nower.com.co.nower.models.MapData;
+import castofo_nower.com.co.nower.models.Promo;
+import castofo_nower.com.co.nower.models.Redemption;
+import castofo_nower.com.co.nower.models.User;
 
 
-public class SplashActivity extends Activity {
+public class RedemptionProcess extends Activity {
+
+    private String code;
+    private Redemption redemption;
+    private Promo promoToRedeem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_splash);
-
-        Thread splashTimer = new Thread(){
-            public void run(){
-                try {
-                    // Se muestra el splash durante un segundo.
-                    sleep(1000);
-                } catch (InterruptedException e){
-                    e.printStackTrace();
-                } finally {
-                    // Luego se ingresa propiamente a la aplicación.
-                    Intent openApp = new Intent(SplashActivity.this, TabsHandler.class);
-                    startActivity(openApp);
-                    finish();
-                }
-            }
-        };
-
-        splashTimer.start();
+        setContentView(R.layout.activity_redemption_process);
+        capturePromo();
     }
 
+    public void capturePromo() {
+        code = getIntent().getExtras().getString("code");
+        redemption = User.obtainedPromos.get(code);
+        int promoId = redemption.getPromoId();
+        // En este punto se captura la promoción que desea redimir el usuario.
+        promoToRedeem = MapData.getPromo(promoId);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_splash, menu);
+        getMenuInflater().inflate(R.menu.menu_redemption_process, menu);
         return true;
     }
 

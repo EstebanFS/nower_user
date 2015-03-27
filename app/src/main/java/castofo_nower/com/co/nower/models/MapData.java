@@ -65,4 +65,8 @@ public class MapData {
     public static String getTerms(int id) {
         return promosTermsMap.get(id);
     }
+
+    public static void clearBranchesMap() {
+        branchesMap.clear();
+    }
 }

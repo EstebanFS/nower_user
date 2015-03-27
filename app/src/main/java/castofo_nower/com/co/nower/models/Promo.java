@@ -1,6 +1,5 @@
 package castofo_nower.com.co.nower.models;
 
-
 public class Promo {
 
     private int id;

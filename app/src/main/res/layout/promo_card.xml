@@ -1,53 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:background="?android:attr/windowBackground"
+              android:orientation="vertical"
+              android:padding="10dp">
+
+  <LinearLayout
+    android:id="@+id/promo_header"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <LinearLayout
+      android:id="@+id/image_layout"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:orientation="vertical"
+      android:layout_gravity="center">
+
+      <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/promo_card_layout"
-        android:gravity="center"
-        android:orientation="vertical" >
+        android:maxHeight="60dp"
+        android:maxWidth="60dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/bk_logo"/>
+    </LinearLayout>
+
+    <LinearLayout
+      android:id="@+id/titles_layout"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="3"
+      android:orientation="vertical">
+
+      <TextView
+        android:id="@+id/promo_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Combo Whopper grande $12.500"
+        android:textStyle="bold"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
+
+      <TextView
+        android:id="@+id/store_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Burger King"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
+    </LinearLayout>
+  </LinearLayout>
+
+  <LinearLayout
+    android:id="@+id/promo_redemption"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="15dp"
+    android:orientation="vertical">
+
+    <Button
+      android:layout_width="match_parent"
+      android:layout_height="40dp"
+      android:background="@drawable/now_button_background"
+      android:textColor="@color/white"
+      android:text="NOW"
+      android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+      android:onClick="now"
+      android:visibility="visible"/>
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:textSize="50sp"
+      android:textStyle="bold"
+      android:text="63A6C9"
+      android:typeface="monospace"
+      android:visibility="gone"/>
+  </LinearLayout>
+  
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="@color/gray"/>
+
+  <LinearLayout
+    android:id="@+id/promo_limits"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+      android:id="@+id/expiration_date_layout"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:orientation="horizontal">
+
+      <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
         <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:src="@drawable/ic_launcher" />
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:minHeight="40dp"
+          android:minWidth="40dp"
+          android:src="@drawable/ic_expiration_date"
+          android:gravity="center"/>
+      </LinearLayout>
+
+      <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:gravity="center">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/promo_title" />
+          android:id="@+id/promo_expiration_date"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="04:06:31"
+          android:textColor="@color/red"
+          android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
+          android:textSize="25sp"
+          android:textStyle="bold"/>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal" >
+      </LinearLayout>
+    </LinearLayout>
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/promo_expiration_date" />
+    <LinearLayout
+      android:id="@+id/people_limit_layout"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1">
+      <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/promo_available_redemptions" />
+        <ImageView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:minHeight="40dp"
+          android:minWidth="40dp"
+          android:src="@drawable/ic_people_limit"
+          android:gravity="center"/>
+      </LinearLayout>
 
-        </LinearLayout>
-
-         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/promo_description" />
+      <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="4"
+        android:gravity="center">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/promo_terms" />
+          android:id="@+id/promo_available_redemptions"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="618"
+          android:textColor="@color/red"
+          android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
+          android:textSize="25sp"
+          android:textStyle="bold"/>
 
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/now"
-            android:onClick="now" />
+      </LinearLayout>
+    </LinearLayout>
+  </LinearLayout>
 
+  <View
+    android:layout_width="match_parent"
+    android:layout_height="1dp"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
+    android:background="@color/gray"/>
+
+  <LinearLayout
+    android:padding="10dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:background="@color/light_green">
+
+      <TextView
+        android:id="@+id/promo_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
+        android:layout_margin="15dp"
+        android:text="¡Sólo por hoy! lleva un Combo Whopper grande por tan solo $12.500. ¡Disfruta esta grandiosa oportunidad acompañado de tus mejores amigos y familia!
+        \nLa promoción contiene Hamburguesa Whopper grande, papas grandes y bebida grande."/>
+    </LinearLayout>
+  </LinearLayout>
+
+  <LinearLayout
+    android:id="@+id/expand_reviews"
+    android:layout_width="match_parent"
+    android:layout_height="40dp">
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:text="VER COMENTARIOS Y PUNTUACIÓN"
+      android:textColor="@color/green"
+      android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+      android:layout_gravity="center"/>
+  </LinearLayout>
+
+    <TextView
+        android:id="@+id/promo_terms"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="618"
+        android:textColor="@color/red"
+        android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
+        android:textSize="25sp"
+        android:textStyle="bold"
+        android:visibility="gone"/>
 </LinearLayout>

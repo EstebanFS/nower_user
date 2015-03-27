@@ -8,11 +8,12 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+
 import java.util.ArrayList;
+import java.util.Map;
 
 import castofo_nower.com.co.nower.R;
-import castofo_nower.com.co.nower.models.MapData;
-import castofo_nower.com.co.nower.models.Promo;
+
 import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
@@ -35,21 +36,21 @@ public class UserPromoList extends ListActivity {
     }
 
     public static ArrayList<Object> generateData(){
-        ArrayList<Object> userPromos = new ArrayList<Object>();
-        for (int i = 0; i < User.obtainedPromos.size(); ++i) {
-            Redemption userRedemption = User.obtainedPromos.get(i);
-            int promoId = userRedemption.getPromoId();
-            Promo promo = MapData.detailedPromosMap.get(promoId);
-            userPromos.add(promo);
+        ArrayList<Object> userPromosToRedeem = new ArrayList<Object>();
+        for(Map.Entry<String, Redemption> promoToRedeem : User.obtainedPromos.entrySet()){
+            userPromosToRedeem.add(promoToRedeem.getValue());
         }
 
-        return userPromos;
+        return userPromosToRedeem;
     }
 
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        int promoId = v.getId();
-        //TODO ir al detalle de la promoción
+        String code = (Integer.toHexString(v.getId())).toUpperCase();
+        Intent showPromoToRedeem = new Intent(UserPromoList.this, RedemptionProcess.class);
+        showPromoToRedeem.putExtra("code", code);
+        showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(showPromoToRedeem);
     }
 
     @Override
