@@ -15,5 +15,16 @@
     <string name="title_activity_promo_card">PromoCard</string>
     <string name="title_activity_promo_card_animation">PromoCardAnimation</string>
     <string name="obtaining_promo_code">Obteniendo código de promoción</string>
+    <string name="obtaining_promos">Obteniendo promociones</string>
+    <string name="now">Now!</string>
+    <string name="promo">Promoción</string>
+    <string name="confirm_taking_promo">Estás a punto de tomar esta promoción.</string>
+    <string name="_continue">Continuar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="promo_obtained">Promoción obtenida</string>
+    <string name="promo_now_in_list">Ahora puedes encontrar esta promoción en tu lista de promociones.</string>
+    <string name="ok">OK</string>
+    <string name="title_activity_user_promo_list">UserPromoList</string>
+    <string name="title_activity_promo_list">PromoList</string>
 
 </resources>

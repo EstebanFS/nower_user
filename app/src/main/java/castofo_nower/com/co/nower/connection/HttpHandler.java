@@ -15,6 +15,7 @@ import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -153,9 +154,14 @@ public class HttpHandler {
     public JSONObject createJsonObject(String action, Map<String, String> params) {
         JSONObject json = new JSONObject();
         JSONObject internJson = new JSONObject();
+        JSONArray internJsonArray;
         try {
             // Servicio a ejecutar según el parámetro action.
             switch (action) {
+                case PromoCardAnimator.ACTION_PROMOS_DETAILS:
+                    internJsonArray = new JSONArray(params.get("promos_ids_list"));
+                    json.put("promos", internJsonArray);
+                    break;
                 case PromoCardAnimator.ACTION_NOW:
                     json.put("promo_id", params.get("promo_id"));
                     json.put("user_id", params.get("user_id"));
@@ -224,11 +230,15 @@ public class HttpHandler {
                 case NowerMap.ACTION_PROMOS:
                     progressDialog.setMessage(context.getString(R.string.loading_promos));
                     break;
+                case PromoCardAnimator.ACTION_PROMOS_DETAILS:
+                    progressDialog.setMessage(context.getString(R.string.obtaining_promos));
+                    break;
                 case PromoCardAnimator.ACTION_NOW:
                     progressDialog.setMessage(context.getString(R.string.obtaining_promo_code));
                     break;
             }
 
+            progressDialog.setCanceledOnTouchOutside(false);
             progressDialog.show();
         }
 

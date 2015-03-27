@@ -1,6 +1,8 @@
 package castofo_nower.com.co.nower.models;
 
 
+import java.util.ArrayList;
+
 public class User {
 
     public static int id = 2;
@@ -10,7 +12,9 @@ public class User {
     public static String birthday;
     public static String password;
 
-    public void setUsetData(int idToSet, String emailToSet, String nameToSet, boolean genderToSet,
+    public static ArrayList<Redemption> obtainedPromos = new ArrayList<>();
+
+    public void setUserData(int idToSet, String emailToSet, String nameToSet, boolean genderToSet,
                             String birthdayToSet, String passwordToSet) {
         id = idToSet;
         email = emailToSet;
@@ -18,5 +22,9 @@ public class User {
         gender = genderToSet;
         birthday = birthdayToSet;
         password = passwordToSet;
+    }
+
+    public static void addPromoToRedeem(Redemption r) {
+        obtainedPromos.add(r);
     }
 }
