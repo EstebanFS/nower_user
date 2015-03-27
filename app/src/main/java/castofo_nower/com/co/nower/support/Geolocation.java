@@ -36,12 +36,12 @@ public class Geolocation extends Service implements LocationListener{
 
     // LocationManager es la clase de Android encargada de gestionar la geolocalización del usuario.
     protected LocationManager locationManager;
-    protected String defaultLocationProvider;
 
     public Geolocation(Context context) {
         this.context = context;
         verifyLocationPossibilities();
     }
+
     // En este punto se determina a qué Activity será enviado el aviso de cambio en la localización.
     public void addListeningActivity(GeolocationInterface activity) {
         this.listeningActivity = activity;

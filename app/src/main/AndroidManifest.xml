@@ -27,7 +27,8 @@
         android:theme="@style/AppTheme" >
         <activity
             android:name=".controllers.SplashActivity"
-            android:label="@string/app_name" >
+            android:label="@string/app_name"
+            android:theme="@style/AppThemeNoActionBar" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,6 +50,14 @@
         <activity
             android:name=".controllers.PromoCardAnimator"
             android:label="@string/title_activity_promo_card_animation" >
+        </activity>
+        <activity
+            android:name=".controllers.UserPromoList"
+            android:label="@string/title_activity_user_promo_list" >
+        </activity>
+        <activity
+            android:name=".controllers.BranchesList"
+            android:label="@string/title_activity_promo_list" >
         </activity>
     </application>
 

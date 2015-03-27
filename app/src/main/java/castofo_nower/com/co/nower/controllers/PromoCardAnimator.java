@@ -1,5 +1,6 @@
 package castofo_nower.com.co.nower.controllers;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.app.ActionBarActivity;
@@ -18,6 +19,7 @@ import android.widget.Toast;
 import android.widget.ViewFlipper;
 
 import org.apache.http.client.methods.HttpPost;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -27,13 +29,17 @@ import java.util.Map;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
+import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
+import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
+import castofo_nower.com.co.nower.support.AlertDialogCreator;
 
 
 public class PromoCardAnimator extends ActionBarActivity implements SubscribedActivities,
+                                                                    AlertDialogsResponses,
                                                                     GestureDetector
                                                                     .OnGestureListener {
 
@@ -43,14 +49,23 @@ public class PromoCardAnimator extends ActionBarActivity implements SubscribedAc
     Animation slide_in_left, slide_out_right, slide_in_right, slide_out_left;
 
     private HttpHandler httpHandler = new HttpHandler();
+    public static final String ACTION_PROMOS_DETAILS = "/promos/details";
     public static final String ACTION_NOW = "/promo/now";
     private Map<String, String> params = new HashMap<String, String>();
 
     private TextView promoTitle;
     private TextView promoExpirationDate;
     private TextView promoAvailableRedemptions;
+    private TextView promoDescription;
+    private TextView promoTerms;
 
+    private AlertDialogCreator alertDialogCreator = new AlertDialogCreator();
+
+    private int branchId;
     private ArrayList<Promo> promos = new ArrayList<>();
+
+    public static final String TAKE_PROMO = "TAKE_PROMO";
+    public static final String OBTAINED_PROMO = "OBTAINED_PROMO";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,9 +77,14 @@ public class PromoCardAnimator extends ActionBarActivity implements SubscribedAc
         // Se indica al HttpHandler la actividad que estará esperando la respuesta a la petición.
         httpHandler.addListeningActivity(this);
 
+        // Se indica al AlertDialogCreator la actividad que estará esperando la respuesta
+        // de la elección del usuario..
+        alertDialogCreator.addListeningActivity(this);
+
         setFlipperAnimation();
         capturePromos();
-        addPromosToFlipper();
+        setPromosIdsList();
+        getPromosDescriptionsAndTerms();
     }
 
     public void setFlipperAnimation() {
@@ -75,10 +95,32 @@ public class PromoCardAnimator extends ActionBarActivity implements SubscribedAc
     }
 
     public void capturePromos() {
-        int branchId = getIntent().getExtras().getInt("branch_id");
+        branchId = getIntent().getExtras().getInt("branch_id");
         // En este punto se capturan las promociones correspondientes al establecimiento
         // seleccionado por el usuario.
         promos = MapData.getPromoList(branchId);
+    }
+
+    public void setPromosIdsList() {
+        String pIdsList = "[";
+        for (int i = 0; i < promos.size(); ++i) {
+            pIdsList += ("{\"id\": " + promos.get(i).getId() + "},");
+        }
+        pIdsList = pIdsList.substring(0, pIdsList.length()-1) + "]";
+        // El String que se envía podrá ser traducido fácilmente a JSONArray.
+        params.put("promos_ids_list", pIdsList);
+    }
+
+    public void getPromosDescriptionsAndTerms() {
+        if (httpHandler.isInternetConnectionAvailable(this)){
+            httpHandler.sendRequest(HttpHandler.API_V1, ACTION_PROMOS_DETAILS, "", params,
+                                    new HttpPost(), PromoCardAnimator.this);
+        }
+        else {
+            Toast.makeText(getApplicationContext(),
+                           getResources().getString(R.string.internet_connection_required),
+                           Toast.LENGTH_SHORT).show();
+        }
     }
 
     public void addPromosToFlipper() {
@@ -98,18 +140,33 @@ public class PromoCardAnimator extends ActionBarActivity implements SubscribedAc
             promoExpirationDate = (TextView) promoCard.findViewById(R.id.promo_expiration_date);
             promoAvailableRedemptions = (TextView) promoCard
                                         .findViewById(R.id.promo_available_redemptions);
+            promoDescription = (TextView) promoCard.findViewById(R.id.promo_description);
+            promoTerms = (TextView) promoCard.findViewById(R.id.promo_terms);
 
             // Se modifica la información de la promoción a mostrar.
             promoTitle.setText(promo.getTitle());
             promoExpirationDate.setText(promo.getExpirationDate());
             promoAvailableRedemptions.setText(String.valueOf(promo.getAvailableRedemptions()));
+            promoDescription.setText(MapData.getDescription(promo.getId()));
+            promoTerms.setText(MapData.getTerms(promo.getId()));
         }
     }
 
     public void now(View v) {
         params.put("promo_id", String.valueOf(promosFlipper.getCurrentView().getId()));
         params.put("user_id", String.valueOf(User.id));
-        takePromo();
+        askToTakePromo();
+    }
+
+    public void askToTakePromo() {
+        // Se muestra un diálogo al usuario para que decida si desea tomar la promoción
+        // actual o no.
+        AlertDialog promoNowAD = AlertDialogCreator
+                                 .createAlertDialog(this, R.string.promo,
+                                         R.string.confirm_taking_promo,
+                                         R.string._continue, R.string.cancel,
+                                         TAKE_PROMO);
+        promoNowAD.show();
     }
 
     public void takePromo() {
@@ -124,19 +181,91 @@ public class PromoCardAnimator extends ActionBarActivity implements SubscribedAc
         }
     }
 
+    public void showObtainedPromo() {
+        // Se muestra un diálogo al usuario para indicarle que ya ha sido acreedor
+        // de la promoción.
+        AlertDialog promoObtainedAD = AlertDialogCreator
+                                      .createAlertDialog(this, R.string.promo_obtained,
+                                                         R.string.promo_now_in_list,
+                                                         R.string.ok, -1, OBTAINED_PROMO);
+        promoObtainedAD.show();
+    }
+
+    @Override
+    public void notifyToRespond(String action) {
+        if (action.equals(TAKE_PROMO)) {
+            takePromo();
+        }
+    }
+
     @Override
     public void notify(String action, JSONObject responseJson) {
         try {
-            if (action.equals(ACTION_NOW)) {
+            if (action.equals(ACTION_PROMOS_DETAILS)) {
+                Log.i("responseJson", responseJson.toString());
+                if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
+                    Map<Integer, String> promosDescriptionsMap = new HashMap<>();
+                    Map<Integer, String> promosTermsMap = new HashMap<>();
+                    Map<Integer, ArrayList<Promo>> promosMap = new HashMap<>();
+                    ArrayList<Promo> promoList = new ArrayList<>();
+                    Map<Integer, Promo> detailedPromosMap = new HashMap<>();
+
+                    JSONArray promosDescriptionAndTerms = responseJson.getJSONArray("promos");
+                    for(int i = 0; i < promosDescriptionAndTerms.length(); ++i) {
+                        JSONObject internPromo = promosDescriptionAndTerms.getJSONObject(i);
+                        int promoId = internPromo.getInt("id");
+                        String title = internPromo.getString("title");
+                        String expirationDate = internPromo.getString("expiration_date");
+                        int availableRedemptions = internPromo.getInt("available_redemptions");
+                        String description = internPromo.getString("description");
+                        String terms = internPromo.getString("terms");
+
+                        // Se genera la lista de promociones para ser actualizada localmente.
+                        Promo p = new Promo(promoId, title, expirationDate, availableRedemptions);
+                        promoList.add(p);
+
+                        detailedPromosMap.put(promoId, p);
+
+                        promosDescriptionsMap.put(promoId, description);
+                        promosTermsMap.put(promoId, terms);
+                    }
+
+                    promosMap.put(branchId, promoList);
+                    // Se actualiza la lista de promociones para el establecimiento en cuestión.
+                    MapData.setPromosMap(promosMap);
+                    // Se actualiza la lista de promociones para cada id requerido.
+                    MapData.setDetailedPromosMap(detailedPromosMap);
+
+                    // Se almacenan localmente las descripciones y los términos de
+                    // las promociones para el establecimiento en cuestión.
+                    MapData.setPromosDescriptionsMap(promosDescriptionsMap);
+                    MapData.setPromosTermsMap(promosTermsMap);
+
+                    // En este punto ya es posible poner la lista detallada de promociones.
+                    addPromosToFlipper();
+                }
+            }
+            else if (action.equals(ACTION_NOW)) {
                 Log.i("responseJson", responseJson.toString());
                 if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
                     if (responseJson.getBoolean("success")) {
                         JSONObject redemption = responseJson.getJSONObject("redemption");
-                        Toast.makeText(getApplicationContext(), redemption.getString("code"),
-                                       Toast.LENGTH_LONG).show();
+                        String code = redemption.getString("code");
+                        int promoId = redemption.getInt("promo_id");
+                        int user_id = redemption.getInt("user_id");
+                        boolean redeemed = redemption.getBoolean("redeemed");
+
+                        Redemption r = new Redemption(code, promoId, redeemed);
+                        // Se adiciona la promoción a la lista de promociones del usuario.
+                        User.addPromoToRedeem(r);
+                        showObtainedPromo();
+                        // TODO deshabilitarle el botón al usuario para que no la trate de volver a tomarla
                     }
                 }
             }
+
+            params.clear();
+
         } catch (JSONException e) {
 
         }

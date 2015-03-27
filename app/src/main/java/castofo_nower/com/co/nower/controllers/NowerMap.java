@@ -44,6 +44,7 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     private int ZOOM_LEVEL = 14;
     private Geolocation geolocation;
     public Marker userMarker = null;
+    public Marker currentMarker = null;
 
     private HttpHandler httpHandler = new HttpHandler();
     public static final String ACTION_PROMOS = "/promos/locations";
@@ -179,6 +180,7 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
                 Log.i("responseJson", responseJson.toString());
                 if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
                     ArrayList<Promo> promoList = new ArrayList<>();
+                    Map<Integer,Promo> detailedPromosMap = new HashMap<>();
                     branchesMap.clear();
                     promosMap.clear();
 
@@ -189,6 +191,7 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
 
                         JSONObject internLocation = locations.getJSONObject(i);
                         int id = internLocation.getInt("id");
+                        String name = internLocation.getString("name");
                         double latitude = internLocation.getDouble("latitude");
                         double longitude = internLocation.getDouble("longitude");
                         int storeId = internLocation.getInt("store_id");
@@ -206,14 +209,18 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
                                                 availableRedemptions);
                             promoList.add(p);
 
+                            // Se crea un mapa de promociones para luego buscar su descripción
+                            // con el id.
+                            detailedPromosMap.put(promoId, p);
                         }
-                        putMarkerAndSavePromoList(id, latitude, longitude, storeId, storeName,
+                        putMarkerAndSavePromoList(id, name, latitude, longitude, storeId, storeName,
                                                   promoList);
                     }
                     // Se envían al modelo MapData para que puedan ser accedidos
                     // desde otras actividades.
                     MapData.setBranchesMap(branchesMap);
                     MapData.setPromosMap(promosMap);
+                    MapData.setDetailedPromosMap(detailedPromosMap);
                 }
             }
         } catch (JSONException e) {
@@ -222,16 +229,17 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     }
 
     // Este método se encarga de poner todas las promociones en el mapa y guardarlas localmente.
-    public void putMarkerAndSavePromoList(int id, double latitude,double longitude, int storeId,
-                                          String storeName, ArrayList<Promo> promoList) {
+    public void putMarkerAndSavePromoList(int id, String name, double latitude,double longitude,
+                                          int storeId, String storeName,
+                                          ArrayList<Promo> promoList) {
 
-        Branch branch = new Branch(id, latitude, longitude, storeId, storeName);
+        Branch branch = new Branch(id, name, latitude, longitude, storeId, storeName);
 
         Marker locationMarker = map.addMarker(new MarkerOptions()
-                        .position(new LatLng(latitude, longitude))
-                        .title(storeName)
-                        .icon(BitmapDescriptorFactory.fromResource
-                                (R.drawable.nower_marker))
+                                              .position(new LatLng(latitude, longitude))
+                                              .title(storeName + " - " + name)
+                                              .icon(BitmapDescriptorFactory.fromResource
+                                                    (R.drawable.nower_marker))
         );
 
         branchesMap.put(locationMarker, branch);
@@ -242,23 +250,37 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        if (marker != userMarker) {
-            if (marker.isInfoWindowShown()) {
-                marker.hideInfoWindow();
-                return true;
+        if (!marker.equals(userMarker)) {
+            if (currentMarker == null) {
+                marker.showInfoWindow();
+                currentMarker = marker;
             }
-            return false;
+            else {
+                if (currentMarker.equals(marker)) {
+                    marker.hideInfoWindow();
+                    currentMarker = null;
+                }
+                else {
+                    currentMarker.hideInfoWindow();
+                    marker.showInfoWindow();
+                    currentMarker = marker;
+                }
+            }
+
+            return true;
         }
+
         return false;
     }
 
     @Override
     public void onInfoWindowClick(Marker marker) {
         // Se activa el detector de gestos para animar las tarjetas de promociones.
-        if (marker != userMarker) {
+        if (!marker.equals(userMarker)) {
             int branchId = MapData.getBranch(marker).getId();
             Intent showPromos = new Intent(NowerMap.this, PromoCardAnimator.class);
             showPromos.putExtra("branch_id", branchId);
+            showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(showPromos);
         }
     }
