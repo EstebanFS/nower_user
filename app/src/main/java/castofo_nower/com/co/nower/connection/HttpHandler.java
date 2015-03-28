@@ -12,7 +12,6 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
-import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
@@ -30,6 +29,7 @@ import java.util.Map;
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.controllers.NowerMap;
 import castofo_nower.com.co.nower.controllers.PromoCardAnimator;
+import castofo_nower.com.co.nower.controllers.UserPromoList;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 
 
@@ -235,6 +235,9 @@ public class HttpHandler {
                     break;
                 case PromoCardAnimator.ACTION_NOW:
                     progressDialog.setMessage(context.getString(R.string.obtaining_promo_code));
+                    break;
+                case UserPromoList.ACTION_USER_REDEMPTIONS:
+                    progressDialog.setMessage(context.getString(R.string.obtaining_your_promos));
                     break;
             }
 
