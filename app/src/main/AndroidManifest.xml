@@ -50,7 +50,7 @@
 
         <activity
             android:name=".controllers.PromoCardAnimator"
-            android:label="@string/title_activity_promo_card_animation"
+            android:label="@string/promo"
             android:theme="@style/AppTheme.TranslucentActionBar" >
         </activity>
         <activity
@@ -61,17 +61,9 @@
             android:name=".controllers.BranchesList"
             android:label="@string/title_activity_branches_list" >
         </activity>
-        <activity
-            android:name=".controllers.RedemptionProcess"
-            android:label="@string/title_activity_redemption_process" >
-        </activity>
-        <activity
+      <activity
             android:name=".controllers.TabsHandler"
-            android:label="@string/title_activity_tab_handler" >
-        </activity>
-        <activity
-            android:name=".controllers.NowerMap1"
-            android:label="@string/title_activity_nower_map1" >
+            android:label="@string/app_name" >
         </activity>
     </application>
 

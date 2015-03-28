@@ -4,7 +4,7 @@
     <string name="app_name">Nower</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_map">Map</string>
+    <string name="title_activity_map">Mapa</string>
     <string name="gps">GPS</string>
     <string name="enable_gps_suggestion">¿Te gustaría activar el GPS para tener una mejor experiencia?</string>
     <string name="yes">Sí</string>
@@ -12,8 +12,6 @@
     <string name="internet_connection_required">Necesitas conexión a Internet para acceder a las promociones.</string>
     <string name="loading_promos">Cargando promociones</string>
     <string name="you_are_here">¡Estás aquí!</string>
-    <string name="title_activity_promo_card">PromoCard</string>
-    <string name="title_activity_promo_card_animation">PromoCardAnimation</string>
     <string name="obtaining_promo_code">Obteniendo código de promoción</string>
     <string name="obtaining_promos">Obteniendo promociones</string>
     <string name="now">NOW</string>
@@ -24,22 +22,17 @@
     <string name="promo_obtained">Promoción obtenida</string>
     <string name="promo_now_in_list">Ahora puedes encontrar esta promoción en tu lista de promociones.</string>
     <string name="ok">OK</string>
+    <string name="title_activity_user_promo_list">Mis promociones</string>
+    <string name="title_activity_branches_list">Tiendas</string>
     <string name="promo_expired">Vencida</string>
-    <string name="title_activity_user_promo_list">UserPromoList</string>
-    <string name="title_activity_branches_list">BranchesList</string>
-    <string name="title_activity_redemption_process">RedemptionProcess</string>
-    <string name="title_activity_tab_handler">TabHandler</string>
     <string name="expand_reviews">VER COMENTARIOS Y PUNTUACIÓN</string>
     <string name="promo_description">DESCRIPCIÓN</string>
     <string name="promo_terms">TÉRMINOS Y CONDICIONES</string>
 
     <string-array name="tabs_names">
-        <item>Mapa</item>
-        <item>Tiendas</item>
-        <item>Mis promociones</item>
+        <item>@string/title_activity_map</item>
+        <item>@string/title_activity_branches_list</item>
+        <item>@string/title_activity_user_promo_list</item>
     </string-array>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_nower_map1">NowerMap1</string>
 
 </resources>
