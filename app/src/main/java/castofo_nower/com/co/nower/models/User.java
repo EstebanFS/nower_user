@@ -6,7 +6,7 @@ import java.util.Map;
 
 public class User {
 
-    public static int id = 22;
+    public static int id = 2;
     public static String email;
     public static String name;
     public static boolean gender;
