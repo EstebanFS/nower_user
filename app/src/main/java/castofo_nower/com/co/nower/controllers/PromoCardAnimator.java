@@ -14,6 +14,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,10 +63,18 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     private TextView promoDescription;
     private TextView promoTerms;
 
+    private Button nowButton;
+    private TextView redemptionCode;
+
     private AlertDialogCreator alertDialogCreator = new AlertDialogCreator();
 
+    // Indicador para saber qué acción se está tratando de ejecutar.
+    private String action;
+
     private int branchId;
+    private String code;
     private ArrayList<Promo> promos = new ArrayList<>();
+    private Map<Integer, Promo> userPromos = new HashMap<>();
 
     public static final String TAKE_PROMO = "TAKE_PROMO";
     public static final String OBTAINED_PROMO = "OBTAINED_PROMO";
@@ -73,8 +82,8 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //setContentView(R.layout.activity_promo_card_animator);
         initView();
+
         gestureDetector = new GestureDetectorCompat(this, this);
 
 
@@ -92,7 +101,6 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     }
 
     public void initView() {
-
         FadingActionBarHelper helper = new FadingActionBarHelper()
                                        .actionBarBackground(R.drawable.ab_background)
                                        .headerLayout(R.layout.header)
@@ -114,10 +122,24 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     }
 
     public void capturePromos() {
-        branchId = getIntent().getExtras().getInt("branch_id");
-        // En este punto se capturan las promociones correspondientes al establecimiento
-        // seleccionado por el usuario.
-        promos = MapData.getPromoList(branchId);
+        action = getIntent().getExtras().getString("action");
+        if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
+            branchId = getIntent().getExtras().getInt("branch_id");
+            // En este punto se capturan las promociones correspondientes al establecimiento
+            // seleccionado por el usuario.
+            promos = MapData.getPromoList(branchId);
+
+            // Estas promociones se capturan para saber cuáles deben mostrarse
+            // con botón y cuáles con código.
+            userPromos = User.getUserPromosToRedeem();
+        }
+        else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
+            code = getIntent().getExtras().getString("code");
+            Redemption r = User.obtainedPromos.get(code);
+            Promo p = MapData.getPromo(r.getPromoId());
+            // En este punto se captura la promoción que desea redimir el usuario.
+            promos.add(p);
+        }
     }
 
     public void setPromosIdsList() {
@@ -162,13 +184,35 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
             promoDescription = (TextView) promoCard.findViewById(R.id.promo_description);
             promoTerms = (TextView) promoCard.findViewById(R.id.promo_terms);
 
+            nowButton = (Button) promoCard.findViewById(R.id.now_button);
+            redemptionCode = (TextView) promoCard.findViewById(R.id.redemption_code);
+
             // Se modifica la información de la promoción a mostrar.
             promoTitle.setText(promo.getTitle());
             promoExpirationDate.setText(promo.getExpirationDate());
             promoAvailableRedemptions.setText(String.valueOf(promo.getAvailableRedemptions()));
             promoDescription.setText(MapData.getDescription(promo.getId()));
             promoTerms.setText(MapData.getTerms(promo.getId()));
+
+            if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
+                if (userPromos.containsKey(promo.getId())) {
+                    // El usuario no debería poder tomar esta promoción porque ya la tiene.
+                    code = User.promosToRedeemCodes.get(promo.getId());
+                    changeButtonToCode();
+                }
+            }
+            else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
+                changeButtonToCode();
+            }
         }
+    }
+
+    public void changeButtonToCode() {
+        // El usuario está tratando de visualizar una promoción que ya obtuvo.
+        // Por eso, desaparece el botón de Now y aparece el código para redimirla.
+        nowButton.setVisibility(View.GONE);
+        redemptionCode.setText(code);
+        redemptionCode.setVisibility(View.VISIBLE);
     }
 
     public void now(View v) {
@@ -277,6 +321,20 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
                         Redemption r = new Redemption(code, promoId, redeemed);
                         // Se adiciona la promoción a la lista de promociones del usuario.
                         User.addPromoToRedeem(code, r);
+                        // Se asocia el código para redimir con la promoción correspondiente.
+                        User.addPromoToRedeemCode(promoId, code);
+
+                        this.code = code;
+
+                        // Se capturan botón y código de la vista actual para
+                        // realizar el intercambio.
+                        nowButton = (Button) promosFlipper.getCurrentView()
+                                                          .findViewById(R.id.now_button);
+                        redemptionCode = (TextView) promosFlipper
+                                                    .getCurrentView()
+                                                    .findViewById(R.id.redemption_code);
+                        changeButtonToCode();
+
                         showObtainedPromo();
                         // TODO deshabilitarle el botón al usuario para que no la trate de volver a tomarla
                     }
