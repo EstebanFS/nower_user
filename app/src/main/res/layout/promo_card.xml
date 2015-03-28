@@ -120,12 +120,13 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="4"
-        android:gravity="center">
+        android:gravity="left|center_vertical">
 
         <TextView
           android:id="@+id/promo_expiration_date"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:paddingLeft="20dp"
           android:text="04:06:31"
           android:textColor="@color/red"
           android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
@@ -139,7 +140,9 @@
       android:id="@+id/people_limit_layout"
       android:layout_width="0dp"
       android:layout_height="wrap_content"
-      android:layout_weight="1">
+      android:layout_weight="1"
+      android:paddingLeft="30dp">
+
       <LinearLayout
         android:layout_width="0dp"
         android:layout_height="match_parent"
@@ -158,12 +161,13 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="4"
-        android:gravity="center">
+        android:gravity="left|center">
 
         <TextView
           android:id="@+id/promo_available_redemptions"
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
+          android:paddingLeft="20dp"
           android:text="618"
           android:textColor="@color/red"
           android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
@@ -183,11 +187,11 @@
 
   <LinearLayout
     android:padding="10dp"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
     <LinearLayout
-      android:layout_width="wrap_content"
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:background="@color/light_green">
 

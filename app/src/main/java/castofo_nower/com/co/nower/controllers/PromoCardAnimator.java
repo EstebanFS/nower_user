@@ -3,6 +3,7 @@ package castofo_nower.com.co.nower.controllers;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.os.CountDownTimer;
 import android.support.v4.view.GestureDetectorCompat;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +26,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,6 +42,7 @@ import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.AlertDialogCreator;
+import castofo_nower.com.co.nower.support.DateManager;
 
 import com.manuelpeinado.fadingactionbar.FadingActionBarHelper;
 
@@ -58,7 +62,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     private Map<String, String> params = new HashMap<String, String>();
 
     private TextView promoTitle;
-    private TextView promoExpirationDate;
+    //private TextView promoExpirationDate;
     private TextView promoAvailableRedemptions;
     private TextView promoDescription;
     private TextView promoTerms;
@@ -168,7 +172,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
         for (int i = 0; i < promos.size(); ++i) {
             Promo promo = promos.get(i);
             LayoutInflater inflater = (LayoutInflater)
-                                      this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                    this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             View promoCard = inflater.inflate(R.layout.promo_card, null);
             // Con este ID se identificará la promoción actual que visualiza el usuario.
             promoCard.setId(promo.getId());
@@ -178,9 +182,10 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
 
             // Se capturan los campos que se van a modificar.
             promoTitle = (TextView) promoCard.findViewById(R.id.promo_title);
-            promoExpirationDate = (TextView) promoCard.findViewById(R.id.promo_expiration_date);
+            final TextView promoExpirationDate = (TextView)
+                    promoCard.findViewById(R.id.promo_expiration_date);
             promoAvailableRedemptions = (TextView) promoCard
-                                        .findViewById(R.id.promo_available_redemptions);
+                    .findViewById(R.id.promo_available_redemptions);
             promoDescription = (TextView) promoCard.findViewById(R.id.promo_description);
             promoTerms = (TextView) promoCard.findViewById(R.id.promo_terms);
 
@@ -204,7 +209,45 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
             else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
                 changeButtonToCode();
             }
+
+            CountDownTimer countDownTimer = createCountDownTimer(
+                    promoExpirationDate,
+                    promo.getExpirationDate());
+            countDownTimer.start();
         }
+    }
+
+    public CountDownTimer createCountDownTimer(final TextView countDownView,
+                                               String expirationDate) {
+        long millisUntilFinished, promoDeadLine;
+        try {
+            promoDeadLine = DateManager.getTimeStamp(expirationDate);
+        }
+        catch (ParseException e) {
+            return null;
+        }
+
+        Date currentTime = new Date();
+        millisUntilFinished = promoDeadLine - currentTime.getTime();
+
+        CountDownTimer countDownTimer = new CountDownTimer(millisUntilFinished,
+                1000) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                long seconds = millisUntilFinished / 1000;
+                long minutes = seconds / 60;
+                long hours = minutes / 60;
+                countDownView.setText(String.format("%02d:%02d:%02d", hours,
+                        minutes % 60, seconds % 60));
+            }
+
+            @Override
+            public void onFinish() {
+                countDownView.setText(getResources()
+                        .getString(R.string.promo_expired));
+            }
+        };
+        return countDownTimer;
     }
 
     public void changeButtonToCode() {
@@ -387,7 +430,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
 
     @Override
     public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-        float sensitivity = 50;
+        float sensitivity = 90;
 
         // No es necesario pasar de promoción si solamente existe una.
         if (promosFlipper.getChildCount() > 1) {
