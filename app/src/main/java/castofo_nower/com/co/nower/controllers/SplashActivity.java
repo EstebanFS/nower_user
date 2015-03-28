@@ -25,7 +25,8 @@ public class SplashActivity extends Activity {
                     e.printStackTrace();
                 } finally {
                     // Luego se ingresa propiamente a la aplicación.
-                    Intent openApp = new Intent(SplashActivity.this, TabsHandler.class);
+                    Intent openApp = new Intent(SplashActivity.this,
+                                                LoginActivity.class);
                     startActivity(openApp);
                     finish();
                 }
