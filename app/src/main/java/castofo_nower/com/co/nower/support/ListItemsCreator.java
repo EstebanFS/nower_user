@@ -45,10 +45,10 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         View item = inflater.inflate(resource, parent, false);
 
         TextView title = (TextView) item.findViewById(R.id.title);
-        ImageView storeIcon = (ImageView) item.findViewById(R.id.store_icon);
+        ImageView icon = (ImageView) item.findViewById(R.id.icon);
 
         String titleText = "";
-
+        Drawable iconImg = null;
         switch (action) {
             case UserPromoList.LIST_USER_PROMOS:
                 // Se obtiene el título de la promoción actual.
@@ -58,6 +58,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
                 // Se le pone el código para redimir la promoción con el fin de poder gestionarla
                 // al ser presionada por el usuario.
                 item.setId(Integer.parseInt(r.getCode(), 16));
+                iconImg = context.getResources().getDrawable(R.drawable.promo_icon);
                 break;
             case BranchesList.LIST_BRANCHES:
                 // Se obtiene el nombre del establecimiento actual.
@@ -67,13 +68,13 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
                 // Se le pone el ID del establecimiento para poder gestionarlo al ser presionado
                 // por el usuario.
                 item.setId(b.getId());
+                iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
                 break;
         }
 
         title.setText(titleText);
 
-        Drawable storeIconImg = context.getResources().getDrawable(R.drawable.nower_marker);
-        storeIcon.setImageDrawable(storeIconImg);
+        if (iconImg != null) icon.setImageDrawable(iconImg);
 
         /*
         Drawable categoryIcon = null;
