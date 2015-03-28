@@ -5,7 +5,7 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/store_icon"
+        android:id="@+id/icon"
         android:layout_gravity="center_vertical"
         android:padding="5dp"
         android:layout_width="wrap_content"

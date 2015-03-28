@@ -25,8 +25,9 @@
     <string name="title_activity_user_promo_list">Mis promociones</string>
     <string name="title_activity_branches_list">Tiendas</string>
     <string name="promo_expired">Vencida</string>
+    <string name="empty_user_promo_list">Aún no has obtenido ninguna promoción</string>
 
-    <string-array name="tabs_names">
+  <string-array name="tabs_names">
         <item>@string/title_activity_map</item>
         <item>@string/title_activity_branches_list</item>
         <item>@string/title_activity_user_promo_list</item>

@@ -30,6 +30,12 @@ public class UserPromoList extends ListActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_promo_list);
+
+        // Se muestra un mensaje en caso de que la lista de promociones del usuario esté vacía.
+        View empty = findViewById(R.id.empty_list);
+        ListView list=(ListView)findViewById(android.R.id.list);
+        list.setEmptyView(empty);
+
         userPromosListToShow = new ListItemsCreator(this, R.layout.promo_item, generateData(),
                                                     LIST_USER_PROMOS);
 

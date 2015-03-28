@@ -10,4 +10,16 @@
         android:layout_width="match_parent"
         android:dividerHeight="2dp" />
 
+
+    <TextView
+        android:id="@+id/empty_list"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/empty_user_promo_list"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@color/gray"/>
 </RelativeLayout>
