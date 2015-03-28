@@ -33,6 +33,8 @@ public class BranchesList extends ListActivity {
                                                   LIST_BRANCHES);
 
         setListAdapter(branchesListToShow);
+
+        setEmptyListMessage();
     }
 
     public static ArrayList<Object> generateData(){
@@ -42,6 +44,13 @@ public class BranchesList extends ListActivity {
         }
 
         return branches;
+    }
+
+    public void setEmptyListMessage() {
+        // Se muestra un mensaje en caso de que la lista de tiendas esté vacía.
+        View empty = findViewById(R.id.empty_list);
+        ListView list = (ListView) findViewById(android.R.id.list);
+        list.setEmptyView(empty);
     }
 
     protected void onListItemClick(ListView l, View v, int position, long id) {

@@ -29,9 +29,10 @@
     <string name="expand_reviews">VER COMENTARIOS Y PUNTUACIÓN</string>
     <string name="promo_description">DESCRIPCIÓN</string>
     <string name="promo_terms">TÉRMINOS Y CONDICIONES</string>
-    <string name="not_redeemed">NO REDIMIDAS</string>
+    <string name="not_redeemed">POR REDIMIR</string>
     <string name="redeemed">REDIMIDAS</string>
-  <string name="obtaining_your_promos">Obteniendo tus promociones</string>
+    <string name="obtaining_your_promos">Obteniendo tus promociones</string>
+    <string name="empty_branches_list">No fue posible mostrar las tiendas</string>
 
   <string-array name="tabs_names">
         <item>@string/title_activity_map</item>
