@@ -24,6 +24,7 @@ public class UserPromoList extends ListActivity {
     private ListItemsCreator userPromosListToShow;
 
     public static final String LIST_USER_PROMOS = "LIST_USER_PROMOS";
+    public static final String SHOW_PROMO_TO_REDEEM = "SHOW_PROMO_TO_REDEEM";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +48,8 @@ public class UserPromoList extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         String code = (Integer.toHexString(v.getId())).toUpperCase();
-        Intent showPromoToRedeem = new Intent(UserPromoList.this, RedemptionProcess.class);
+        Intent showPromoToRedeem = new Intent(UserPromoList.this, PromoCardAnimator.class);
+        showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
         showPromoToRedeem.putExtra("code", code);
         showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(showPromoToRedeem);

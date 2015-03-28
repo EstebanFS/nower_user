@@ -51,6 +51,8 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     private Map<String, String> params = new HashMap<String, String>();
 
     public static final int OP_SUCCEEDED = 0;
+    public static final String SHOW_BRANCH_PROMOS = "SHOW_BRANCH_PROMOS";
+
 
     private Map<Marker, Branch> branchesMap = new HashMap<>();
     private Map<Integer, ArrayList<Promo>> promosMap = new HashMap<>();
@@ -279,6 +281,7 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
         if (!marker.equals(userMarker)) {
             int branchId = MapData.getBranch(marker).getId();
             Intent showPromos = new Intent(NowerMap.this, PromoCardAnimator.class);
+            showPromos.putExtra("action", SHOW_BRANCH_PROMOS);
             showPromos.putExtra("branch_id", branchId);
             showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             startActivity(showPromos);

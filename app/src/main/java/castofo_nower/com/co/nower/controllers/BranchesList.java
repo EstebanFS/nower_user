@@ -48,6 +48,7 @@ public class BranchesList extends ListActivity {
         super.onListItemClick(l, v, position, id);
         int branchId = v.getId();
         Intent showPromos = new Intent(BranchesList.this, PromoCardAnimator.class);
+        showPromos.putExtra("action", NowerMap.SHOW_BRANCH_PROMOS);
         showPromos.putExtra("branch_id", branchId);
         showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(showPromos);
