@@ -61,6 +61,7 @@
     android:orientation="vertical">
 
     <Button
+      android:id="@+id/now_button"
       android:layout_width="match_parent"
       android:layout_height="40dp"
       android:background="@drawable/now_button_background"
@@ -71,6 +72,7 @@
       android:visibility="visible"/>
 
     <TextView
+      android:id="@+id/redemption_code"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:gravity="center"
