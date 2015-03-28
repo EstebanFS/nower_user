@@ -64,7 +64,7 @@
       android:id="@+id/now_button"
       android:layout_width="match_parent"
       android:layout_height="40dp"
-      android:background="@drawable/now_button_background"
+      android:background="@drawable/green_button_background"
       android:textColor="@color/white"
       android:text="@string/now"
       android:textStyle="bold"
