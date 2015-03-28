@@ -16,7 +16,7 @@
     <string name="title_activity_promo_card_animation">PromoCardAnimation</string>
     <string name="obtaining_promo_code">Obteniendo código de promoción</string>
     <string name="obtaining_promos">Obteniendo promociones</string>
-    <string name="now">Now!</string>
+    <string name="now">NOW</string>
     <string name="promo">Promoción</string>
     <string name="confirm_taking_promo">Estás a punto de tomar esta promoción.</string>
     <string name="_continue">Continuar</string>
@@ -29,6 +29,9 @@
     <string name="title_activity_branches_list">BranchesList</string>
     <string name="title_activity_redemption_process">RedemptionProcess</string>
     <string name="title_activity_tab_handler">TabHandler</string>
+    <string name="expand_reviews">VER COMENTARIOS Y PUNTUACIÓN</string>
+    <string name="promo_description">DESCRIPCIÓN</string>
+    <string name="promo_terms">TÉRMINOS Y CONDICIONES</string>
 
     <string-array name="tabs_names">
         <item>Mapa</item>
