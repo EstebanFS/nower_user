@@ -16,7 +16,6 @@ import castofo_nower.com.co.nower.controllers.BranchesList;
 import castofo_nower.com.co.nower.controllers.UserPromoList;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
-import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 
 
@@ -53,12 +52,34 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
             case UserPromoList.LIST_USER_PROMOS:
                 // Se obtiene el título de la promoción actual.
                 Redemption r = (Redemption) listData.get(position);
-                int promoId = r.getPromoId();
-                titleText = MapData.getPromo(promoId).getTitle();
-                // Se le pone el código para redimir la promoción con el fin de poder gestionarla
-                // al ser presionada por el usuario.
-                item.setId(Integer.parseInt(r.getCode(), 16));
-                iconImg = context.getResources().getDrawable(R.drawable.promo_icon);
+
+                // Se trata de un encabezado de sección.
+                if (r.getCode() == "0" || r.getCode() == "1") {
+                    item = inflater.inflate(R.layout.redeemed_status_header, parent, false);
+                    title = (TextView) item.findViewById(R.id.redeemed_status_title);
+                    // Se trata del encabezado de promociones no redimidas.
+                    if (r.getCode() == "0") {
+                        titleText = context.getResources().getString(R.string.not_redeemed);
+                    }
+                    // Se trata del encabezado de promoiones redimidas.
+                    else {
+                        titleText = context.getResources().getString(R.string.redeemed);
+                    }
+                    // Es un encabezado y por tanto no clickeable.
+                    item.setClickable(false);
+                    item.setLongClickable(false);
+                    item.setOnClickListener(null);
+                    item.setOnLongClickListener(null);
+                }
+                // Se trata de un item.
+                else {
+                    int promoId = r.getPromoId();
+                    titleText = MapData.getPromo(promoId).getTitle();
+                    // Se le pone el código para redimir la promoción con el fin de poder gestionarla
+                    // al ser presionada por el usuario.
+                    item.setId(Integer.parseInt(r.getCode(), 16));
+                    iconImg = context.getResources().getDrawable(R.drawable.promo_icon);
+                }
                 break;
             case BranchesList.LIST_BRANCHES:
                 // Se obtiene el nombre del establecimiento actual.

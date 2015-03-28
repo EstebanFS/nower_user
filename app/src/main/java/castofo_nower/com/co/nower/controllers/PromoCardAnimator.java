@@ -77,6 +77,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
 
     private int branchId;
     private String code;
+    private boolean isUserPromoRedeemed;
     private ArrayList<Promo> promos = new ArrayList<>();
     private Map<Integer, Promo> userPromos = new HashMap<>();
 
@@ -140,6 +141,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
         else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
             code = getIntent().getExtras().getString("code");
             Redemption r = User.obtainedPromos.get(code);
+            isUserPromoRedeemed = r.isRedeemed();
             Promo p = MapData.getPromo(r.getPromoId());
             // En este punto se captura la promoción que desea redimir el usuario.
             promos.add(p);
@@ -203,6 +205,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
                 if (userPromos.containsKey(promo.getId())) {
                     // El usuario no debería poder tomar esta promoción porque ya la tiene.
                     code = User.promosToRedeemCodes.get(promo.getId());
+                    isUserPromoRedeemed = User.obtainedPromos.get(code).isRedeemed();
                     changeButtonToCode();
                 }
             }
@@ -255,6 +258,9 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
         // Por eso, desaparece el botón de Now y aparece el código para redimirla.
         nowButton.setVisibility(View.GONE);
         redemptionCode.setText(code);
+        // En caso de tratarse de una promoción ya redimida por el usuario,
+        // el código aparece en color gris.
+        if (isUserPromoRedeemed) redemptionCode.setTextColor(getResources().getColor(R.color.gray));
         redemptionCode.setVisibility(View.VISIBLE);
     }
 
@@ -368,6 +374,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
                         User.addPromoToRedeemCode(promoId, code);
 
                         this.code = code;
+                        isUserPromoRedeemed = redeemed;
 
                         // Se capturan botón y código de la vista actual para
                         // realizar el intercambio.
@@ -379,8 +386,8 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
                         changeButtonToCode();
 
                         showObtainedPromo();
-                        // TODO deshabilitarle el botón al usuario para que no la trate de volver a tomarla
                     }
+                    //TODO acciones cuando no se pudo tomar la promoción.
                 }
             }
 
