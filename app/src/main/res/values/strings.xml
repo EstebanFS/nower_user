@@ -24,6 +24,7 @@
     <string name="promo_obtained">Promoción obtenida</string>
     <string name="promo_now_in_list">Ahora puedes encontrar esta promoción en tu lista de promociones.</string>
     <string name="ok">OK</string>
+    <string name="promo_expired">Vencida</string>
     <string name="title_activity_user_promo_list">UserPromoList</string>
     <string name="title_activity_branches_list">BranchesList</string>
     <string name="title_activity_redemption_process">RedemptionProcess</string>
