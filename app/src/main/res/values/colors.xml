@@ -5,7 +5,13 @@
   <color name="light_green">#DBEDC7</color>
   <color name="light_orange">#76ffc369</color>
   <color name="white">#FFFFFF</color>
+  <color name="dark_white">#DDD8E8</color>
   <color name="black">#000000</color>
   <color name="gray">#ffa9a9a9</color>
   <color name="red">#FF0000</color>
+  <color name="blue">#366CD1</color>
+  <color name="blue2">#417BE8</color>
+  <color name="blue3">#4084FF</color>
+  <color name="light_blue">#7AB5E8</color>
+  <color name="aqua">#5EE8BF</color>
 </resources>

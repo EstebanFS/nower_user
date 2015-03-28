@@ -29,11 +29,25 @@
     <string name="expand_reviews">VER COMENTARIOS Y PUNTUACIÓN</string>
     <string name="promo_description">DESCRIPCIÓN</string>
     <string name="promo_terms">TÉRMINOS Y CONDICIONES</string>
+    <string name="full_name">Nombre completo</string>
+    <string name="email">Correo electrónico</string>
+    <string name="password">Contraseña</string>
+    <string name="password_confirmation">Confirmar contraseña</string>
+    <string name="birthday_date">Fecha de nacimiento</string>
+    <string name="log_in">Ingresar</string>
+    <string name="register">Registrarse</string>
+    <string name="dont_have_account">No tengo una cuenta, crear una</string>
+    <string name="already_have_account">Ya tengo una cuenta, ingresar</string>
+    <string name="male">Hombre</string>
+    <string name="female">Mujer</string>
 
     <string-array name="tabs_names">
         <item>@string/title_activity_map</item>
         <item>@string/title_activity_branches_list</item>
         <item>@string/title_activity_user_promo_list</item>
     </string-array>
+
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_register">RegisterActivity</string>
 
 </resources>

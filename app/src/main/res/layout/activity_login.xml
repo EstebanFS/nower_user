@@ -1,0 +1,100 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context="castofo_nower.com.co.nower.controllers.LoginActivity"
+            android:fillViewport="true"
+            android:background="@drawable/login_background">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="4"
+      android:gravity="center"
+      android:orientation="vertical">
+
+      <TextView
+        android:id="@+id/login_header"
+        android:text="@string/app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="70dp"
+        android:textSize="50sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"/>
+
+      <EditText
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="textEmailAddress"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="10dp"
+        android:hint="@string/email"
+        android:textColor="@color/white"
+        android:textColorHint="@color/dark_white"
+        android:background="@drawable/login_field_background"
+        android:drawableLeft="@drawable/ic_email_light"
+        android:drawablePadding="20dp"
+        android:singleLine="true"/>
+
+      <EditText
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:inputType="textPassword"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:paddingLeft="10dp"
+        android:hint="@string/password"
+        android:textColor="@color/white"
+        android:textColorHint="@color/dark_white"
+        android:background="@drawable/login_field_background"
+        android:drawableLeft="@drawable/ic_password_light"
+        android:drawablePadding="20dp"
+        android:singleLine="true"/>
+
+      <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:text="@string/log_in"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:textColor="@color/dark_white"
+        android:textStyle="bold"
+        android:background="@drawable/green_button_background"
+        android:onClick="onLoginClicked" />
+
+    </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:gravity="center|bottom">
+
+      <TextView
+        android:text="@string/dont_have_account"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="50dp"
+        android:layout_marginRight="50dp"
+        android:padding="25dp"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="15sp"
+        android:gravity="center"
+        android:onClick="onDontHaveAccountClicked"
+        android:clickable="true"/>
+    </LinearLayout>
+  </LinearLayout>
+</ScrollView>

@@ -20,6 +20,15 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
+    <!--
+     To retrieve OAuth 2.0 tokens or invalidate tokens to disconnect a user. This disconnect
+     option is required to comply with the Google+ Sign-In developer policies
+    -->
+    <uses-permission android:name="android.permission.USE_CREDENTIALS" /> <!-- To retrieve the account name (email) as part of sign-in: -->
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" /> <!-- To auto-complete the email text field in the login form with the user's emails -->
+    <uses-permission android:name="android.permission.READ_PROFILE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_launcher"
@@ -30,9 +39,9 @@
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar" >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+              <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+              <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
@@ -43,7 +52,7 @@
         <meta-data
             android:name="com.google.android.maps.v2.API_KEY"
             android:value="AIzaSyComkf567bF-nIKsmhbqOtejwJdR8x4cmE" />
-            <!--android:value="AIzaSyAYqjc0sDA7WH8tKwzjEgZa9z6CtRbGaxM" />-->
+        <!-- android:value="AIzaSyAYqjc0sDA7WH8tKwzjEgZa9z6CtRbGaxM" /> -->
         <meta-data
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
@@ -61,9 +70,23 @@
             android:name=".controllers.BranchesList"
             android:label="@string/title_activity_branches_list" >
         </activity>
-      <activity
+        <activity
             android:name=".controllers.TabsHandler"
             android:label="@string/app_name" >
+        </activity>
+        <activity
+            android:name=".controllers.LoginActivity"
+            android:label="@string/log_in"
+            android:launchMode="singleInstance"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
+        </activity>
+        <activity
+            android:name=".controllers.RegisterActivity"
+            android:label="@string/register"
+            android:theme="@style/AppTheme.CustomWhiteRadioButton"
+            android:launchMode="singleInstance"
+            android:windowSoftInputMode="adjustResize|stateHidden" >
         </activity>
     </application>
 
