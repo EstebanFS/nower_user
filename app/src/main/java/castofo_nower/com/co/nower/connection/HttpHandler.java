@@ -27,8 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import castofo_nower.com.co.nower.R;
+import castofo_nower.com.co.nower.controllers.Login;
 import castofo_nower.com.co.nower.controllers.NowerMap;
 import castofo_nower.com.co.nower.controllers.PromoCardAnimator;
+import castofo_nower.com.co.nower.controllers.Register;
 import castofo_nower.com.co.nower.controllers.UserPromoList;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 
@@ -158,6 +160,22 @@ public class HttpHandler {
         try {
             // Servicio a ejecutar según el parámetro action.
             switch (action) {
+                case Register.ACTION_REGISTER:
+                    internJson.put("email", encodeString(params.get("email")));
+                    internJson.put("name", encodeString(params.get("name")));
+                    boolean gender = params.get("gender").equals("0") ? false : true;
+                    internJson.put("gender", gender);
+                    internJson.put("birthday", encodeString(params.get("birthday")));
+                    internJson.put("password", encodeString(params.get("password")));
+                    internJson.put("password_confirmation",
+                                   encodeString(params.get("password_confirmation")));
+                    json.put("user", internJson);
+                    break;
+                case Login.ACTION_LOGIN:
+                    internJson.put("email", encodeString(params.get("email")));
+                    internJson.put("password", encodeString(params.get("password")));
+                    json.put("user", internJson);
+                    break;
                 case PromoCardAnimator.ACTION_PROMOS_DETAILS:
                     internJsonArray = new JSONArray(params.get("promos_ids_list"));
                     json.put("promos", internJsonArray);
@@ -227,6 +245,12 @@ public class HttpHandler {
             progressDialog = new ProgressDialog(context);
 
             switch (action) {
+                case Register.ACTION_REGISTER:
+                    progressDialog.setMessage(context.getString(R.string.registering));
+                    break;
+                case Login.ACTION_LOGIN:
+                    progressDialog.setMessage(context.getString(R.string.logging_in));
+                    break;
                 case NowerMap.ACTION_PROMOS:
                     progressDialog.setMessage(context.getString(R.string.loading_promos));
                     break;

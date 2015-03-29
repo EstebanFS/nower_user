@@ -30,9 +30,11 @@ import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.GeolocationInterface;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.Branch;
+import castofo_nower.com.co.nower.models.Redemption;
+import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.Geolocation;
 import castofo_nower.com.co.nower.models.MapData;
-import castofo_nower.com.co.nower.models.Promo;
+import castofo_nower.com.co.nower.models.Promo;;
 
 
 public class NowerMap extends FragmentActivity implements SubscribedActivities,
@@ -56,7 +58,7 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
 
     private Map<Marker, Branch> branchesMap = new HashMap<>();
     private Map<Integer, ArrayList<Promo>> promosMap = new HashMap<>();
-
+    private Map<Integer, Branch> detailedBranchesMap = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -173,6 +175,18 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
         }
     }
 
+    public void getUserRedemptions() {
+        if (httpHandler.isInternetConnectionAvailable(this)){
+            httpHandler.sendRequest(HttpHandler.API_V1, UserPromoList.ACTION_USER_REDEMPTIONS, "/"
+                                    + User.id, params, new HttpGet(), NowerMap.this);
+        }
+        else {
+            Toast.makeText(getApplicationContext(),
+                           getResources().getString(R.string.internet_connection_required),
+                           Toast.LENGTH_SHORT).show();
+        }
+    }
+
     @Override
     public void notify(String action, JSONObject responseJson) {
         try {
@@ -223,8 +237,33 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
                     // los marcadores no se soobreescribirían sino que se agregarían infinitamente.
                     MapData.clearBranchesMap();
                     MapData.setBranchesMap(branchesMap);
+
+                    MapData.setDetailedBranchesMap(detailedBranchesMap);
                     MapData.setPromosMap(promosMap);
                     MapData.setDetailedPromosMap(detailedPromosMap);
+
+                    // Se hace para actualizar las promociones que el usuario ha obtenido.
+                    getUserRedemptions();
+                }
+            }
+            else if (action.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
+                Log.i("responseJson", responseJson.toString());
+                if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
+                    JSONArray userRedemptions = responseJson.getJSONArray("redemptions");
+                    for(int i = 0; i < userRedemptions.length(); ++i) {
+                        JSONObject internRedemption = userRedemptions.getJSONObject(i);
+                        int id = internRedemption.getInt("id");
+                        int user_id = internRedemption.getInt("user_id");
+                        String code = internRedemption.getString("code");
+                        int promoId = internRedemption.getInt("promo_id");
+                        boolean redeemed = internRedemption.getBoolean("redeemed");
+
+                        Redemption r = new Redemption(code, promoId, redeemed);
+                        // Se adiciona la promoción a la lista de promociones del usuario.
+                        User.addPromoToRedeem(code, r);
+                        // Se asocia el código para redimir con la promoción correspondiente.
+                        User.addPromoToRedeemCode(promoId, code);
+                    }
                 }
             }
         } catch (JSONException e) {
@@ -250,6 +289,8 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
         // Se debe clonar el objeto promoList para que al limpiarlo no se pierda el contenido.
         // Esto se debe a que se genera una referencia al objeto y no se guarda como valor.
         promosMap.put(id, new ArrayList<Promo>(promoList));
+
+        detailedBranchesMap.put(id, branch);
     }
 
     @Override

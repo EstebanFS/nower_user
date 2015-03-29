@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import castofo_nower.com.co.nower.R;
+import castofo_nower.com.co.nower.support.SharedPreferencesManager;
 
 
 public class SplashActivity extends Activity {
@@ -15,6 +16,8 @@ public class SplashActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+
+        SharedPreferencesManager.setup(this);
 
         Thread splashTimer = new Thread(){
             public void run(){
@@ -25,8 +28,10 @@ public class SplashActivity extends Activity {
                     e.printStackTrace();
                 } finally {
                     // Luego se ingresa propiamente a la aplicación.
-                    Intent openApp = new Intent(SplashActivity.this,
-                                                LoginActivity.class);
+                    Intent openApp = new Intent(SplashActivity.this, Login.class);
+                    if (isThereLoginInstance()) {
+                        openApp = new Intent(SplashActivity.this, TabsHandler.class);
+                    }
                     startActivity(openApp);
                     finish();
                 }
@@ -34,6 +39,13 @@ public class SplashActivity extends Activity {
         };
 
         splashTimer.start();
+    }
+
+    public boolean isThereLoginInstance() {
+        int userId = SharedPreferencesManager.getIntegerValue(SharedPreferencesManager.USER_ID);
+        // Un valor diferente de -1 indicaría que el usuario aún tiene sesión activa.
+        if (userId == -1) return false;
+        else return true;
     }
 
 

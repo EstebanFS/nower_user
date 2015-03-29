@@ -53,5 +53,19 @@
 
     <string name="title_activity_login">LoginActivity</string>
     <string name="title_activity_register">RegisterActivity</string>
+    <string name="write_your_email">Escribe tu correo</string>
+    <string name="write_your_password">Escribe tu contraseña</string>
+    <string name="login_failed">Correo o contraseña inválidos</string>
+    <string name="take_promo_error">Error obteniendo promoción</string>
+    <string name="logging_in">Ingresando</string>
+    <string name="write_your_name">Escribe tu nombre</string>
+    <string name="write_your_password_again">Escribe tu contraseña nuevamente</string>
+    <string name="select_your_birthday">Selecciona tu fecha de nacimiento</string>
+    <string name="select_your_gender">Selecciona tu género</string>
+    <string name="passwords_not_matching">Las contraseñas no coinciden</string>
+    <string name="registering">Registrando</string>
+    <string name="email_already_taken">Este correo ya fue utilizado por otra persona</string>
+    <string name="register_error">Error registrando</string>
+    <string name="login_error">Error ingresando</string>
 
 </resources>
