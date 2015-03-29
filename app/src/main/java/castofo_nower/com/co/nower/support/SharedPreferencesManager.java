@@ -13,7 +13,13 @@ public class SharedPreferencesManager {
     private static SharedPreferences.Editor editor;
 
     // Claves para guardar información.
-    public static final String USER_ID_KEY = "id";
+    public static final String USER_ID = "USER_ID";
+    public static final String USER_EMAIL = "USER_EMAIL";
+    public static final String USER_NAME = "USER_NAME";
+    public static final String USER_GENDER = "USER_GENDER";
+    public static final String USER_BIRTHDAY = "USER_BIRTHDAY";
+
+    private static int noValueSaved = -1;
 
     public static void setup(Context context) {
         SharedPreferencesManager.context = context;
@@ -25,8 +31,16 @@ public class SharedPreferencesManager {
         editor.putString(key, value).commit();
     }
 
+    public static void saveIntegerValue(String key, int value) {
+        editor.putInt(key, value).commit();
+    }
+
     public static String getStringValue(String key) {
         return sharedPreferences.getString(key, null);
+    }
+
+    public static int getIntegerValue(String key) {
+        return sharedPreferences.getInt(key, noValueSaved);
     }
 
     public static void clearSharedPreferences() {

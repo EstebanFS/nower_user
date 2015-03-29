@@ -22,4 +22,11 @@ public class DateManager {
         String result = sdf.format(cal.getTime());
         return result;
     }
+
+    public static String getBirthdayText(Calendar cal) {
+        SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
+
+        String result = sdf.format(cal.getTime());
+        return result;
+    }
 }

@@ -35,9 +35,14 @@ public class UserPromoList extends ListActivity implements SubscribedActivities{
 
     private HttpHandler httpHandler = new HttpHandler();
     public static final String ACTION_USER_REDEMPTIONS = "/user/redemptions";
+    private Map<String, String> params = new HashMap<String, String>();
+
     public static final String LIST_USER_PROMOS = "LIST_USER_PROMOS";
     public static final String SHOW_PROMO_TO_REDEEM = "SHOW_PROMO_TO_REDEEM";
-    private Map<String, String> params = new HashMap<String, String>();
+
+    // Se usa localmente solamente para asociar de manera temporal cada código para redimir
+    // con una tienda en particular.
+    private Map<String, String> redemptionsCodesStores = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +54,6 @@ public class UserPromoList extends ListActivity implements SubscribedActivities{
 
         // Se hace para actualizar el estado de las promociones que ha obtenido el usuario.
         getUserRedemptions();
-    }
-
-    public void setEmptyListMessage() {
-        // Se muestra un mensaje en caso de que la lista de promociones del usuario esté vacía.
-        View empty = findViewById(R.id.empty_list);
-        ListView list = (ListView) findViewById(android.R.id.list);
-        list.setEmptyView(empty);
     }
 
     public void getUserRedemptions() {
@@ -105,12 +103,20 @@ public class UserPromoList extends ListActivity implements SubscribedActivities{
         return userPromos;
     }
 
+    public void setEmptyListMessage() {
+        // Se muestra un mensaje en caso de que la lista de promociones del usuario esté vacía.
+        View empty = findViewById(R.id.empty_list);
+        ListView list = (ListView) findViewById(android.R.id.list);
+        list.setEmptyView(empty);
+    }
+
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         String code = (Integer.toHexString(v.getId())).toUpperCase();
         Intent showPromoToRedeem = new Intent(UserPromoList.this, PromoCardAnimator.class);
         showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
         showPromoToRedeem.putExtra("code", code);
+        showPromoToRedeem.putExtra("store_name", redemptionsCodesStores.get(code));
         showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(showPromoToRedeem);
     }
@@ -135,6 +141,9 @@ public class UserPromoList extends ListActivity implements SubscribedActivities{
                         User.addPromoToRedeem(code, r);
                         // Se asocia el código para redimir con la promoción correspondiente.
                         User.addPromoToRedeemCode(promoId, code);
+
+                        String  storeName = internRedemption.getString("store_name");
+                        redemptionsCodesStores.put(code, storeName);
                     }
 
                     // Ya con las promociones del usuario actualizadas,

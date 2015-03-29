@@ -11,6 +11,7 @@ public class MapData {
 
     public static Map<Marker, Branch> branchesMap = new HashMap<>();
     public static Map<Integer, ArrayList<Promo>> promosMap = new HashMap<>();
+    public static Map<Integer, Branch> detailedBranchesMap = new HashMap<>();
     public static Map<Integer, Promo> detailedPromosMap = new HashMap<>();
 
     public static Map<Integer, String> promosDescriptionsMap = new HashMap<>();
@@ -22,15 +23,21 @@ public class MapData {
         }
     }
 
-    public static void setDetailedPromosMap(Map<Integer, Promo> detailedPromosMapToSet) {
-        for(Map.Entry<Integer, Promo> detailedPromo : detailedPromosMapToSet.entrySet()){
-            detailedPromosMap.put(detailedPromo.getKey(), detailedPromo.getValue());
-        }
-    }
-
     public static void setPromosMap(Map<Integer, ArrayList<Promo>> promosMapToSet) {
         for(Map.Entry<Integer, ArrayList<Promo>> branchPromosMap : promosMapToSet.entrySet()){
             promosMap.put(branchPromosMap.getKey(), branchPromosMap.getValue());
+        }
+    }
+
+    public static void setDetailedBranchesMap(Map<Integer, Branch> detailedBranchesMapToSet) {
+        for(Map.Entry<Integer, Branch> detailedBranch : detailedBranchesMapToSet.entrySet()){
+            detailedBranchesMap.put(detailedBranch.getKey(),detailedBranch.getValue());
+        }
+    }
+
+    public static void setDetailedPromosMap(Map<Integer, Promo> detailedPromosMapToSet) {
+        for(Map.Entry<Integer, Promo> detailedPromo : detailedPromosMapToSet.entrySet()){
+            detailedPromosMap.put(detailedPromo.getKey(), detailedPromo.getValue());
         }
     }
 
@@ -52,6 +59,10 @@ public class MapData {
 
     public static ArrayList<Promo> getPromoList(int branchId) {
         return promosMap.get(branchId);
+    }
+
+    public static Branch getBranchById(int branchId) {
+        return detailedBranchesMap.get(branchId);
     }
 
     public static Promo getPromo(int promoId) {

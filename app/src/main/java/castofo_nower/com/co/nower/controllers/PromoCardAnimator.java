@@ -62,7 +62,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     private Map<String, String> params = new HashMap<String, String>();
 
     private TextView promoTitle;
-    //private TextView promoExpirationDate;
+    private TextView promoStoreName;
     private TextView promoAvailableRedemptions;
     private TextView promoDescription;
     private TextView promoTerms;
@@ -77,6 +77,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
 
     private int branchId;
     private String code;
+    private String storeName;
     private boolean isUserPromoRedeemed;
     private ArrayList<Promo> promos = new ArrayList<>();
     private Map<Integer, Promo> userPromos = new HashMap<>();
@@ -130,6 +131,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
         action = getIntent().getExtras().getString("action");
         if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
             branchId = getIntent().getExtras().getInt("branch_id");
+            storeName = MapData.getBranchById(branchId).getStoreName();
             // En este punto se capturan las promociones correspondientes al establecimiento
             // seleccionado por el usuario.
             promos = MapData.getPromoList(branchId);
@@ -140,6 +142,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
         }
         else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
             code = getIntent().getExtras().getString("code");
+            storeName = getIntent().getExtras().getString("store_name");
             Redemption r = User.obtainedPromos.get(code);
             isUserPromoRedeemed = r.isRedeemed();
             Promo p = MapData.getPromo(r.getPromoId());
@@ -184,6 +187,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
 
             // Se capturan los campos que se van a modificar.
             promoTitle = (TextView) promoCard.findViewById(R.id.promo_title);
+            promoStoreName = (TextView) promoCard.findViewById(R.id.promo_store_name);
             final TextView promoExpirationDate = (TextView)
                     promoCard.findViewById(R.id.promo_expiration_date);
             promoAvailableRedemptions = (TextView) promoCard
@@ -196,6 +200,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
 
             // Se modifica la información de la promoción a mostrar.
             promoTitle.setText(promo.getTitle());
+            promoStoreName.setText(storeName);
             promoExpirationDate.setText(promo.getExpirationDate());
             promoAvailableRedemptions.setText(String.valueOf(promo.getAvailableRedemptions()));
             promoDescription.setText(MapData.getDescription(promo.getId()));
@@ -387,7 +392,12 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
 
                         showObtainedPromo();
                     }
-                    //TODO acciones cuando no se pudo tomar la promoción.
+                    else {
+                        Toast.makeText(getApplicationContext(),
+                                       getResources().getString(R.string.take_promo_error),
+                                       Toast.LENGTH_SHORT).show();
+                        //TODO acciones cuando no se pudo tomar la promoción.
+                    }
                 }
             }
 
