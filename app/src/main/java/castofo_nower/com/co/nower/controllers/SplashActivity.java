@@ -7,6 +7,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import castofo_nower.com.co.nower.R;
+import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.SharedPreferencesManager;
 
 
@@ -30,6 +31,7 @@ public class SplashActivity extends Activity {
                     // Luego se ingresa propiamente a la aplicación.
                     Intent openApp = new Intent(SplashActivity.this, Login.class);
                     if (isThereLoginInstance()) {
+                        updateUserData();
                         openApp = new Intent(SplashActivity.this, TabsHandler.class);
                     }
                     startActivity(openApp);
@@ -48,6 +50,18 @@ public class SplashActivity extends Activity {
         else return true;
     }
 
+    public void updateUserData() {
+        // Se actualizan los datos del usuario dado que ya tenía sesión activa.
+        int id = SharedPreferencesManager.getIntegerValue(SharedPreferencesManager.USER_ID);
+        String email = SharedPreferencesManager.getStringValue(SharedPreferencesManager.USER_EMAIL);
+        String name = SharedPreferencesManager.getStringValue(SharedPreferencesManager.USER_NAME);
+        String gender = SharedPreferencesManager
+                        .getStringValue(SharedPreferencesManager.USER_GENDER);
+        String birthday = SharedPreferencesManager
+                          .getStringValue(SharedPreferencesManager.USER_BIRTHDAY);
+
+        User.setUserData(id, email, name, gender, birthday);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
