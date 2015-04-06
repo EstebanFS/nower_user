@@ -75,9 +75,9 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
                 else {
                     int promoId = r.getPromoId();
                     titleText = MapData.getPromo(promoId).getTitle();
-                    // Se le pone el código para redimir la promoción con el fin de poder gestionarla
+                    // Se le pone el id de la promoción a redimir con el fin de poder gestionarla
                     // al ser presionada por el usuario.
-                    item.setId(Integer.parseInt(r.getCode(), 16));
+                    item.setId(promoId);
                     iconImg = context.getResources().getDrawable(R.drawable.promo_icon);
                 }
                 break;
