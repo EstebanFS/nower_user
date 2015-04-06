@@ -40,9 +40,9 @@ public class UserPromoList extends ListActivity implements SubscribedActivities{
     public static final String LIST_USER_PROMOS = "LIST_USER_PROMOS";
     public static final String SHOW_PROMO_TO_REDEEM = "SHOW_PROMO_TO_REDEEM";
 
-    // Se usa localmente solamente para asociar de manera temporal cada código para redimir
-    // con una tienda en particular.
-    private Map<String, String> redemptionsCodesStores = new HashMap<>();
+    // Se usa localmente solamente para asociar de manera temporal cada id de promoción
+    // a redimir, con una tienda en particular.
+    private Map<Integer, String> redemptionsCodesStores = new HashMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -112,11 +112,11 @@ public class UserPromoList extends ListActivity implements SubscribedActivities{
 
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        String code = (Integer.toHexString(v.getId())).toUpperCase();
+        int promoId = v.getId();
         Intent showPromoToRedeem = new Intent(UserPromoList.this, PromoCardAnimator.class);
         showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
-        showPromoToRedeem.putExtra("code", code);
-        showPromoToRedeem.putExtra("store_name", redemptionsCodesStores.get(code));
+        showPromoToRedeem.putExtra("promo_id", promoId);
+        showPromoToRedeem.putExtra("store_name", redemptionsCodesStores.get(promoId));
         showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         startActivity(showPromoToRedeem);
     }
@@ -143,7 +143,7 @@ public class UserPromoList extends ListActivity implements SubscribedActivities{
                         User.addPromoToRedeemCode(promoId, code);
 
                         String  storeName = internRedemption.getString("store_name");
-                        redemptionsCodesStores.put(code, storeName);
+                        redemptionsCodesStores.put(promoId, storeName);
                     }
 
                     // Ya con las promociones del usuario actualizadas,

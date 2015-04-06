@@ -141,7 +141,8 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
             userPromos = User.getUserPromosToRedeem();
         }
         else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
-            code = getIntent().getExtras().getString("code");
+            int promoId = getIntent().getExtras().getInt("promo_id");
+            code = User.promosToRedeemCodes.get(promoId);
             storeName = getIntent().getExtras().getString("store_name");
             Redemption r = User.obtainedPromos.get(code);
             isUserPromoRedeemed = r.isRedeemed();
@@ -358,7 +359,10 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
                     MapData.setPromosDescriptionsMap(promosDescriptionsMap);
                     MapData.setPromosTermsMap(promosTermsMap);
 
-                    // En este punto ya es posible poner la lista detallada de promociones.
+                    // En este punto ya es posible poner la lista detallada de promociones
+                    // actualizadas.
+                    promos.clear();
+                    promos = MapData.getPromoList(branchId);
                     addPromosToFlipper();
                 }
             }

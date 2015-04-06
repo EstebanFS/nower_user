@@ -80,4 +80,16 @@ public class MapData {
     public static void clearBranchesMap() {
         branchesMap.clear();
     }
+
+    public static void clearPromosMap() {
+        promosMap.clear();
+    }
+
+    public static void clearDetailedBranchesMap() {
+        detailedBranchesMap.clear();
+    }
+
+    public static void clearDetailedPromosMap() {
+        detailedPromosMap.clear();
+    }
 }

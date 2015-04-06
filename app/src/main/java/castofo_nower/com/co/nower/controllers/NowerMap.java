@@ -197,6 +197,7 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
                     Map<Integer, Promo> detailedPromosMap = new HashMap<>();
                     branchesMap.clear();
                     promosMap.clear();
+                    detailedBranchesMap.clear();
 
                     JSONArray locations = responseJson.getJSONArray("locations");
                     // Se recorren todas las promociones obtenidas para dibujarlas en el mapa.
@@ -238,8 +239,11 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
                     MapData.clearBranchesMap();
                     MapData.setBranchesMap(branchesMap);
 
-                    MapData.setDetailedBranchesMap(detailedBranchesMap);
+                    MapData.clearPromosMap();
                     MapData.setPromosMap(promosMap);
+                    MapData.clearDetailedBranchesMap();
+                    MapData.setDetailedBranchesMap(detailedBranchesMap);
+                    MapData.clearDetailedPromosMap();
                     MapData.setDetailedPromosMap(detailedPromosMap);
 
                     // Se hace para actualizar las promociones que el usuario ha obtenido.
