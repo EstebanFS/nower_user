@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:background="?android:attr/windowBackground"
-              android:orientation="vertical"
-              android:padding="10dp">
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  android:background="?android:attr/windowBackground"
+  android:orientation="vertical"
+  android:padding="10dp">
 
   <LinearLayout
     android:id="@+id/promo_header"
@@ -27,6 +27,7 @@
         android:maxWidth="60dp"
         android:adjustViewBounds="true"
         android:src="@drawable/bk_logo"/>
+
     </LinearLayout>
 
     <LinearLayout
@@ -50,7 +51,9 @@
         android:layout_height="wrap_content"
         android:text="Burger King"
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
+
     </LinearLayout>
+
   </LinearLayout>
 
   <LinearLayout
@@ -82,8 +85,9 @@
       android:text="63A6C9"
       android:typeface="monospace"
       android:visibility="gone"/>
+
   </LinearLayout>
-  
+
   <View
     android:layout_width="match_parent"
     android:layout_height="1dp"
@@ -115,6 +119,7 @@
           android:minWidth="40dp"
           android:src="@drawable/ic_expiration_date"
           android:gravity="center"/>
+
       </LinearLayout>
 
       <LinearLayout
@@ -135,6 +140,7 @@
           android:textStyle="bold"/>
 
       </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
@@ -156,6 +162,7 @@
           android:minWidth="40dp"
           android:src="@drawable/ic_people_limit"
           android:gravity="center"/>
+
       </LinearLayout>
 
       <LinearLayout
@@ -176,7 +183,9 @@
           android:textStyle="bold"/>
 
       </LinearLayout>
+
     </LinearLayout>
+
   </LinearLayout>
 
   <View
@@ -211,8 +220,10 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
         android:layout_margin="15dp"
         android:text="¡Sólo por hoy! lleva un Combo Whopper grande por tan solo $12.500. ¡Disfruta esta grandiosa oportunidad acompañado de tus mejores amigos y familia!
-        \nLa promoción contiene Hamburguesa Whopper grande, papas grandes y bebida grande."/>
+                     \nLa promoción contiene Hamburguesa Whopper grande, papas grandes y bebida grande."/>
+
     </LinearLayout>
+
   </LinearLayout>
 
   <View
@@ -247,8 +258,10 @@
         android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
         android:layout_margin="15dp"
         android:text="¡Sólo por hoy! lleva un Combo Whopper grande por tan solo $12.500. ¡Disfruta esta grandiosa oportunidad acompañado de tus mejores amigos y familia!
-        \nLa promoción contiene Hamburguesa Whopper grande, papas grandes y bebida grande."/>
+                     \nLa promoción contiene Hamburguesa Whopper grande, papas grandes y bebida grande."/>
+
     </LinearLayout>
+
   </LinearLayout>
 
   <LinearLayout
@@ -264,5 +277,7 @@
       android:textColor="@color/green"
       android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
       android:layout_gravity="center"/>
+
   </LinearLayout>
+
 </LinearLayout>

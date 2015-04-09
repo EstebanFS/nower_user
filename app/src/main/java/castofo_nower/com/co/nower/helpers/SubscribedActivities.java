@@ -5,6 +5,6 @@ import org.json.JSONObject;
 
 public interface SubscribedActivities {
 
-    public void notify(String action, JSONObject responseJson);
+  public void notify(String action, JSONObject responseJson);
 
 }
