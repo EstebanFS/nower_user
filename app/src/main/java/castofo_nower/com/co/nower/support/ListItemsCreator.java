@@ -21,81 +21,81 @@ import castofo_nower.com.co.nower.models.Redemption;
 
 public class ListItemsCreator extends ArrayAdapter<Object> {
 
-    private final Context context;
-    private final int resource;
-    private final ArrayList<Object> listData;
-    private final String action;
+  private final Context context;
+  private final int resource;
+  private final ArrayList<Object> listData;
+  private final String action;
 
-    public ListItemsCreator(Context context, int resource, ArrayList<Object> promosList,
-                            String action) {
-        super(context, resource, promosList);
-        this.context = context;
-        this.resource = resource;
-        this.listData = promosList;
-        this.action = action;
+  public ListItemsCreator(Context context, int resource, ArrayList<Object> promosList,
+                          String action) {
+    super(context, resource, promosList);
+    this.context = context;
+    this.resource = resource;
+    this.listData = promosList;
+    this.action = action;
+  }
+
+  @Override
+  public View getView(int position, View convertView, ViewGroup parent) {
+
+    LayoutInflater inflater = (LayoutInflater)
+                              context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
+    View item = inflater.inflate(resource, parent, false);
+
+    TextView title = (TextView) item.findViewById(R.id.title);
+    ImageView icon = (ImageView) item.findViewById(R.id.icon);
+
+    String titleText = "";
+    Drawable iconImg = null;
+    switch (action) {
+      case UserPromoList.LIST_USER_PROMOS:
+        // Se obtiene el título de la promoción actual.
+        Redemption redemption = (Redemption) listData.get(position);
+
+        // Se trata de un encabezado de sección.
+        if (redemption.getCode() == "0" || redemption.getCode() == "1") {
+          item = inflater.inflate(R.layout.redeemed_status_header, parent, false);
+          title = (TextView) item.findViewById(R.id.redeemed_status_title);
+          // Se trata del encabezado de promociones no redimidas.
+          if (redemption.getCode() == "0") {
+            titleText = context.getResources().getString(R.string.not_redeemed);
+          }
+          // Se trata del encabezado de promoiones redimidas.
+          else {
+            titleText = context.getResources().getString(R.string.redeemed);
+          }
+          // Es un encabezado y por tanto no clickeable.
+          item.setClickable(false);
+          item.setLongClickable(false);
+          item.setOnClickListener(null);
+          item.setOnLongClickListener(null);
+        }
+        // Se trata de un item.
+        else {
+          int promoId = redemption.getPromoId();
+          titleText = MapData.promosMap.get(promoId).getTitle();
+          // Se le pone el id de la promoción a redimir con el fin de poder gestionarla al ser
+          // presionada por el usuario.
+          item.setId(promoId);
+          iconImg = context.getResources().getDrawable(R.drawable.promo_icon);
+        }
+        break;
+      case BranchesList.LIST_BRANCHES:
+        // Se obtiene el nombre del establecimiento actual.
+        Branch b = (Branch) listData.get(position);
+        // El título a mostrar incluye, además del nombre del establecimiento, su sucursal.
+        titleText = b.getStoreName() + " - " + b.getName();
+        // Se le pone el ID del establecimiento para poder gestionarlo al ser presionado por el
+        // usuario.
+        item.setId(b.getId());
+        iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
+        break;
     }
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    title.setText(titleText);
 
-        LayoutInflater inflater = (LayoutInflater)
-                                  context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        View item = inflater.inflate(resource, parent, false);
-
-        TextView title = (TextView) item.findViewById(R.id.title);
-        ImageView icon = (ImageView) item.findViewById(R.id.icon);
-
-        String titleText = "";
-        Drawable iconImg = null;
-        switch (action) {
-            case UserPromoList.LIST_USER_PROMOS:
-                // Se obtiene el título de la promoción actual.
-                Redemption r = (Redemption) listData.get(position);
-
-                // Se trata de un encabezado de sección.
-                if (r.getCode() == "0" || r.getCode() == "1") {
-                    item = inflater.inflate(R.layout.redeemed_status_header, parent, false);
-                    title = (TextView) item.findViewById(R.id.redeemed_status_title);
-                    // Se trata del encabezado de promociones no redimidas.
-                    if (r.getCode() == "0") {
-                        titleText = context.getResources().getString(R.string.not_redeemed);
-                    }
-                    // Se trata del encabezado de promoiones redimidas.
-                    else {
-                        titleText = context.getResources().getString(R.string.redeemed);
-                    }
-                    // Es un encabezado y por tanto no clickeable.
-                    item.setClickable(false);
-                    item.setLongClickable(false);
-                    item.setOnClickListener(null);
-                    item.setOnLongClickListener(null);
-                }
-                // Se trata de un item.
-                else {
-                    int promoId = r.getPromoId();
-                    titleText = MapData.getPromo(promoId).getTitle();
-                    // Se le pone el id de la promoción a redimir con el fin de poder gestionarla
-                    // al ser presionada por el usuario.
-                    item.setId(promoId);
-                    iconImg = context.getResources().getDrawable(R.drawable.promo_icon);
-                }
-                break;
-            case BranchesList.LIST_BRANCHES:
-                // Se obtiene el nombre del establecimiento actual.
-                Branch b = (Branch) listData.get(position);
-                // El título a mostrar incluye, además del nombre del establecimiento, su sucursal.
-                titleText = b.getStoreName() + " - " + b.getName();
-                // Se le pone el ID del establecimiento para poder gestionarlo al ser presionado
-                // por el usuario.
-                item.setId(b.getId());
-                iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
-                break;
-        }
-
-        title.setText(titleText);
-
-        if (iconImg != null) icon.setImageDrawable(iconImg);
+    if (iconImg != null) icon.setImageDrawable(iconImg);
 
         /*
         Drawable categoryIcon = null;
@@ -137,7 +137,8 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         categoryView.setImageDrawable(categoryIcon);
         */
 
-        //Se retorna el item que va a ser mostrado para cada fila de la lista.
-        return item;
-    }
+    //Se retorna el item que va a ser mostrado para cada fila de la lista.
+    return item;
+  }
+
 }

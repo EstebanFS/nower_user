@@ -1,10 +1,10 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:tools="http://schemas.android.com/tools"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:context="castofo_nower.com.co.nower.controllers.Register"
-            android:fillViewport="true"
-            android:background="@drawable/login_background">
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  tools:context="castofo_nower.com.co.nower.controllers.Register"
+  android:fillViewport="true"
+  android:background="@drawable/login_background">
 
   <LinearLayout
     android:layout_width="match_parent"
@@ -137,7 +137,8 @@
         android:textColor="@color/white"
         android:textSize="17sp"
         android:textStyle="bold"
-        android:text="@string/male" />
+        android:text="@string/male"/>
+
     </RadioGroup>
 
     <Button
@@ -166,5 +167,7 @@
       android:gravity="center"
       android:onClick="onAlreadyHaveAccountClicked"
       android:clickable="true"/>
+
   </LinearLayout>
+
 </ScrollView>
