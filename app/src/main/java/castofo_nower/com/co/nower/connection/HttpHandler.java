@@ -250,7 +250,12 @@ public class HttpHandler {
           progressDialog.setMessage(context.getString(R.string.loading_promos));
           break;
         case PromoCardAnimator.ACTION_PROMOS_DETAILS:
-          progressDialog.setMessage(context.getString(R.string.obtaining_promos));
+          if (PromoCardAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
+            progressDialog.setMessage(context.getString(R.string.obtaining_promos));
+          }
+          else if (PromoCardAnimator.action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
+            progressDialog.setMessage(context.getString(R.string.opening_promo));
+          }
           break;
         case PromoCardAnimator.ACTION_NOW:
           progressDialog.setMessage(context.getString(R.string.obtaining_promo_code));

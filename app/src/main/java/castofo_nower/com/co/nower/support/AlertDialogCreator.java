@@ -11,9 +11,11 @@ import castofo_nower.com.co.nower.controllers.PromoCardAnimator;
 import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
 
 
-public class AlertDialogCreator implements AlertDialogsResponses {
+public class AlertDialogCreator {
 
   private static AlertDialogsResponses listeningActivity;
+
+  public static final int NO_BUTTON_TO_SHOW = -1;
 
   // En este punto se determina a qué Activity será enviado el aviso de la elección del usuario.
   public void addListeningActivity(AlertDialogsResponses activity) {
@@ -49,7 +51,7 @@ public class AlertDialogCreator implements AlertDialogsResponses {
                               });
 
     // Se pregunta para saber si es necesario poner un botón de negación o no.
-    if (negativeButtonId != -1) {
+    if (negativeButtonId != NO_BUTTON_TO_SHOW) {
       builder.setNegativeButton(context.getResources().getString(negativeButtonId),
                                 new DialogInterface.OnClickListener() {
                                   @Override
@@ -65,8 +67,5 @@ public class AlertDialogCreator implements AlertDialogsResponses {
 
     return alertDialog;
   }
-
-  @Override
-  public void notifyToRespond(String action) {}
 
 }
