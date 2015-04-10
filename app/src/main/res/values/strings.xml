@@ -6,7 +6,7 @@
   <string name="action_settings">Settings</string>
   <string name="title_activity_map">Mapa</string>
   <string name="gps">GPS</string>
-  <string name="enable_gps_suggestion">¿Te gustaría activar el GPS para tener una mejor experiencia?</string>
+  <string name="enable_gps_suggestion">Es necesario activar el GPS para acceder a las promociones.</string>
   <string name="yes">Sí</string>
   <string name="no_thanks">No, gracias</string>
   <string name="internet_connection_required">Necesitas conexión a Internet para acceder a las promociones.</string>
@@ -67,5 +67,7 @@
   <string name="email_already_taken">Este correo ya fue utilizado por otra persona</string>
   <string name="register_error">Error registrando</string>
   <string name="login_error">Error ingresando</string>
+  <string name="opening_promo">Abriendo promoción</string>
+  <string name="activate">Activar</string>
 
 </resources>

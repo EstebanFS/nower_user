@@ -74,7 +74,7 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
   private AlertDialogCreator alertDialogCreator = new AlertDialogCreator();
 
   // Indicador para saber qué acción se está tratando de ejecutar.
-  private String action;
+  public static String action;
 
   private int branchId;
   private String code;
@@ -302,8 +302,9 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     // Se muestra un diálogo al usuario para indicarle que ya ha sido acreedor de la promoción.
     AlertDialog promoObtainedAD = AlertDialogCreator
                                   .createAlertDialog(this, R.string.promo_obtained,
-                                          R.string.promo_now_in_list,
-                                          R.string.ok, -1, OBTAINED_PROMO);
+                                                     R.string.promo_now_in_list, R.string.ok,
+                                                     AlertDialogCreator.NO_BUTTON_TO_SHOW,
+                                                     OBTAINED_PROMO);
     promoObtainedAD.show();
   }
 

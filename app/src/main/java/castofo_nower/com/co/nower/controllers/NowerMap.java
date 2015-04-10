@@ -79,9 +79,8 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
       setUpMap();
       setMapListeners();
       verifyLocationProviders();
-      sendRequest(ACTION_PROMOS);
     } else {
-
+      //TODO acción en caso de que el mapa no haya cargado
     }
   }
 
@@ -104,8 +103,9 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     geolocation.verifyLocationPossibilities();
     if (geolocation.canGetLocation()) {
       centerMapInUserPosition();
+      sendRequest(ACTION_PROMOS);
     } else {
-      // Si no es posible obtener la localización,  se muestra un diálogo para activar el GPS.
+      // Si no es posible obtener la localización, se muestra un diálogo para activar el GPS.
       geolocation.askToEnableGPS();
     }
   }
@@ -178,6 +178,8 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
       userMarker.setPosition(new LatLng(latitude, longitude));
       userMarker.showInfoWindow();
     }
+    // Con cada cambio de ubicación del usuario se vuelven a cargar las promociones.
+    sendRequest(ACTION_PROMOS);
   }
 
   @Override

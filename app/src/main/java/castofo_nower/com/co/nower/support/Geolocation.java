@@ -143,8 +143,10 @@ public class Geolocation extends Service implements LocationListener {
     // localización aproximada.
     AlertDialog geolocationAD = AlertDialogCreator
                                 .createAlertDialog(context, R.string.gps,
-                                                   R.string.enable_gps_suggestion, R.string.yes,
-                                                   R.string.no_thanks, ENABLE_GPS);
+                                                   R.string.enable_gps_suggestion,
+                                                   R.string.activate,
+                                                   AlertDialogCreator.NO_BUTTON_TO_SHOW,
+                                                   ENABLE_GPS);
     geolocationAD.show();
   }
 
