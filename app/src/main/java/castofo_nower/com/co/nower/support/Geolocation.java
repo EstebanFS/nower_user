@@ -160,7 +160,7 @@ public class Geolocation extends Service implements LocationListener {
     // Se utiliza como callback para la actividad en donde está el mapa.
     // De esta manera se le da aviso para que tenga en cuenta la última modificiación de la
     // localización.
-    listeningActivity.locationChanged(latitude, longitude);
+    listeningActivity.notifyLocationChange(latitude, longitude);
   }
 
   @Override
