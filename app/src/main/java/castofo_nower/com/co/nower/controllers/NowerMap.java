@@ -1,5 +1,6 @@
 package castofo_nower.com.co.nower.controllers;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -35,7 +36,7 @@ import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.Geolocation;
 import castofo_nower.com.co.nower.models.MapData;
-import castofo_nower.com.co.nower.models.Promo;;
+import castofo_nower.com.co.nower.models.Promo;
 
 
 public class NowerMap extends FragmentActivity implements SubscribedActivities,
@@ -60,6 +61,8 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
   private Map<Integer, Branch> branchesMap = new TreeMap<>();
   private Map<Integer, Promo> promosMap = new TreeMap<>();
 
+  private ProgressDialog progressDialog = null;
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -78,12 +81,11 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     if (map != null) {
       setUpMap();
       setMapListeners();
-      if (MapData.userLat != -1 && MapData.userLong != -1) {
+      // Ya estaba previamente capturada la localización del usuario.
+      if (MapData.userLat != MapData.NO_USER_LAT && MapData.userLong != MapData.NO_USER_LONG) {
         moveCameraToPosition(MapData.userLat, MapData.userLong);
       }
-      else {
-        verifyLocationProviders();
-      }
+      verifyLocationProviders();
     }
     else {
       //TODO acción en caso de que el mapa no haya cargado
@@ -108,11 +110,23 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
   public void verifyLocationProviders() {
     geolocation.verifyLocationPossibilities();
     if (geolocation.canGetLocation()) {
+      setLocProgressDialog();
       geolocation.getUserLocation();
     }
     else {
       // Si no es posible obtener la localización, se muestra un diálogo para activar el GPS.
       geolocation.askToEnableGPS();
+    }
+  }
+
+  public void setLocProgressDialog() {
+    if (MapData.userLat == MapData.NO_USER_LAT && MapData.userLong == MapData.NO_USER_LONG) {
+      // Se muestra un mensaje de progreso al usuario si aún no se tenía una localización
+      // previa.
+      progressDialog = new ProgressDialog(this);
+      progressDialog.setMessage(getResources().getString(R.string.obtaining_your_location));
+      progressDialog.setCanceledOnTouchOutside(false);
+      progressDialog.show();
     }
   }
 
@@ -183,6 +197,7 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
         //El usuario activó el GPS.
         geolocation.verifyLocationPossibilities();
         if (geolocation.canGetLocation()) {
+          setLocProgressDialog();
           // Este método se invoca con el fin de que el listener de la localización sea encendido,
           // ya que se activó el GPS.
           geolocation.getUserLocation();
@@ -194,7 +209,11 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
   }
 
   @Override
-  public void locationChanged(double latitude, double longitude) {
+  public void notifyLocationChange(double latitude, double longitude) {
+    if (progressDialog != null) {
+      progressDialog.dismiss();
+      progressDialog = null;
+    }
     // Se actualizan con la última localización del usuario obtenida.
     MapData.userLat = latitude;
     MapData.userLong = longitude;

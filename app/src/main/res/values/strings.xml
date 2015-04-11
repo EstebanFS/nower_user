@@ -69,5 +69,6 @@
   <string name="login_error">Error ingresando</string>
   <string name="opening_promo">Abriendo promoción</string>
   <string name="activate">Activar</string>
+  <string name="obtaining_your_location">Obteniendo tu localización</string>
 
 </resources>
