@@ -56,10 +56,10 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
   public static final int OP_SUCCEEDED = 0;
   public static final String SHOW_BRANCH_PROMOS = "SHOW_BRANCH_PROMOS";
 
-
   private Map<Marker, Integer> branchesIdsMap = new HashMap<>();
   private Map<Integer, Branch> branchesMap = new TreeMap<>();
   private Map<Integer, Promo> promosMap = new TreeMap<>();
+
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -78,8 +78,14 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     if (map != null) {
       setUpMap();
       setMapListeners();
-      verifyLocationProviders();
-    } else {
+      if (MapData.userLat != -1 && MapData.userLong != -1) {
+        moveCameraToPosition(MapData.userLat, MapData.userLong);
+      }
+      else {
+        verifyLocationProviders();
+      }
+    }
+    else {
       //TODO acción en caso de que el mapa no haya cargado
     }
   }
@@ -102,33 +108,54 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
   public void verifyLocationProviders() {
     geolocation.verifyLocationPossibilities();
     if (geolocation.canGetLocation()) {
-      centerMapInUserPosition();
-      sendRequest(ACTION_PROMOS);
-    } else {
+      geolocation.getUserLocation();
+    }
+    else {
       // Si no es posible obtener la localización, se muestra un diálogo para activar el GPS.
       geolocation.askToEnableGPS();
     }
   }
 
-  public void centerMapInUserPosition() {
-    geolocation.getUserLocation();
-    double latitude = geolocation.getLatitude();
-    double longitude = geolocation.getLongitude();
-    // Se centra el mapa en la localización actual del usuario.
-    animateCameraToPosition(latitude, longitude);
-    // Se pone un marcador para indicarle al usuario su posición actual.
-    putUserMarker(latitude, longitude);
+  // Este método se utiliza para animar los cambios de ubicación del usuario.
+  public void animateCameraToPosition(final double lat, final double lon) {
+    map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), ZOOM_LEVEL),
+            new GoogleMap.CancelableCallback() {
+              @Override
+              public void onFinish() {
+                putUserMarker(lat, lon);
+                // Con el mapa centrado en la localización del usuario es tiempo de
+                // mostrar las promociones.
+                sendRequest(ACTION_PROMOS);
+              }
+
+              @Override
+              public void onCancel() { }
+            });
   }
 
-  public void animateCameraToPosition(double lat, double lon) {
-    map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), ZOOM_LEVEL));
+  // En caso de que recientemene se haya actualizado la localización del usuario, el mapa se
+  // se centra inmediatamente allí.
+  public void moveCameraToPosition(double lat, double lon) {
+    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), ZOOM_LEVEL));
+    putUserMarker(lat, lon);
+    sendRequest(ACTION_PROMOS);
   }
 
+  // Se pone un marcador para indicarle al usuario su posición actual.
   public void putUserMarker(double latitude, double longitude) {
-    userMarker = map.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                               .title(getResources().getString(R.string.you_are_here))
-                               .icon(BitmapDescriptorFactory.fromResource(R.drawable.user_marker))
-                              );
+    // Es la primera vez que se va a poner el marcador del usuario.
+    if (userMarker == null) {
+      userMarker = map.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
+                                                    .title(getResources()
+                                                            .getString(R.string.you_are_here))
+                                                    .icon(BitmapDescriptorFactory
+                                                            .fromResource(R.drawable.user_marker))
+                                );
+    }
+    // El marcador ya existía pero se debe mover, ya que la localización del usuario cambió.
+    else {
+      userMarker.setPosition(new LatLng(latitude, longitude));
+    }
     userMarker.showInfoWindow();
   }
 
@@ -168,18 +195,10 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
 
   @Override
   public void locationChanged(double latitude, double longitude) {
+    // Se actualizan con la última localización del usuario obtenida.
+    MapData.userLat = latitude;
+    MapData.userLong = longitude;
     animateCameraToPosition(latitude, longitude);
-    // Es la primera vez que se va a poner el marcador del usuario.
-    if (userMarker == null) {
-      putUserMarker(latitude, longitude);
-    }
-    // El marcador ya existía pero se debe mover, ya que la localización del usuario cambió.
-    else {
-      userMarker.setPosition(new LatLng(latitude, longitude));
-      userMarker.showInfoWindow();
-    }
-    // Con cada cambio de ubicación del usuario se vuelven a cargar las promociones.
-    sendRequest(ACTION_PROMOS);
   }
 
   @Override
@@ -228,7 +247,12 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
 
             putMarkerAndSaveBranch(branch);
           }
-          // Se envían al modelo MapData para que puedan ser accedidos desde otras actividades.
+
+          // Se borran los marcadores previos que indicaban la ubicación de los estabecimientos.
+          clearPreviousMarkers();
+
+          // Se envían los mapas construidos al modelo MapData para que puedan ser accedidos desde
+          // otras actividades.
           // Se debe borrar explícitamente este branchesIdsMap debido a que cada marcador agregado
           // tiene un ID diferente. De no hacer esto, los marcadores no se soobreescribirían sino
           // que se agregarían infinitamente.
@@ -280,6 +304,12 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
 
     // Se asocia cada establecimiento a un marcador diferente.
     branchesIdsMap.put(branchMarker, branch.getId());
+  }
+
+  public void clearPreviousMarkers() {
+    for (Map.Entry<Marker, Integer> markerBranchId : MapData.branchesIdsMap.entrySet()) {
+      markerBranchId.getKey().remove();
+    }
   }
 
   @Override

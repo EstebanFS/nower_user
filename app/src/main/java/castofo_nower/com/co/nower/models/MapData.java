@@ -13,6 +13,9 @@ public class MapData {
   public static Map<Integer, Branch> branchesMap = new TreeMap<>();
   public static Map<Integer, Promo> promosMap = new TreeMap<>();
 
+  public static double userLat = -1;
+  public static double userLong = -1;
+
   public static void setBranchesIdsMap(Map<Marker, Integer> branchesIdsMapToSet) {
     for (Map.Entry<Marker, Integer> markerBranchId : branchesIdsMapToSet.entrySet()) {
       branchesIdsMap.put(markerBranchId.getKey(), markerBranchId.getValue());
