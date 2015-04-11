@@ -266,7 +266,9 @@ public class HttpHandler {
       }
 
       progressDialog.setCanceledOnTouchOutside(false);
-      progressDialog.show();
+      // Los mensajes de los servicios cuando el usuario está en la vista del mapa son frecuentes
+      // debido a la actualización de promociones y no deben mostrarse.
+      if (!(context instanceof NowerMap)) progressDialog.show();
     }
 
     protected JSONObject doInBackground(Void... params) {

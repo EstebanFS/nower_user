@@ -9,6 +9,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.util.Log;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.helpers.GeolocationInterface;
@@ -28,8 +29,8 @@ public class Geolocation extends Service implements LocationListener {
   private double latitude;
   private double longitude;
 
-  private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10;
-  private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1;
+  private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 0;
+  private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 3;
 
   public static final String ENABLE_GPS = "ENABLE_GPS";
   public static final int ENABLE_GPS_CODE = 0;
@@ -56,7 +57,8 @@ public class Geolocation extends Service implements LocationListener {
 
     if (!isGPSEnabled && !isNetworkEnabled) {
 
-    } else {
+    }
+    else {
       //Sí va a ser posible obtener la localización del usuario.
       this.canGetLocation = true;
     }
@@ -152,6 +154,7 @@ public class Geolocation extends Service implements LocationListener {
 
   @Override
   public void onLocationChanged(Location arg0) {
+    Log.i("GPS", "Actualización GPS");
     latitude = arg0.getLatitude();
     longitude = arg0.getLongitude();
     // Se utiliza como callback para la actividad en donde está el mapa.
