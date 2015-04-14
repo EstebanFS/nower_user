@@ -10,6 +10,7 @@ import android.widget.ListView;
 
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.TreeMap;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.models.Branch;
@@ -27,8 +28,8 @@ public class BranchesList extends ListActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_branches_list);
-    branchesListToShow = new ListItemsCreator(this, R.layout.promo_item, generateData(),
-                                              LIST_BRANCHES);
+    branchesListToShow = new ListItemsCreator(this, R.layout.promo_item,
+                                              generateData(), LIST_BRANCHES);
 
     setListAdapter(branchesListToShow);
 
@@ -37,8 +38,20 @@ public class BranchesList extends ListActivity {
 
   public static ArrayList<Object> generateData() {
     ArrayList<Object> branches = new ArrayList<Object>();
-    for (Map.Entry<Integer, Branch> branchIdBranch : MapData.branchesMap.entrySet()) {
-      branches.add(branchIdBranch.getValue());
+    Map<String, Branch> lexicOrderedBranches = new TreeMap<>();
+    // Con este ciclo se ponen los establecimientos en orden lexicográfico
+    // según su nombre completo.
+    for (Map.Entry<Integer, Branch> branchIdBranch
+            : MapData.branchesMap.entrySet()) {
+      Branch branch = branchIdBranch.getValue();
+      String completeName = branch.getStoreName() + " - " + branch.getName();
+      lexicOrderedBranches.put(completeName, branch);
+    }
+
+    // Con las tiendas en orden alfabético, ahora es posible generar la lista.
+    for (Map.Entry<String, Branch> branchStoreNameBranch
+         : lexicOrderedBranches.entrySet()) {
+      branches.add(branchStoreNameBranch.getValue());
     }
 
     return branches;

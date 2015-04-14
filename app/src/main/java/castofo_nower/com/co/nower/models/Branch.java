@@ -12,8 +12,8 @@ public class Branch {
   private String storeName;
   private ArrayList<Integer> promosIds;
 
-  public Branch(int id, String name, double latitude, double longitude, int storeId,
-                String storeName, ArrayList<Integer> promosIds) {
+  public Branch(int id, String name, double latitude, double longitude,
+                int storeId, String storeName, ArrayList<Integer> promosIds) {
     this.id = id;
     this.name = name;
     this.latitude = latitude;

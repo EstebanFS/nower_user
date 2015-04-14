@@ -10,8 +10,8 @@ public class Promo {
   private String terms;
 
 
-  public Promo(int id, String title, String expirationDate, int availableRedemptions,
-               String description, String terms) {
+  public Promo(int id, String title, String expirationDate,
+               int availableRedemptions, String description, String terms) {
     this.id = id;
     this.title = title;
     this.expirationDate = expirationDate;

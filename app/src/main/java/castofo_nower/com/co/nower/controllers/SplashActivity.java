@@ -44,18 +44,24 @@ public class SplashActivity extends Activity {
   }
 
   public boolean isThereLoginInstance() {
-    int userId = SharedPreferencesManager.getIntegerValue(SharedPreferencesManager.USER_ID);
-    // Un valor diferente de -1 indicaría que el usuario aún tiene sesión activa.
+    int userId = SharedPreferencesManager
+                 .getIntegerValue(SharedPreferencesManager.USER_ID);
+    // Un valor diferente de -1 indicaría que el usuario aún tiene sesión
+    // activa.
     if (userId == -1) return false;
     else return true;
   }
 
   public void updateUserData() {
     // Se actualizan los datos del usuario dado que ya tenía sesión activa.
-    int id = SharedPreferencesManager.getIntegerValue(SharedPreferencesManager.USER_ID);
-    String email = SharedPreferencesManager.getStringValue(SharedPreferencesManager.USER_EMAIL);
-    String name = SharedPreferencesManager.getStringValue(SharedPreferencesManager.USER_NAME);
-    String gender = SharedPreferencesManager.getStringValue(SharedPreferencesManager.USER_GENDER);
+    int id = SharedPreferencesManager.getIntegerValue(SharedPreferencesManager
+                                                      .USER_ID);
+    String email = SharedPreferencesManager
+                   .getStringValue(SharedPreferencesManager.USER_EMAIL);
+    String name = SharedPreferencesManager
+                  .getStringValue(SharedPreferencesManager.USER_NAME);
+    String gender = SharedPreferencesManager
+                    .getStringValue(SharedPreferencesManager.USER_GENDER);
     String birthday = SharedPreferencesManager
                       .getStringValue(SharedPreferencesManager.USER_BIRTHDAY);
 

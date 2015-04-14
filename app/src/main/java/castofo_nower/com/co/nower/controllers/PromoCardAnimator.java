@@ -49,8 +49,7 @@ import com.manuelpeinado.fadingactionbar.FadingActionBarHelper;
 
 
 public class PromoCardAnimator extends Activity implements SubscribedActivities,
-                                                           AlertDialogsResponses,
-                                                           GestureDetector.OnGestureListener {
+AlertDialogsResponses, GestureDetector.OnGestureListener {
 
   private GestureDetectorCompat gestureDetector;
   private ViewFlipper promosFlipper;
@@ -95,11 +94,12 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     gestureDetector = new GestureDetectorCompat(this, this);
 
 
-    // Se indica al HttpHandler la actividad que estará esperando la respuesta a la petición.
+    // Se indica al HttpHandler la actividad que estará esperando la respuesta
+    // a la petición.
     httpHandler.addListeningActivity(this);
 
-    // Se indica al AlertDialogCreator la actividad que estará esperando la respuesta de la
-    // elección del usuario..
+    // Se indica al AlertDialogCreator la actividad que estará esperando la
+    // respuesta de la elección del usuario..
     alertDialogCreator.addListeningActivity(this);
 
     setFlipperAnimation();
@@ -110,9 +110,11 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
 
   public void initView() {
     FadingActionBarHelper helper = new FadingActionBarHelper()
-                                   .actionBarBackground(R.drawable.ab_background)
+                                   .actionBarBackground
+                                   (R.drawable.ab_background)
                                    .headerLayout(R.layout.header)
-                                   .contentLayout(R.layout.activity_promo_card_animator);
+                                   .contentLayout
+                                   (R.layout.activity_promo_card_animator);
     setContentView(helper.createView(this));
     ImageView headerImage = ((ImageView) findViewById(R.id.header_image));
     headerImage.setImageResource(R.drawable.promo);
@@ -124,7 +126,8 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
 
   public void setFlipperAnimation() {
     slide_in_left = AnimationUtils.loadAnimation(this, R.anim.slide_in_left);
-    slide_out_right = AnimationUtils.loadAnimation(this, R.anim.slide_out_right);
+    slide_out_right = AnimationUtils.loadAnimation
+                      (this, R.anim.slide_out_right);
     slide_in_right = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
     slide_out_left = AnimationUtils.loadAnimation(this, R.anim.slide_out_left);
   }
@@ -136,12 +139,12 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
       branchId = getIntent().getExtras().getInt("branch_id");
       storeName = MapData.branchesMap.get(branchId).getStoreName();
-      // En este punto se capturan las promociones correspondientes al establecimiento seleccionado
-      // por el usuario.
+      // En este punto se capturan las promociones correspondientes al
+      // establecimiento seleccionado por el usuario.
       setBranchPromos();
 
-      // Estas promociones se capturan para saber cuáles deben mostrarse con botón y cuáles con
-      // código.
+      // Estas promociones se capturan para saber cuáles deben mostrarse con
+      // botón y cuáles con código.
       userPromos = User.takenPromos;
     }
     else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
@@ -157,7 +160,8 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
   }
 
   public void setBranchPromos() {
-    ArrayList<Integer> promosIds = MapData.branchesMap.get(branchId).getPromosIds();
+    ArrayList<Integer> promosIds = MapData.branchesMap.get(branchId)
+                                   .getPromosIds();
     for (Integer promoId : promosIds) {
       promos.add(MapData.promosMap.get(promoId));
     }
@@ -177,17 +181,18 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
   public void sendRequest(String request) {
     if (httpHandler.isInternetConnectionAvailable(this)) {
       if (request.equals(ACTION_PROMOS_DETAILS)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_PROMOS_DETAILS, "", params,
-                                new HttpPost(), PromoCardAnimator.this);
+        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_PROMOS_DETAILS, "",
+                                params, new HttpPost(), PromoCardAnimator.this);
       }
       else if (request.equals(ACTION_NOW)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_NOW, "", params, new HttpPost(),
-                                PromoCardAnimator.this);
+        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_NOW, "", params,
+                                new HttpPost(), PromoCardAnimator.this);
       }
     }
     else {
       Toast.makeText(getApplicationContext(),
-                     getResources().getString(R.string.internet_connection_required),
+                     getResources()
+                     .getString(R.string.internet_connection_required),
                      Toast.LENGTH_SHORT).show();
     }
   }
@@ -195,10 +200,11 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
   public void addPromosToFlipper() {
     for (int i = 0; i < promos.size(); ++i) {
       Promo promo = promos.get(i);
-      LayoutInflater inflater = (LayoutInflater)
-                                this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+      LayoutInflater inflater = (LayoutInflater) this.getSystemService
+                                (Context.LAYOUT_INFLATER_SERVICE);
       View promoCard = inflater.inflate(R.layout.promo_card, null);
-      // Con este ID se identificará la promoción actual que visualiza el usuario.
+      // Con este ID se identificará la promoción actual que visualiza el
+      // usuario.
       promoCard.setId(promo.getId());
 
       // Se agrega una nueva tarjeta de promoción.
@@ -207,11 +213,12 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
       // Se capturan los campos que se van a modificar.
       promoTitle = (TextView) promoCard.findViewById(R.id.promo_title);
       promoStoreName = (TextView) promoCard.findViewById(R.id.promo_store_name);
-      final TextView promoExpirationDate = (TextView)
-                                           promoCard.findViewById(R.id.promo_expiration_date);
-      promoAvailableRedemptions = (TextView) promoCard
-                                  .findViewById(R.id.promo_available_redemptions);
-      promoDescription = (TextView) promoCard.findViewById(R.id.promo_description);
+      final TextView promoExpirationDate = (TextView) promoCard.findViewById
+                                           (R.id.promo_expiration_date);
+      promoAvailableRedemptions = (TextView) promoCard.findViewById
+                                  (R.id.promo_available_redemptions);
+      promoDescription = (TextView) promoCard.findViewById
+                         (R.id.promo_description);
       promoTerms = (TextView) promoCard.findViewById(R.id.promo_terms);
 
       nowButton = (Button) promoCard.findViewById(R.id.now_button);
@@ -221,15 +228,18 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
       promoTitle.setText(promo.getTitle());
       promoStoreName.setText(storeName);
       promoExpirationDate.setText(promo.getExpirationDate());
-      promoAvailableRedemptions.setText(String.valueOf(promo.getAvailableRedemptions()));
+      promoAvailableRedemptions.setText
+      (String.valueOf(promo.getAvailableRedemptions()));
       promoDescription.setText(promo.getDescription());
       promoTerms.setText(promo.getTerms());
 
       if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
         if (userPromos.containsKey(promo.getId())) {
-          // El usuario no debería poder tomar esta promoción porque ya la tiene.
+          // El usuario no debería poder tomar esta promoción porque ya la
+          // tiene.
           code = User.takenPromos.get(promo.getId()).getCode();
-          isUserPromoRedeemed = User.takenPromos.get(promo.getId()).isRedeemed();
+          isUserPromoRedeemed = User.takenPromos.get(promo.getId())
+                                .isRedeemed();
           changeButtonToCode();
         }
       }
@@ -237,8 +247,9 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
         changeButtonToCode();
       }
 
-      CountDownTimer countDownTimer = createCountDownTimer(promoExpirationDate,
-                                                           promo.getExpirationDate());
+      CountDownTimer countDownTimer = createCountDownTimer
+                                      (promoExpirationDate,
+                                       promo.getExpirationDate());
       countDownTimer.start();
     }
   }
@@ -255,21 +266,22 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     Date currentTime = new Date();
     millisUntilFinished = promoDeadLine - currentTime.getTime();
 
-    CountDownTimer countDownTimer = new CountDownTimer(millisUntilFinished, 1000) {
+    CountDownTimer countDownTimer
+    = new CountDownTimer(millisUntilFinished, 1000) {
       @Override
       public void onTick(long millisUntilFinished) {
         long seconds = millisUntilFinished / 1000;
         long minutes = seconds / 60;
         long hours = minutes / 60;
-        countDownView.setText(String.format("%02d:%02d:%02d", hours, minutes % 60, seconds % 60));
+        countDownView.setText(String.format("%02d:%02d:%02d", hours,
+                                            minutes % 60, seconds % 60));
       }
 
       @Override
       public void onFinish() {
-        countDownView.setText(getResources()
-                .getString(R.string.promo_expired));
-      }
-    };
+        countDownView.setText(getResources().getString(R.string.promo_expired));
+      }};
+
     return countDownTimer;
   }
 
@@ -278,32 +290,41 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     // Por eso, desaparece el botón de Now y aparece el código para redimirla.
     nowButton.setVisibility(View.GONE);
     redemptionCode.setText(code);
-    // En caso de tratarse de una promoción ya redimida por el usuario, el código aparece en color
-    // gris.
-    if (isUserPromoRedeemed) redemptionCode.setTextColor(getResources().getColor(R.color.gray));
+    // En caso de tratarse de una promoción ya redimida por el usuario, el
+    // código aparece en color gris.
+    if (isUserPromoRedeemed) {
+      redemptionCode.setTextColor(getResources().getColor(R.color.gray));
+    }
     redemptionCode.setVisibility(View.VISIBLE);
   }
 
   public void now(View v) {
-    params.put("promo_id", String.valueOf(promosFlipper.getCurrentView().getId()));
+    params.put("promo_id", String.valueOf(promosFlipper.getCurrentView()
+                                          .getId()));
     params.put("user_id", String.valueOf(User.id));
     askToTakePromo();
   }
 
   public void askToTakePromo() {
-    // Se muestra un diálogo al usuario para que decida si desea tomar la promoción actual o no.
+    // Se muestra un diálogo al usuario para que decida si desea tomar la
+    // promoción actual o no.
     AlertDialog promoNowAD = AlertDialogCreator
-                             .createAlertDialog(this, R.string.promo, R.string.confirm_taking_promo,
-                                     R.string._continue, R.string.cancel, TAKE_PROMO);
+                             .createAlertDialog(this, R.string.promo,
+                                                R.string.confirm_taking_promo,
+                                                R.string._continue,
+                                                R.string.cancel, TAKE_PROMO);
     promoNowAD.show();
   }
 
   public void showObtainedPromo() {
-    // Se muestra un diálogo al usuario para indicarle que ya ha sido acreedor de la promoción.
+    // Se muestra un diálogo al usuario para indicarle que ya ha sido acreedor
+    // de la promoción.
     AlertDialog promoObtainedAD = AlertDialogCreator
-                                  .createAlertDialog(this, R.string.promo_obtained,
-                                                     R.string.promo_now_in_list, R.string.ok,
-                                                     AlertDialogCreator.NO_BUTTON_TO_SHOW,
+                                  .createAlertDialog(this,
+                                                     R.string.promo_obtained,
+                                                     R.string.promo_now_in_list,
+                                                     R.string.ok,
+                                           AlertDialogCreator.NO_BUTTON_TO_SHOW,
                                                      OBTAINED_PROMO);
     promoObtainedAD.show();
   }
@@ -320,36 +341,41 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
     try {
       if (action.equals(ACTION_PROMOS_DETAILS)) {
         Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
+        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
+        {
           promos.clear();
           promosMap.clear();
 
-          JSONArray promosDescriptionAndTerms = responseJson.getJSONArray("promos");
+          JSONArray promosDescriptionAndTerms = responseJson
+                                                .getJSONArray("promos");
           for (int i = 0; i < promosDescriptionAndTerms.length(); ++i) {
             JSONObject internPromo = promosDescriptionAndTerms.getJSONObject(i);
             int promoId = internPromo.getInt("id");
             String title = internPromo.getString("title");
             String expirationDate = internPromo.getString("expiration_date");
-            int availableRedemptions = internPromo.getInt("available_redemptions");
+            int availableRedemptions = internPromo
+                                       .getInt("available_redemptions");
             String description = internPromo.getString("description");
             String terms = internPromo.getString("terms");
 
-            // Se genera la lista de promociones para ser actualizada localmente, ya incluyendo
-            // descripción y términos.
-            Promo promo = new Promo(promoId, title, expirationDate, availableRedemptions,
-                                    description, terms);
+            // Se genera la lista de promociones para ser actualizada
+            // localmente, ya incluyendo descripción y términos.
+            Promo promo = new Promo(promoId, title, expirationDate,
+                                    availableRedemptions,description, terms);
             promos.add(promo);
             promosMap.put(promo.getId(), promo);
           }
 
-          // Se actualiza la lista de promociones para el establecimiento en cuestión.
+          // Se actualiza la lista de promociones para el establecimiento en
+          // cuestión.
           MapData.setPromosMap(promosMap);
 
           addPromosToFlipper();
         }
       } else if (action.equals(ACTION_NOW)) {
         Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
+        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
+        {
           if (responseJson.getBoolean("success")) {
             JSONObject redemption = responseJson.getJSONObject("redemption");
             String code = redemption.getString("code");
@@ -361,13 +387,15 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
             // Se adiciona la promoción a la lista de promociones del usuario.
             User.addPromoToTakenPromos(promoId, r);
 
-            // Se ponen estos valores en las variables como los actuales para poder simular la
-            // obtención de la promoción para el usuario.
+            // Se ponen estos valores en las variables como los actuales para
+            // poder simular la obtención de la promoción para el usuario.
             this.code = code;
             isUserPromoRedeemed = redeemed;
 
-            // Se capturan botón y código de la vista actual para realizar el intercambio.
-            nowButton = (Button) promosFlipper.getCurrentView().findViewById(R.id.now_button);
+            // Se capturan botón y código de la vista actual para realizar el
+            // intercambio.
+            nowButton = (Button) promosFlipper.getCurrentView()
+                        .findViewById(R.id.now_button);
             redemptionCode = (TextView) promosFlipper.getCurrentView()
                              .findViewById(R.id.redemption_code);
             changeButtonToCode();
@@ -417,7 +445,8 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
   }
 
   @Override
-  public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+  public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
+                          float distanceY) {
     return false;
   }
 
@@ -427,7 +456,8 @@ public class PromoCardAnimator extends Activity implements SubscribedActivities,
   }
 
   @Override
-  public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+  public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
+                         float velocityY) {
     float sensitivity = 90;
 
     // No es necesario pasar de promoción si solamente existe una.

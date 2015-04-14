@@ -23,7 +23,8 @@ public class SharedPreferencesManager {
 
   public static void setup(Context context) {
     SharedPreferencesManager.context = context;
-    sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
+    sharedPreferences = context.getSharedPreferences(PREFS_NAME,
+                                                     Context.MODE_PRIVATE);
     editor = sharedPreferences.edit();
   }
 
