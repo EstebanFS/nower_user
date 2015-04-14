@@ -48,7 +48,8 @@ public class Login extends Activity implements SubscribedActivities {
     SharedPreferencesManager.setup(this);
 
     TextView title = (TextView) findViewById(R.id.login_header);
-    Typeface headerFont = Typeface.createFromAsset(getAssets(), "fonts/exo2_extra_bold.otf");
+    Typeface headerFont = Typeface.createFromAsset(getAssets(),
+                                                   "fonts/exo2_extra_bold.otf");
     title.setTypeface(headerFont);
 
     emailView = (TextView) findViewById(R.id.email);
@@ -73,11 +74,13 @@ public class Login extends Activity implements SubscribedActivities {
 
     if (email.isEmpty() && password.isEmpty()) {
       emailView.setError(getResources().getString(R.string.write_your_email));
-      passwordView.setError(getResources().getString(R.string.write_your_password));
+      passwordView.setError(getResources()
+                            .getString(R.string.write_your_password));
     } else if (email.isEmpty() && !password.isEmpty()) {
       emailView.setError(getResources().getString(R.string.write_your_email));
     } else if (!email.isEmpty() && password.isEmpty()) {
-      passwordView.setError(getResources().getString(R.string.write_your_password));
+      passwordView.setError(getResources()
+                            .getString(R.string.write_your_password));
     } else {
       setParamsForLogin();
     }
@@ -92,24 +95,31 @@ public class Login extends Activity implements SubscribedActivities {
   public void sendRequest(String request) {
     if (httpHandler.isInternetConnectionAvailable(this)) {
       if (request.equals(ACTION_LOGIN)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_LOGIN, "", params, new HttpPost(),
-                                Login.this);
+        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_LOGIN, "", params,
+                                new HttpPost(), Login.this);
       }
     }
     else {
       Toast.makeText(getApplicationContext(),
-                     getResources().getString(R.string.internet_connection_required),
+                     getResources()
+                     .getString(R.string.internet_connection_required),
                      Toast.LENGTH_SHORT).show();
     }
   }
 
-  public void saveUserData(int id, String email, String name, String gender, String birthday) {
+  public void saveUserData(int id, String email, String name, String gender,
+                           String birthday) {
     // Se almacenan los datos del usuario que acaba de autenticarse.
-    SharedPreferencesManager.saveIntegerValue(SharedPreferencesManager.USER_ID, id);
-    SharedPreferencesManager.saveStringValue(SharedPreferencesManager.USER_EMAIL, email);
-    SharedPreferencesManager.saveStringValue(SharedPreferencesManager.USER_NAME, name);
-    SharedPreferencesManager.saveStringValue(SharedPreferencesManager.USER_GENDER, gender);
-    SharedPreferencesManager.saveStringValue(SharedPreferencesManager.USER_BIRTHDAY, birthday);
+    SharedPreferencesManager.saveIntegerValue(SharedPreferencesManager
+                                              .USER_ID, id);
+    SharedPreferencesManager.saveStringValue(SharedPreferencesManager
+                                             .USER_EMAIL, email);
+    SharedPreferencesManager.saveStringValue(SharedPreferencesManager
+                                             .USER_NAME, name);
+    SharedPreferencesManager.saveStringValue(SharedPreferencesManager
+                                             .USER_GENDER, gender);
+    SharedPreferencesManager.saveStringValue(SharedPreferencesManager
+                                             .USER_BIRTHDAY, birthday);
 
     User.setUserData(id, email, name, gender, birthday, null);
   }
@@ -125,7 +135,8 @@ public class Login extends Activity implements SubscribedActivities {
     try {
       if (action.equals(ACTION_LOGIN)) {
         Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
+        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
+        {
           if (responseJson.getBoolean("success")) {
             String token = responseJson.getString("token");
             JSONObject user = responseJson.getJSONObject("user");
@@ -147,12 +158,12 @@ public class Login extends Activity implements SubscribedActivities {
             String error = errors.get(0).toString();
             if (error.equalsIgnoreCase("Login failed")) {
               Toast.makeText(getApplicationContext(),
-                             getResources().getString(R.string.login_failed), Toast.LENGTH_SHORT)
-                             .show();
+                             getResources().getString(R.string.login_failed),
+                             Toast.LENGTH_SHORT).show();
             } else {
               Toast.makeText(getApplicationContext(),
-                             getResources().getString(R.string.login_error), Toast.LENGTH_SHORT)
-                             .show();
+                             getResources().getString(R.string.login_error),
+                             Toast.LENGTH_SHORT).show();
             }
           }
         }

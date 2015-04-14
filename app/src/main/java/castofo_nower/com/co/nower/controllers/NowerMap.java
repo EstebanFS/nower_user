@@ -40,9 +40,8 @@ import castofo_nower.com.co.nower.models.Promo;
 
 
 public class NowerMap extends FragmentActivity implements SubscribedActivities,
-                                                          GeolocationInterface,
-                                                          GoogleMap.OnMarkerClickListener,
-                                                          GoogleMap.OnInfoWindowClickListener {
+GeolocationInterface, GoogleMap.OnMarkerClickListener,
+GoogleMap.OnInfoWindowClickListener {
 
   private GoogleMap map;
   private int ZOOM_LEVEL = 14;
@@ -70,19 +69,23 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     setContentView(R.layout.activity_nower_map);
 
     geolocation = new Geolocation(NowerMap.this);
-    // Se indica a Geolocation la actividad que estará esperando el aviso de cambio de localización.
+    // Se indica a Geolocation la actividad que estará esperando el aviso de
+    // cambio de localización.
     geolocation.addListeningActivity(this);
-    // Se indica al HttpHandler la actividad que estará esperando la respuesta a la petición.
+    // Se indica al HttpHandler la actividad que estará esperando la respuesta
+    // a la petición.
     httpHandler.addListeningActivity(this);
 
     // Se captura el mapa dentro de la variable map para poderlo gestionar.
-    map = ((SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map)).getMap();
+    map = ((SupportMapFragment) getSupportFragmentManager()
+           .findFragmentById(R.id.map)).getMap();
 
     if (map != null) {
       setUpMap();
       setMapListeners();
       // Ya estaba previamente capturada la localización del usuario.
-      if (MapData.userLat != MapData.NO_USER_LAT && MapData.userLong != MapData.NO_USER_LONG) {
+      if (MapData.userLat != MapData.NO_USER_LAT
+          && MapData.userLong != MapData.NO_USER_LONG) {
         moveCameraToPosition(MapData.userLat, MapData.userLong);
       }
       verifyLocationProviders();
@@ -94,7 +97,8 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
 
   public void setUpMap() {
     map.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-    // Se remueven los controles de zoom para que solamente funcione con pinch-zoom.
+    // Se remueven los controles de zoom para que solamente funcione con
+    // pinch-zoom.
     map.getUiSettings().setZoomControlsEnabled(false);
     // Se muestra la brújula dentro del mapa para indicar el Norte.
     map.getUiSettings().setCompassEnabled(true);
@@ -114,17 +118,20 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
       geolocation.getUserLocation();
     }
     else {
-      // Si no es posible obtener la localización, se muestra un diálogo para activar el GPS.
+      // Si no es posible obtener la localización, se muestra un diálogo para
+      // activar el GPS.
       geolocation.askToEnableGPS();
     }
   }
 
   public void setLocProgressDialog() {
-    if (MapData.userLat == MapData.NO_USER_LAT && MapData.userLong == MapData.NO_USER_LONG) {
-      // Se muestra un mensaje de progreso al usuario si aún no se tenía una localización
-      // previa.
+    if (MapData.userLat == MapData.NO_USER_LAT
+        && MapData.userLong == MapData.NO_USER_LONG) {
+      // Se muestra un mensaje de progreso al usuario si aún no se tenía una
+      // localización previa.
       progressDialog = new ProgressDialog(this);
-      progressDialog.setMessage(getResources().getString(R.string.obtaining_your_location));
+      progressDialog.setMessage(getResources()
+                                .getString(R.string.obtaining_your_location));
       progressDialog.setCanceledOnTouchOutside(false);
       progressDialog.show();
     }
@@ -132,25 +139,27 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
 
   // Este método se utiliza para animar los cambios de ubicación del usuario.
   public void animateCameraToPosition(final double lat, final double lon) {
-    map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), ZOOM_LEVEL),
-            new GoogleMap.CancelableCallback() {
-              @Override
-              public void onFinish() {
-                putUserMarker(lat, lon);
-                // Con el mapa centrado en la localización del usuario es tiempo de
-                // mostrar las promociones.
-                sendRequest(ACTION_PROMOS);
-              }
+    map.animateCamera(CameraUpdateFactory
+                      .newLatLngZoom(new LatLng(lat, lon), ZOOM_LEVEL),
+                      new GoogleMap.CancelableCallback() {
+                        @Override
+                        public void onFinish() {
+                          putUserMarker(lat, lon);
+                          // Con el mapa centrado en la localización del usuario
+                          // es tiempo de mostrar las promociones.
+                          sendRequest(ACTION_PROMOS);
+                        }
 
-              @Override
-              public void onCancel() { }
-            });
+                        @Override
+                        public void onCancel() { }
+                      });
   }
 
-  // En caso de que recientemene se haya actualizado la localización del usuario, el mapa se
-  // se centra inmediatamente allí.
+  // En caso de que recientemene se haya actualizado la localización del
+  // usuario, el mapa se centra inmediatamente allí.
   public void moveCameraToPosition(double lat, double lon) {
-    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon), ZOOM_LEVEL));
+    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon),
+                                                     ZOOM_LEVEL));
     putUserMarker(lat, lon);
     sendRequest(ACTION_PROMOS);
   }
@@ -159,14 +168,15 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
   public void putUserMarker(double latitude, double longitude) {
     // Es la primera vez que se va a poner el marcador del usuario.
     if (userMarker == null) {
-      userMarker = map.addMarker(new MarkerOptions().position(new LatLng(latitude, longitude))
-                                                    .title(getResources()
-                                                            .getString(R.string.you_are_here))
-                                                    .icon(BitmapDescriptorFactory
-                                                            .fromResource(R.drawable.user_marker))
-                                );
+      userMarker = map.addMarker(new MarkerOptions()
+                                 .position(new LatLng(latitude, longitude))
+                                 .title(getResources()
+                                        .getString(R.string.you_are_here))
+                                 .icon(BitmapDescriptorFactory
+                                       .fromResource(R.drawable.user_marker)));
     }
-    // El marcador ya existía pero se debe mover, ya que la localización del usuario cambió.
+    // El marcador ya existía pero se debe mover, ya que la localización del
+    // usuario cambió.
     else {
       userMarker.setPosition(new LatLng(latitude, longitude));
     }
@@ -176,30 +186,34 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
   public void sendRequest(String request) {
     if (httpHandler.isInternetConnectionAvailable(this)) {
       if (request.equals(ACTION_PROMOS)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_PROMOS, "", params, new HttpGet(),
-                                NowerMap.this);
+        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_PROMOS, "", params,
+                                new HttpGet(),NowerMap.this);
       }
       else if (request.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, UserPromoList.ACTION_USER_REDEMPTIONS, "/"
-                                + User.id, params, new HttpGet(), NowerMap.this);
+        httpHandler.sendRequest(HttpHandler.API_V1,
+                                UserPromoList.ACTION_USER_REDEMPTIONS, "/"
+                                + User.id, params, new HttpGet(),
+                                NowerMap.this);
       }
     }
     else {
       Toast.makeText(getApplicationContext(),
-                     getResources().getString(R.string.internet_connection_required),
+                     getResources()
+                     .getString(R.string.internet_connection_required),
                      Toast.LENGTH_SHORT).show();
     }
   }
 
-  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+  protected void onActivityResult(int requestCode, int resultCode, Intent data)
+  {
     if (requestCode == Geolocation.ENABLE_GPS_CODE) {
       if (resultCode == OP_SUCCEEDED) {
         //El usuario activó el GPS.
         geolocation.verifyLocationPossibilities();
         if (geolocation.canGetLocation()) {
           setLocProgressDialog();
-          // Este método se invoca con el fin de que el listener de la localización sea encendido,
-          // ya que se activó el GPS.
+          // Este método se invoca con el fin de que el listener de la
+          // localización sea encendido, ya que se activó el GPS.
           geolocation.getUserLocation();
         }
         // Ahora se espera el cambio de localización para centrar el mapa.
@@ -225,13 +239,15 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     try {
       if (action.equals(ACTION_PROMOS)) {
         Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
+        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
+        {
           branchesIdsMap.clear();
           branchesMap.clear();
           promosMap.clear();
 
           JSONArray locations = responseJson.getJSONArray("locations");
-          // Se recorren todas las promociones obtenidas para dibujarlas en el mapa.
+          // Se recorren todas las promociones obtenidas para dibujarlas en
+          // el mapa.
           for (int i = 0; i < locations.length(); ++i) {
             ArrayList<Integer> promoList = new ArrayList<>();
 
@@ -249,32 +265,35 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
               int promoId = internPromo.getInt("id");
               String title = internPromo.getString("title");
               String expirationDate = internPromo.getString("expiration_date");
-              int availableRedemptions = internPromo.getInt("available_redemptions");
-              // Se genera la lista de promociones para esa localización, aún sin descripción ni
-              // términos.
-              Promo promo = new Promo(promoId, title, expirationDate, availableRedemptions, null,
-                                      null);
+              int availableRedemptions = internPromo
+                                         .getInt("available_redemptions");
+              // Se genera la lista de promociones para esa localización,
+              // aún sin descripción ni términos.
+              Promo promo = new Promo(promoId, title, expirationDate,
+                                      availableRedemptions, null, null);
               promoList.add(promo.getId());
 
               // Se agrega la promoción a un mapa de promociones.
               promosMap.put(promoId, promo);
             }
 
-            Branch branch = new Branch(id, name, latitude, longitude, storeId, storeName,
-                                       promoList);
+            Branch branch = new Branch(id, name, latitude, longitude, storeId,
+                                       storeName, promoList);
             branchesMap.put(branch.getId(), branch);
 
             putMarkerAndSaveBranch(branch);
           }
 
-          // Se borran los marcadores previos que indicaban la ubicación de los estabecimientos.
+          // Se borran los marcadores previos que indicaban la ubicación de los
+          // estabecimientos.
           clearPreviousMarkers();
 
-          // Se envían los mapas construidos al modelo MapData para que puedan ser accedidos desde
-          // otras actividades.
-          // Se debe borrar explícitamente este branchesIdsMap debido a que cada marcador agregado
-          // tiene un ID diferente. De no hacer esto, los marcadores no se soobreescribirían sino
-          // que se agregarían infinitamente.
+          // Se envían los mapas construidos al modelo MapData para que puedan
+          // ser accedidos desde otras actividades.
+          // Se debe borrar explícitamente este branchesIdsMap debido a que
+          // cada marcador agregado tiene un ID diferente. De no hacer esto,
+          // los marcadores no se soobreescribirían sino que se agregarían
+          // infinitamente.
           MapData.clearBranchesIdsMap();
           MapData.setBranchesIdsMap(branchesIdsMap);
 
@@ -289,7 +308,8 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
         }
       } else if (action.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
         Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
+        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
+        {
           JSONArray userRedemptions = responseJson.getJSONArray("redemptions");
           for (int i = 0; i < userRedemptions.length(); ++i) {
             JSONObject internRedemption = userRedemptions.getJSONObject(i);
@@ -310,23 +330,26 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
     }
   }
 
-  // Este método se encarga de poner todas las promociones en el mapa y guardarlas los
-  // establecimientos localmente.
+  // Este método se encarga de poner todas las promociones en el mapa y
+  // guardarlas los establecimientos localmente.
   public void putMarkerAndSaveBranch(Branch branch) {
     Marker branchMarker = map.addMarker(new MarkerOptions()
-                                        .position(new LatLng(branch.getLatitude(),
-                                                             branch.getLongitude()))
-                                         .title(branch.getStoreName() + " - " + branch.getName())
-                                         .icon(BitmapDescriptorFactory.fromResource
-                                               (R.drawable.nower_marker))
-                                        );
+                                        .position
+                                        (new LatLng(branch.getLatitude(),
+                                                    branch.getLongitude()))
+                                        .title(branch.getStoreName() + " - " +
+                                               branch.getName())
+                                        .icon(BitmapDescriptorFactory
+                                              .fromResource
+                                              (R.drawable.nower_marker)));
 
     // Se asocia cada establecimiento a un marcador diferente.
     branchesIdsMap.put(branchMarker, branch.getId());
   }
 
   public void clearPreviousMarkers() {
-    for (Map.Entry<Marker, Integer> markerBranchId : MapData.branchesIdsMap.entrySet()) {
+    for (Map.Entry<Marker, Integer> markerBranchId
+         : MapData.branchesIdsMap.entrySet()) {
       markerBranchId.getKey().remove();
     }
   }
@@ -337,11 +360,13 @@ public class NowerMap extends FragmentActivity implements SubscribedActivities,
       if (currentMarker == null) {
         marker.showInfoWindow();
         currentMarker = marker;
-      } else {
+      }
+      else {
         if (currentMarker.equals(marker)) {
           marker.hideInfoWindow();
           currentMarker = null;
-        } else {
+        }
+        else {
           currentMarker.hideInfoWindow();
           marker.showInfoWindow();
           currentMarker = marker;

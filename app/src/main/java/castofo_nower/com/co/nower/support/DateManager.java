@@ -16,7 +16,8 @@ public class DateManager {
   }
 
   public static String getDateText(Calendar cal) {
-    SimpleDateFormat sdf = new SimpleDateFormat("dd - MMMM - yyyy", new Locale("es_ES"));
+    SimpleDateFormat sdf = new SimpleDateFormat("dd - MMMM - yyyy",
+                                                new Locale("es_ES"));
 
     String result = sdf.format(cal.getTime());
     return result;

@@ -68,13 +68,15 @@ public class Register extends FragmentActivity implements SubscribedActivities {
     SharedPreferencesManager.setup(this);
 
     TextView title = (TextView) findViewById(R.id.register_header);
-    Typeface headerFont = Typeface.createFromAsset(getAssets(), "fonts/exo2_extra_bold.otf");
+    Typeface headerFont = Typeface.createFromAsset(getAssets(),
+                                                   "fonts/exo2_extra_bold.otf");
     title.setTypeface(headerFont);
 
     nameView = (TextView) findViewById(R.id.name);
     emailView = (TextView) findViewById(R.id.email);
     passwordView = (TextView) findViewById(R.id.password);
-    passwordConfirmationView = (TextView) findViewById(R.id.password_confirmation);
+    passwordConfirmationView = (TextView)
+                               findViewById(R.id.password_confirmation);
     birthdayView = (TextView) findViewById(R.id.birthday);
     genderRadio = (RadioGroup) findViewById(R.id.gender);
 
@@ -110,20 +112,23 @@ public class Register extends FragmentActivity implements SubscribedActivities {
       everythingOkToRegister = false;
     }
     if (password.isEmpty()) {
-      passwordView.setError(getResources().getString(R.string.write_your_password));
+      passwordView.setError(getResources()
+                            .getString(R.string.write_your_password));
       everythingOkToRegister = false;
     }
     if (passwordConfirmation.isEmpty()) {
-      passwordConfirmationView.setError(getResources()
-              .getString(R.string.write_your_password_again));
+      passwordConfirmationView.setError
+      (getResources().getString(R.string.write_your_password_again));
       everythingOkToRegister = false;
     }
     if (birthday == null) {
-      birthdayView.setError(getResources().getString(R.string.select_your_birthday));
+      birthdayView.setError(getResources()
+                            .getString(R.string.select_your_birthday));
       everythingOkToRegister = false;
     }
     if (!isGenderSelected) {
-      Toast.makeText(getApplicationContext(), getResources().getString(R.string.select_your_gender),
+      Toast.makeText(getApplicationContext(),
+                     getResources().getString(R.string.select_your_gender),
                      Toast.LENGTH_SHORT).show();
       everythingOkToRegister = false;
     }
@@ -133,7 +138,8 @@ public class Register extends FragmentActivity implements SubscribedActivities {
         setParamsForRegister();
       } else {
         Toast.makeText(getApplicationContext(),
-                       getResources().getString(R.string.passwords_not_matching),
+                       getResources()
+                       .getString(R.string.passwords_not_matching),
                        Toast.LENGTH_SHORT).show();
       }
     }
@@ -212,24 +218,31 @@ public class Register extends FragmentActivity implements SubscribedActivities {
   public void sendRequest(String request) {
     if (httpHandler.isInternetConnectionAvailable(this)) {
       if (request.equals(ACTION_REGISTER)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_REGISTER, "", params, new HttpPost(),
-                                Register.this);
+        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_REGISTER, "", params,
+                                new HttpPost(), Register.this);
       }
     }
     else {
       Toast.makeText(getApplicationContext(),
-                     getResources().getString(R.string.internet_connection_required),
+                     getResources()
+                     .getString(R.string.internet_connection_required),
                      Toast.LENGTH_SHORT).show();
     }
   }
 
-  public void saveUserData(int id, String email, String name, String gender, String birthday) {
+  public void saveUserData(int id, String email, String name, String gender,
+                           String birthday) {
     // Se almacenan los datos del usuario que acaba de registrarse.
-    SharedPreferencesManager.saveIntegerValue(SharedPreferencesManager.USER_ID, id);
-    SharedPreferencesManager.saveStringValue(SharedPreferencesManager.USER_EMAIL, email);
-    SharedPreferencesManager.saveStringValue(SharedPreferencesManager.USER_NAME, name);
-    SharedPreferencesManager.saveStringValue(SharedPreferencesManager.USER_GENDER, gender);
-    SharedPreferencesManager.saveStringValue(SharedPreferencesManager.USER_BIRTHDAY, birthday);
+    SharedPreferencesManager.saveIntegerValue(SharedPreferencesManager
+                                              .USER_ID, id);
+    SharedPreferencesManager.saveStringValue(SharedPreferencesManager
+                                             .USER_EMAIL, email);
+    SharedPreferencesManager.saveStringValue(SharedPreferencesManager
+                                             .USER_NAME, name);
+    SharedPreferencesManager.saveStringValue(SharedPreferencesManager
+                                             .USER_GENDER, gender);
+    SharedPreferencesManager.saveStringValue(SharedPreferencesManager
+                                             .USER_BIRTHDAY, birthday);
 
     User.setUserData(id, email, name, gender, birthday, null);
   }
@@ -245,7 +258,8 @@ public class Register extends FragmentActivity implements SubscribedActivities {
     try {
       if (action.equals(ACTION_REGISTER)) {
         Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
+        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
+        {
           if (responseJson.getBoolean("success")) {
             JSONObject user = responseJson.getJSONObject("user");
             int id = user.getInt("id");
@@ -267,11 +281,11 @@ public class Register extends FragmentActivity implements SubscribedActivities {
             String emailError = email.get(0).toString();
             if (emailError.equalsIgnoreCase("has already been taken")) {
               emailView.setError(getResources()
-                      .getString(R.string.email_already_taken));
+                                 .getString(R.string.email_already_taken));
             } else {
               Toast.makeText(getApplicationContext(),
-                             getResources().getString(R.string.register_error), Toast.LENGTH_SHORT)
-                             .show();
+                             getResources().getString(R.string.register_error),
+                             Toast.LENGTH_SHORT).show();
             }
           }
         }

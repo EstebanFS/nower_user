@@ -19,6 +19,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Stack;
 
 import castofo_nower.com.co.nower.R;
 
@@ -31,7 +32,8 @@ import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
 
 
-public class UserPromoList extends ListActivity implements SubscribedActivities {
+public class UserPromoList extends ListActivity implements SubscribedActivities
+{
 
   private ListItemsCreator userPromosListToShow;
 
@@ -47,23 +49,27 @@ public class UserPromoList extends ListActivity implements SubscribedActivities 
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_user_promo_list);
 
-    // Se indica al HttpHandler la actividad que estará esperando la respuesta a la petición.
+    // Se indica al HttpHandler la actividad que estará esperando la respuesta
+    // a la petición.
     httpHandler.addListeningActivity(this);
 
-    // Se hace para actualizar el estado de las promociones que ha obtenido el usuario.
+    // Se hace para actualizar el estado de las promociones que ha obtenido el
+    // usuario.
     sendRequest(ACTION_USER_REDEMPTIONS);
   }
 
   public void sendRequest(String request) {
     if (httpHandler.isInternetConnectionAvailable(this)) {
       if (request.equals(ACTION_USER_REDEMPTIONS)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_USER_REDEMPTIONS, "/" + User.id, params,
-                                new HttpGet(), UserPromoList.this);
+        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_USER_REDEMPTIONS,
+                                "/" + User.id, params, new HttpGet(),
+                                UserPromoList.this);
       }
     }
     else {
       Toast.makeText(getApplicationContext(),
-                     getResources().getString(R.string.internet_connection_required),
+                     getResources()
+                     .getString(R.string.internet_connection_required),
                      Toast.LENGTH_SHORT).show();
     }
   }
@@ -72,27 +78,44 @@ public class UserPromoList extends ListActivity implements SubscribedActivities 
     ArrayList<Object> userPromos = new ArrayList<Object>();
     ArrayList<Object> userPromosNotRedeemed = new ArrayList<Object>();
     ArrayList<Object> userPromosRedeemed = new ArrayList<Object>();
+    Stack<Object> notRedeemedPromos = new Stack<>();
+    Stack<Object> redeemedPromos = new Stack<>();
 
-    // Se agrega una Redemption inexistente como indicador de inicio de lista para la promociones
-    // no redimidas.
+    // Se agrega una Redemption inexistente como indicador de inicio de lista
+    // para la promociones no redimidas.
     userPromosNotRedeemed.add(new Redemption("0", 0, false));
-    // Se agrega una Redemption inexistente como indicador de inicio de lista para la promociones
-    // redimidas.
+    // Se agrega una Redemption inexistente como indicador de inicio de lista
+    // para la promociones redimidas.
     userPromosRedeemed.add(new Redemption("1", 0, true));
 
-    for (Map.Entry<Integer, Redemption> promoIdRedemption : User.takenPromos.entrySet()) {
+    // Se utiliza este ciclo para almacenar en dos pilas distintas las
+    //promociones redimidas y no redimidas del usuario.
+    for (Map.Entry<Integer, Redemption> promoIdRedemption
+         : User.takenPromos.entrySet()) {
       if (!promoIdRedemption.getValue().isRedeemed()) {
-        // Se adiciona la promoción dentro de la lista de no redimidas.
-        userPromosNotRedeemed.add(promoIdRedemption.getValue());
+        // Se adiciona la promoción dentro de la pila de no redimidas.
+        notRedeemedPromos.push(promoIdRedemption.getValue());
       }
       else {
-        // Se adiciona la promoción dentro de la lista de redimidas.
-        userPromosRedeemed.add(promoIdRedemption.getValue());
+        // Se adiciona la promoción dentro de la pila de redimidas.
+        redeemedPromos.push(promoIdRedemption.getValue());
       }
     }
 
-    // Si existe al menos una promoción redimida o no redimida, se mostrará la lista al usuario.
-    // De lo contrario, no contendrá nada la lista para que se muestre el mensaje cuando está vacía.
+    // Ambos ciclos sirven para pasar las promociones de las pilas a las
+    // listas, de forma que queden organizadas cronológicamente de manera
+    // descendente.
+    while (!notRedeemedPromos.empty()) {
+      userPromosNotRedeemed.add(notRedeemedPromos.pop());
+    }
+    while (!redeemedPromos.empty()) {
+      userPromosRedeemed.add(redeemedPromos.pop());
+    }
+
+    // Si existe al menos una promoción redimida o no redimida, se mostrará
+    // la lista al usuario.
+    // De lo contrario, no contendrá nada la lista para que se muestre el
+    // mensaje cuando está vacía.
     if (userPromosNotRedeemed.size() > 1 || userPromosRedeemed.size() > 1) {
       // Se adicionan ambas sublistas a la lista general que se va a mostrar.
       userPromos.addAll(userPromosNotRedeemed);
@@ -103,16 +126,18 @@ public class UserPromoList extends ListActivity implements SubscribedActivities 
   }
 
   public void setEmptyListMessage() {
-    // Se muestra un mensaje en caso de que la lista de promociones del usuario esté vacía.
+    // Se muestra un mensaje en caso de que la lista de promociones del usuario
+    // esté vacía.
     View empty = findViewById(R.id.empty_list);
     ListView list = (ListView) findViewById(android.R.id.list);
     list.setEmptyView(empty);
   }
 
-  // Este método permite identificar a qué establecimiento pertence la promoción que ha tomado el
-  // usuario.
-  public int searchPromoIdStoreName(int pId) {
-    for (Map.Entry<Integer, Branch> branchIdBranch : MapData.branchesMap.entrySet()) {
+  // Este método permite identificar a qué establecimiento pertence la
+  // promoción que ha tomado el usuario.
+  public static int searchPromoIdStoreName(int pId) {
+    for (Map.Entry<Integer, Branch> branchIdBranch
+         : MapData.branchesMap.entrySet()) {
       Branch branch = branchIdBranch.getValue();
       ArrayList<Integer> promosIds = branch.getPromosIds();
       for (Integer promoId : promosIds) {
@@ -125,7 +150,8 @@ public class UserPromoList extends ListActivity implements SubscribedActivities 
   protected void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
     int promoId = v.getId();
-    Intent showPromoToRedeem = new Intent(UserPromoList.this, PromoCardAnimator.class);
+    Intent showPromoToRedeem = new Intent(UserPromoList.this,
+                                          PromoCardAnimator.class);
     showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
     showPromoToRedeem.putExtra("promo_id", promoId);
     int branchId = searchPromoIdStoreName(promoId);
@@ -139,7 +165,8 @@ public class UserPromoList extends ListActivity implements SubscribedActivities 
     try {
       if (action.equals(ACTION_USER_REDEMPTIONS)) {
         Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS) {
+        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
+        {
           JSONArray userRedemptions = responseJson.getJSONArray("redemptions");
           for (int i = 0; i < userRedemptions.length(); ++i) {
             JSONObject internRedemption = userRedemptions.getJSONObject(i);
@@ -154,9 +181,10 @@ public class UserPromoList extends ListActivity implements SubscribedActivities 
             User.addPromoToTakenPromos(promoId, redemption);
           }
 
-          // Ya con las promociones del usuario actualizadas, es posible mostrar la lista de
-          // redimidas y no redimidas.
-          userPromosListToShow = new ListItemsCreator(this, R.layout.promo_item, generateData(),
+          // Ya con las promociones del usuario actualizadas, es posible
+          // mostrar la lista de redimidas y no redimidas.
+          userPromosListToShow = new ListItemsCreator(this, R.layout.promo_item,
+                                                      generateData(),
                                                       LIST_USER_PROMOS);
 
           setListAdapter(userPromosListToShow);

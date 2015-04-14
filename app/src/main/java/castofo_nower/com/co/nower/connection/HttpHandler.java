@@ -57,7 +57,8 @@ public class HttpHandler {
   private HttpRequest httpRequest;
   private Context context;
 
-  // En este punto se determina a qué Activity será enviado el resultado de la petición.
+  // En este punto se determina a qué Activity será enviado el resultado de la
+  // petición.
   public void addListeningActivity(SubscribedActivities activity) {
     this.listeningActivity = activity;
   }
@@ -73,7 +74,8 @@ public class HttpHandler {
     JSONObject jsonToSend = createJsonObject(action, params);
 
     HttpResponse httpResponse = null;
-    // Debe inicializarse el código de la respuesta de la petición con algún valor.
+    // Debe inicializarse el código de la respuesta de la petición con algún
+    // valor.
     // Se selecciona el código de error del servidor por defecto.
     int responseStatusCode = SERVER_INTERNAL_ERROR;
     InputStream inputStream = null;
@@ -81,7 +83,8 @@ public class HttpHandler {
     String jsonString = "";
     JSONObject responseJson = new JSONObject();
 
-    //Se prepara la petición según su tipo y se adicionan los parámetros en caso de ser necesarios.
+    //Se prepara la petición según su tipo y se adicionan los parámetros en
+    // caso de ser necesarios.
     if (httpRequest instanceof HttpGet) {
       httpGet = new HttpGet(url);
       httpGet.setHeader("Accept", "application/json");
@@ -106,7 +109,8 @@ public class HttpHandler {
       }
     }
 
-    //Se ejecuta la petición dependiendo de su tipo y se traduce la respuesta a String.
+    //Se ejecuta la petición dependiendo de su tipo y se traduce la respuesta
+    // a String.
     try {
       if (httpRequest instanceof HttpGet) {
         httpResponse = httpClient.execute(httpGet);
@@ -118,14 +122,16 @@ public class HttpHandler {
       // Se captura el código de respuesta a la petición.
       responseStatusCode = httpResponse.getStatusLine().getStatusCode();
       inputStream = httpResponse.getEntity().getContent();
-      if (inputStream != null) jsonString = convertInputStreamToString(inputStream);
+      if (inputStream != null) {
+        jsonString = convertInputStreamToString(inputStream);
+      }
 
     } catch (IOException e) {
 
     }
 
-    // Se convierte el String de la respuesta a un JSONObject y se le adiciona el código del estado
-    // de la respuesta a la petición HTTP.
+    // Se convierte el String de la respuesta a un JSONObject y se le adiciona
+    // el código del estado de la respuesta a la petición HTTP.
     try {
       responseJson = new JSONObject(jsonString);
       responseJson.put(HTTP_STATUS, responseStatusCode);
@@ -137,7 +143,8 @@ public class HttpHandler {
   }
 
   public void sendRequest(String nameSpace, String action, String urlParams,
-                          Map<String, String> params, HttpRequest httpRequest, Context context) {
+                          Map<String, String> params, HttpRequest httpRequest,
+                          Context context) {
     this.nameSpace = nameSpace;
     this.action = action;
     this.urlParams = urlParams;
@@ -148,7 +155,8 @@ public class HttpHandler {
     new ServerConnection().execute();
   }
 
-  public JSONObject createJsonObject(String action, Map<String, String> params) {
+  public JSONObject createJsonObject(String action, Map<String, String> params)
+  {
     JSONObject json = new JSONObject();
     JSONObject internJson = new JSONObject();
     JSONArray internJsonArray;
@@ -189,8 +197,10 @@ public class HttpHandler {
   }
 
   // Convierte la respuesta del servidor a String.
-  private static String convertInputStreamToString(InputStream inputStream) throws IOException {
-    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+  private static String convertInputStreamToString(InputStream inputStream)
+  throws IOException {
+    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader
+                                                       (inputStream));
     String line = "";
     String result = "";
     while ((line = bufferedReader.readLine()) != null) {
@@ -205,8 +215,8 @@ public class HttpHandler {
     boolean connectionFound = false;
     ConnectivityManager conMgr = (ConnectivityManager) context.getSystemService
                                  (Context.CONNECTIVITY_SERVICE);
-    if (conMgr.getActiveNetworkInfo() != null && conMgr.getActiveNetworkInfo().isAvailable()
-        && conMgr.getActiveNetworkInfo().isConnected()) {
+    if (conMgr.getActiveNetworkInfo() != null && conMgr.getActiveNetworkInfo()
+        .isAvailable() && conMgr.getActiveNetworkInfo().isConnected()) {
       connectionFound = true;
     }
 
@@ -227,8 +237,8 @@ public class HttpHandler {
 
     /*
    * Esta clase es necesaria para hacer la conexión asincrónica con el Servidor.
-   * Se reciben parámetros para la ejecución, tipo de parámetro de método que indica progreso,
-   * y tipo de parámetro que recibe el método post-ejecución.
+   * Se reciben parámetros para la ejecución, tipo de parámetro de método que
+   * indica progreso, y tipo de parámetro que recibe el método post-ejecución.
    */
 
   private class ServerConnection extends AsyncTask<Void, Void, JSONObject> {
@@ -251,23 +261,29 @@ public class HttpHandler {
           break;
         case PromoCardAnimator.ACTION_PROMOS_DETAILS:
           if (PromoCardAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
-            progressDialog.setMessage(context.getString(R.string.obtaining_promos));
+            progressDialog.setMessage(context
+                                      .getString(R.string.obtaining_promos));
           }
-          else if (PromoCardAnimator.action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
-            progressDialog.setMessage(context.getString(R.string.opening_promo));
+          else if (PromoCardAnimator.action.equals(UserPromoList
+                                                   .SHOW_PROMO_TO_REDEEM)) {
+            progressDialog.setMessage(context
+                                      .getString(R.string.opening_promo));
           }
           break;
         case PromoCardAnimator.ACTION_NOW:
-          progressDialog.setMessage(context.getString(R.string.obtaining_promo_code));
+          progressDialog.setMessage(context
+                                    .getString(R.string.obtaining_promo_code));
           break;
         case UserPromoList.ACTION_USER_REDEMPTIONS:
-          progressDialog.setMessage(context.getString(R.string.obtaining_your_promos));
+          progressDialog.setMessage(context
+                                    .getString(R.string.obtaining_your_promos));
           break;
       }
 
       progressDialog.setCanceledOnTouchOutside(false);
-      // Los mensajes de los servicios cuando el usuario está en la vista del mapa son frecuentes
-      // debido a la actualización de promociones y no deben mostrarse.
+      // Los mensajes de los servicios cuando el usuario está en la vista del
+      // mapa son frecuentes debido a la actualización de promociones y no
+      // deben mostrarse.
       if (!(context instanceof NowerMap)) progressDialog.show();
     }
 

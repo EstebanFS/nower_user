@@ -14,8 +14,9 @@ public class User {
 
   public static Map<Integer, Redemption> takenPromos;
 
-  public static void setUserData(int idToSet, String emailToSet, String nameToSet,
-                                 String genderToSet, String birthdayToSet,
+  public static void setUserData(int idToSet, String emailToSet,
+                                 String nameToSet, String genderToSet,
+                                 String birthdayToSet,
                                  Map<Integer, Redemption> takenPromosToSet) {
     id = idToSet;
     email = emailToSet;
@@ -25,7 +26,8 @@ public class User {
     takenPromos = takenPromosToSet;
   }
 
-  public static void addPromoToTakenPromos(Integer promoId, Redemption redemption) {
+  public static void addPromoToTakenPromos(Integer promoId,
+                                           Redemption redemption) {
     if (takenPromos == null) takenPromos = new TreeMap<>();
     takenPromos.put(promoId, redemption);
   }

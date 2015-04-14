@@ -17,31 +17,39 @@ public class AlertDialogCreator {
 
   public static final int NO_BUTTON_TO_SHOW = -1;
 
-  // En este punto se determina a qué Activity será enviado el aviso de la elección del usuario.
+  // En este punto se determina a qué Activity será enviado el aviso de la
+  // elección del usuario.
   public void addListeningActivity(AlertDialogsResponses activity) {
     this.listeningActivity = activity;
   }
 
-  public static AlertDialog createAlertDialog(final Context context, int titleId, int messageId,
-                                              int positiveButtonId, int negativeButtonId,
+  public static AlertDialog createAlertDialog(final Context context,
+                                              int titleId, int messageId,
+                                              int positiveButtonId,
+                                              int negativeButtonId,
                                               final String action) {
-    android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+    android.app.AlertDialog.Builder builder = new android.app.AlertDialog
+                                              .Builder(context);
 
     builder.setTitle(context.getResources().getString(titleId));
     builder.setMessage(context.getResources().getString(messageId));
 
-    builder.setPositiveButton(context.getResources().getString(positiveButtonId),
+    builder.setPositiveButton(context.getResources()
+                              .getString(positiveButtonId),
                               new DialogInterface.OnClickListener() {
                                 @Override
-                                public void onClick(DialogInterface dialog, int which) {
+                                public void onClick(DialogInterface dialog,
+                                                    int which) {
                                   switch (action) {
                                     case Geolocation.ENABLE_GPS:
-                                      // El usuario aceptó activar su GPS y se le redirige a
-                                      // la configuración del dispositivo.
-                                      Intent intent = new Intent(Settings.
-                                                                 ACTION_LOCATION_SOURCE_SETTINGS);
+                                      // El usuario aceptó activar su GPS y se
+                                      // le redirige a la configuración del
+                                      // dispositivo.
+                                      Intent intent = new Intent
+                                     (Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                                       ((Activity) context).
-                                      startActivityForResult(intent, Geolocation.ENABLE_GPS_CODE);
+                                      startActivityForResult(intent,
+                                                   Geolocation.ENABLE_GPS_CODE);
                                       break;
                                     case PromoCardAnimator.TAKE_PROMO:
                                       listeningActivity.notifyToRespond(action);
@@ -52,10 +60,12 @@ public class AlertDialogCreator {
 
     // Se pregunta para saber si es necesario poner un botón de negación o no.
     if (negativeButtonId != NO_BUTTON_TO_SHOW) {
-      builder.setNegativeButton(context.getResources().getString(negativeButtonId),
+      builder.setNegativeButton(context.getResources()
+                                .getString(negativeButtonId),
                                 new DialogInterface.OnClickListener() {
                                   @Override
-                                  public void onClick(DialogInterface dialog, int which) {
+                                  public void onClick(DialogInterface dialog,
+                                                      int which) {
                                     switch (action) {
 
                                     }

@@ -19,14 +19,17 @@ public class MapData {
   public static final double NO_USER_LAT = -1.0;
   public static final double NO_USER_LONG = -1.0;
 
-  public static void setBranchesIdsMap(Map<Marker, Integer> branchesIdsMapToSet) {
-    for (Map.Entry<Marker, Integer> markerBranchId : branchesIdsMapToSet.entrySet()) {
+  public static void setBranchesIdsMap(Map<Marker, Integer> branchesIdsMapToSet)
+  {
+    for (Map.Entry<Marker, Integer> markerBranchId
+         : branchesIdsMapToSet.entrySet()) {
       branchesIdsMap.put(markerBranchId.getKey(), markerBranchId.getValue());
     }
   }
 
   public static void setBranchesMap(Map<Integer, Branch> branchesMapToSet) {
-    for (Map.Entry<Integer, Branch> branchIdBranch : branchesMapToSet.entrySet()) {
+    for (Map.Entry<Integer, Branch> branchIdBranch
+         : branchesMapToSet.entrySet()) {
       branchesMap.put(branchIdBranch.getKey(), branchIdBranch.getValue());
     }
   }

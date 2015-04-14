@@ -26,8 +26,8 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
   private final ArrayList<Object> listData;
   private final String action;
 
-  public ListItemsCreator(Context context, int resource, ArrayList<Object> promosList,
-                          String action) {
+  public ListItemsCreator(Context context, int resource,
+                          ArrayList<Object> promosList, String action) {
     super(context, resource, promosList);
     this.context = context;
     this.resource = resource;
@@ -38,15 +38,18 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
   @Override
   public View getView(int position, View convertView, ViewGroup parent) {
 
-    LayoutInflater inflater = (LayoutInflater)
-                              context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    LayoutInflater inflater = (LayoutInflater) context
+                              .getSystemService
+                              (Context.LAYOUT_INFLATER_SERVICE);
 
     View item = inflater.inflate(resource, parent, false);
 
     TextView title = (TextView) item.findViewById(R.id.title);
+    TextView subtitle = (TextView) item.findViewById(R.id.subtitle);
     ImageView icon = (ImageView) item.findViewById(R.id.icon);
 
     String titleText = "";
+    String subtitleText = "";
     Drawable iconImg = null;
     switch (action) {
       case UserPromoList.LIST_USER_PROMOS:
@@ -55,7 +58,8 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
 
         // Se trata de un encabezado de sección.
         if (redemption.getCode() == "0" || redemption.getCode() == "1") {
-          item = inflater.inflate(R.layout.redeemed_status_header, parent, false);
+          item = inflater.inflate(R.layout.redeemed_status_header, parent,
+                                  false);
           title = (TextView) item.findViewById(R.id.redeemed_status_title);
           // Se trata del encabezado de promociones no redimidas.
           if (redemption.getCode() == "0") {
@@ -75,8 +79,13 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         else {
           int promoId = redemption.getPromoId();
           titleText = MapData.promosMap.get(promoId).getTitle();
-          // Se le pone el id de la promoción a redimir con el fin de poder gestionarla al ser
-          // presionada por el usuario.
+          // Se obtiene el id del establecimiento en donde podrá ser redimida
+          // la promoción tomada por el usuario, con el fin de mostrar su
+          // nombre.
+          int branchId = UserPromoList.searchPromoIdStoreName(promoId);
+          subtitleText = MapData.branchesMap.get(branchId).getStoreName();
+          // Se le pone el id de la promoción a redimir con el fin de poder
+          // gestionarla al ser presionada por el usuario.
           item.setId(promoId);
           iconImg = context.getResources().getDrawable(R.drawable.promo_icon);
         }
@@ -84,16 +93,19 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
       case BranchesList.LIST_BRANCHES:
         // Se obtiene el nombre del establecimiento actual.
         Branch b = (Branch) listData.get(position);
-        // El título a mostrar incluye, además del nombre del establecimiento, su sucursal.
-        titleText = b.getStoreName() + " - " + b.getName();
-        // Se le pone el ID del establecimiento para poder gestionarlo al ser presionado por el
-        // usuario.
+        // El título a mostrar incluye, además del nombre del establecimiento,
+        // su sucursal.
+        titleText = b.getStoreName();
+        subtitleText = b.getName();
+        // Se le pone el ID del establecimiento para poder gestionarlo al ser
+        // presionado por el usuario.
         item.setId(b.getId());
         iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
         break;
     }
 
     title.setText(titleText);
+    subtitle.setText(subtitleText);
 
     if (iconImg != null) icon.setImageDrawable(iconImg);
 
