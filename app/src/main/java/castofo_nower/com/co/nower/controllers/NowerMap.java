@@ -58,9 +58,14 @@ GoogleMap.OnInfoWindowClickListener {
   public static final int OP_SUCCEEDED = 0;
   public static final String SHOW_BRANCH_PROMOS = "SHOW_BRANCH_PROMOS";
 
+  // Para la gestión de los marcadores no es posible utilizar TreeMap, ya que
+  // los marcadores no son comparables.
   private Map<Marker, Integer> branchesIdsMap = new HashMap<>();
   private Map<Integer, Branch> branchesMap = new TreeMap<>();
   private Map<Integer, Promo> promosMap = new TreeMap<>();
+
+  public static final double NO_USER_LAT = -1.0;
+  public static final double NO_USER_LONG = -1.0;
 
   private ProgressDialog progressDialog = null;
 
@@ -86,8 +91,7 @@ GoogleMap.OnInfoWindowClickListener {
       setUpMap();
       setMapListeners();
       // Ya estaba previamente capturada la localización del usuario.
-      if (MapData.userLat != MapData.NO_USER_LAT
-          && MapData.userLong != MapData.NO_USER_LONG) {
+      if (MapData.userLat != NO_USER_LAT && MapData.userLong != NO_USER_LONG) {
         moveCameraToPosition(MapData.userLat, MapData.userLong);
       }
       verifyLocationProviders();
@@ -127,8 +131,7 @@ GoogleMap.OnInfoWindowClickListener {
   }
 
   public void setLocProgressDialog() {
-    if (MapData.userLat == MapData.NO_USER_LAT
-        && MapData.userLong == MapData.NO_USER_LONG) {
+    if (MapData.userLat == NO_USER_LAT && MapData.userLong == NO_USER_LONG) {
       // Se muestra un mensaje de progreso al usuario si aún no se tenía una
       // localización previa.
       progressDialog = new ProgressDialog(this);
@@ -363,7 +366,7 @@ GoogleMap.OnInfoWindowClickListener {
 
   public void clearPreviousMarkers() {
     for (Map.Entry<Marker, Integer> markerBranchId
-         : MapData.branchesIdsMap.entrySet()) {
+         : MapData.getBranchesIdsMap().entrySet()) {
       markerBranchId.getKey().remove();
     }
   }
@@ -397,7 +400,7 @@ GoogleMap.OnInfoWindowClickListener {
   public void onInfoWindowClick(Marker marker) {
     // Se activa el detector de gestos para animar las tarjetas de promociones.
     if (!marker.equals(userMarker)) {
-      int branchId = MapData.branchesIdsMap.get(marker);
+      int branchId = MapData.getBranchesIdsMap().get(marker);
       Intent showPromos = new Intent(NowerMap.this, PromoCardAnimator.class);
       showPromos.putExtra("action", SHOW_BRANCH_PROMOS);
       showPromos.putExtra("branch_id", branchId);

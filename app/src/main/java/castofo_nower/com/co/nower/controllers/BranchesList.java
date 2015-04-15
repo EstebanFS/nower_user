@@ -42,7 +42,7 @@ public class BranchesList extends ListActivity {
     // Con este ciclo se ponen los establecimientos en orden lexicográfico
     // según su nombre completo.
     for (Map.Entry<Integer, Branch> branchIdBranch
-            : MapData.branchesMap.entrySet()) {
+         : MapData.getBranchesMap().entrySet()) {
       Branch branch = branchIdBranch.getValue();
       String completeName = branch.getStoreName() + " - " + branch.getName();
       lexicOrderedBranches.put(completeName, branch);

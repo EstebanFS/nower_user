@@ -138,32 +138,32 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
     action = getIntent().getExtras().getString("action");
     if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
       branchId = getIntent().getExtras().getInt("branch_id");
-      storeName = MapData.branchesMap.get(branchId).getStoreName();
+      storeName = MapData.getBranchesMap().get(branchId).getStoreName();
       // En este punto se capturan las promociones correspondientes al
       // establecimiento seleccionado por el usuario.
       setBranchPromos();
 
       // Estas promociones se capturan para saber cuáles deben mostrarse con
       // botón y cuáles con código.
-      userPromos = User.takenPromos;
+      userPromos = User.getTakenPromos();
     }
     else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
       int promoId = getIntent().getExtras().getInt("promo_id");
-      code = User.takenPromos.get(promoId).getCode();
-      isUserPromoRedeemed = User.takenPromos.get(promoId).isRedeemed();
+      code = User.getTakenPromos().get(promoId).getCode();
+      isUserPromoRedeemed = User.getTakenPromos().get(promoId).isRedeemed();
       branchId = getIntent().getExtras().getInt("branch_id");
-      storeName = MapData.branchesMap.get(branchId).getStoreName();
-      Promo promo = MapData.promosMap.get(promoId);
+      storeName = MapData.getBranchesMap().get(branchId).getStoreName();
+      Promo promo = MapData.getPromosMap().get(promoId);
       // En este punto se captura la promoción que desea redimir el usuario.
       promos.add(promo);
     }
   }
 
   public void setBranchPromos() {
-    ArrayList<Integer> promosIds = MapData.branchesMap.get(branchId)
+    ArrayList<Integer> promosIds = MapData.getBranchesMap().get(branchId)
                                    .getPromosIds();
     for (Integer promoId : promosIds) {
-      promos.add(MapData.promosMap.get(promoId));
+      promos.add(MapData.getPromosMap().get(promoId));
     }
   }
 
@@ -237,8 +237,8 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
         if (userPromos != null && userPromos.containsKey(promo.getId())) {
           // El usuario no debería poder tomar esta promoción porque ya la
           // tiene.
-          code = User.takenPromos.get(promo.getId()).getCode();
-          isUserPromoRedeemed = User.takenPromos.get(promo.getId())
+          code = User.getTakenPromos().get(promo.getId()).getCode();
+          isUserPromoRedeemed = User.getTakenPromos().get(promo.getId())
                                 .isRedeemed();
           changeButtonToCode();
         }
