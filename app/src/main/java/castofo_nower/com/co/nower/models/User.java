@@ -16,14 +16,12 @@ public class User {
 
   public static void setUserData(int idToSet, String emailToSet,
                                  String nameToSet, String genderToSet,
-                                 String birthdayToSet,
-                                 Map<Integer, Redemption> takenPromosToSet) {
+                                 String birthdayToSet) {
     id = idToSet;
     email = emailToSet;
     name = nameToSet;
     gender = genderToSet;
     birthday = birthdayToSet;
-    takenPromos = takenPromosToSet;
   }
 
   public static void addPromoToTakenPromos(Integer promoId,

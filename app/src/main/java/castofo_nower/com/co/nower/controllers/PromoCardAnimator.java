@@ -234,7 +234,7 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
       promoTerms.setText(promo.getTerms());
 
       if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
-        if (userPromos.containsKey(promo.getId())) {
+        if (userPromos != null && userPromos.containsKey(promo.getId())) {
           // El usuario no debería poder tomar esta promoción porque ya la
           // tiene.
           code = User.takenPromos.get(promo.getId()).getCode();
