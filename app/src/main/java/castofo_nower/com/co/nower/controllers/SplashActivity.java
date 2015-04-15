@@ -25,9 +25,11 @@ public class SplashActivity extends Activity {
         try {
           // Se muestra el splash durante un segundo.
           sleep(1000);
-        } catch (InterruptedException e) {
+        }
+        catch (InterruptedException e) {
           e.printStackTrace();
-        } finally {
+        }
+        finally {
           // Luego se ingresa propiamente a la aplicación.
           Intent openApp = new Intent(SplashActivity.this, Login.class);
           if (isThereLoginInstance()) {
