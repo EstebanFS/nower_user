@@ -102,7 +102,8 @@ public class Geolocation extends Service implements LocationListener {
       }
 
 
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
 
     }
   }

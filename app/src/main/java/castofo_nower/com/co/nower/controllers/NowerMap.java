@@ -13,6 +13,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -45,6 +46,7 @@ GoogleMap.OnInfoWindowClickListener {
 
   private GoogleMap map;
   private int ZOOM_LEVEL = 14;
+  private int TILT_LEVEL = 60;
   private Geolocation geolocation;
   public Marker userMarker = null;
   public Marker currentMarker = null;
@@ -139,8 +141,9 @@ GoogleMap.OnInfoWindowClickListener {
 
   // Este método se utiliza para animar los cambios de ubicación del usuario.
   public void animateCameraToPosition(final double lat, final double lon) {
+    CameraPosition cameraPosition = setCameraPosition(lat, lon);
     map.animateCamera(CameraUpdateFactory
-                      .newLatLngZoom(new LatLng(lat, lon), ZOOM_LEVEL),
+                      .newCameraPosition(cameraPosition),
                       new GoogleMap.CancelableCallback() {
                         @Override
                         public void onFinish() {
@@ -158,10 +161,20 @@ GoogleMap.OnInfoWindowClickListener {
   // En caso de que recientemene se haya actualizado la localización del
   // usuario, el mapa se centra inmediatamente allí.
   public void moveCameraToPosition(double lat, double lon) {
-    map.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(lat, lon),
-                                                     ZOOM_LEVEL));
+    CameraPosition cameraPosition = setCameraPosition(lat, lon);
+    map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     putUserMarker(lat, lon);
     sendRequest(ACTION_PROMOS);
+  }
+
+  // Se inclina el mapa para mejorar la visión.
+  public CameraPosition setCameraPosition(double latitude, double longitude) {
+    CameraPosition cameraPosition = new CameraPosition.Builder()
+                                    .target(new LatLng(latitude, longitude))
+                                    .tilt(TILT_LEVEL)
+                                    .zoom(ZOOM_LEVEL)
+                                    .bearing(0).build();
+    return cameraPosition;
   }
 
   // Se pone un marcador para indicarle al usuario su posición actual.
@@ -325,7 +338,8 @@ GoogleMap.OnInfoWindowClickListener {
           }
         }
       }
-    } catch (JSONException e) {
+    }
+    catch (JSONException e) {
 
     }
   }
@@ -338,10 +352,10 @@ GoogleMap.OnInfoWindowClickListener {
                                         (new LatLng(branch.getLatitude(),
                                                     branch.getLongitude()))
                                         .title(branch.getStoreName() + " - " +
-                                               branch.getName())
+                                                branch.getName())
                                         .icon(BitmapDescriptorFactory
-                                              .fromResource
-                                              (R.drawable.nower_marker)));
+                                                .fromResource
+                                                        (R.drawable.nower_marker)));
 
     // Se asocia cada establecimiento a un marcador diferente.
     branchesIdsMap.put(branchMarker, branch.getId());

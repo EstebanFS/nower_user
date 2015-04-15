@@ -259,7 +259,8 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
     long millisUntilFinished, promoDeadLine;
     try {
       promoDeadLine = DateManager.getTimeStamp(expirationDate);
-    } catch (ParseException e) {
+    }
+    catch (ParseException e) {
       return null;
     }
 
@@ -412,7 +413,8 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
 
       params.clear();
 
-    } catch (JSONException e) {
+    }
+    catch (JSONException e) {
 
     }
   }

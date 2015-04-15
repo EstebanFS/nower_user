@@ -171,7 +171,8 @@ public class Login extends Activity implements SubscribedActivities {
 
       params.clear();
 
-    } catch (JSONException e) {
+    }
+    catch (JSONException e) {
 
     }
   }

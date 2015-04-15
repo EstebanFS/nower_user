@@ -161,6 +161,14 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
   }
 
   @Override
+  protected void onRestart() {
+    super.onRestart();
+    // Se hace actualización del estado de las promociones del usuario al
+    // regresar a la lista.
+    sendRequest(ACTION_USER_REDEMPTIONS);
+  }
+
+  @Override
   public void notify(String action, JSONObject responseJson) {
     try {
       if (action.equals(ACTION_USER_REDEMPTIONS)) {
@@ -192,7 +200,8 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
           setEmptyListMessage();
         }
       }
-    } catch (JSONException e) {
+    }
+    catch (JSONException e) {
 
     }
   }
