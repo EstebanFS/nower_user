@@ -121,7 +121,7 @@ public class Login extends Activity implements SubscribedActivities {
     SharedPreferencesManager.saveStringValue(SharedPreferencesManager
                                              .USER_BIRTHDAY, birthday);
 
-    User.setUserData(id, email, name, gender, birthday, null);
+    User.setUserData(id, email, name, gender, birthday);
   }
 
   public void openNowerMap() {

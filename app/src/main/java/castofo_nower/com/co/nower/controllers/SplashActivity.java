@@ -67,7 +67,7 @@ public class SplashActivity extends Activity {
     String birthday = SharedPreferencesManager
                       .getStringValue(SharedPreferencesManager.USER_BIRTHDAY);
 
-    User.setUserData(id, email, name, gender, birthday, null);
+    User.setUserData(id, email, name, gender, birthday);
   }
 
   @Override
