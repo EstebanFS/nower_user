@@ -12,7 +12,7 @@ public class User {
   public static String gender;
   public static String birthday;
 
-  public static Map<Integer, Redemption> takenPromos;
+  private static Map<Integer, Redemption> takenPromos;
 
   public static void setUserData(int idToSet, String emailToSet,
                                  String nameToSet, String genderToSet,
@@ -28,6 +28,11 @@ public class User {
                                            Redemption redemption) {
     if (takenPromos == null) takenPromos = new TreeMap<>();
     takenPromos.put(promoId, redemption);
+  }
+
+  public static Map<Integer, Redemption> getTakenPromos() {
+    if (takenPromos == null) takenPromos = new TreeMap<>();
+    return takenPromos;
   }
 
 }

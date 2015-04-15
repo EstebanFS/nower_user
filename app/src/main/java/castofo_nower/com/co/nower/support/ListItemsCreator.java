@@ -69,21 +69,19 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
           else {
             titleText = context.getResources().getString(R.string.redeemed);
           }
-          // Es un encabezado y por tanto no clickeable.
-          item.setClickable(false);
-          item.setLongClickable(false);
-          item.setOnClickListener(null);
-          item.setOnLongClickListener(null);
+          // Es un encabezado y por tanto no debe hacerse nada cuando el
+          // usuario lo presiona.
+          item.setId(UserPromoList.HEADER_ID);
         }
         // Se trata de un item.
         else {
           int promoId = redemption.getPromoId();
-          titleText = MapData.promosMap.get(promoId).getTitle();
+          titleText = MapData.getPromosMap().get(promoId).getTitle();
           // Se obtiene el id del establecimiento en donde podrá ser redimida
           // la promoción tomada por el usuario, con el fin de mostrar su
           // nombre.
           int branchId = UserPromoList.searchPromoIdStoreName(promoId);
-          subtitleText = MapData.branchesMap.get(branchId).getStoreName();
+          subtitleText = MapData.getBranchesMap().get(branchId).getStoreName();
           // Se le pone el id de la promoción a redimir con el fin de poder
           // gestionarla al ser presionada por el usuario.
           item.setId(promoId);

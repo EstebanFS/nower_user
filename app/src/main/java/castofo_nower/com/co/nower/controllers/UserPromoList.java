@@ -44,6 +44,8 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
   public static final String LIST_USER_PROMOS = "LIST_USER_PROMOS";
   public static final String SHOW_PROMO_TO_REDEEM = "SHOW_PROMO_TO_REDEEM";
 
+  public static final int HEADER_ID = -1;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -91,7 +93,7 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
     // Se utiliza este ciclo para almacenar en dos pilas distintas las
     //promociones redimidas y no redimidas del usuario.
     for (Map.Entry<Integer, Redemption> promoIdRedemption
-         : User.takenPromos.entrySet()) {
+         : User.getTakenPromos().entrySet()) {
       if (!promoIdRedemption.getValue().isRedeemed()) {
         // Se adiciona la promoción dentro de la pila de no redimidas.
         notRedeemedPromos.push(promoIdRedemption.getValue());
@@ -137,7 +139,7 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
   // promoción que ha tomado el usuario.
   public static int searchPromoIdStoreName(int pId) {
     for (Map.Entry<Integer, Branch> branchIdBranch
-         : MapData.branchesMap.entrySet()) {
+         : MapData.getBranchesMap().entrySet()) {
       Branch branch = branchIdBranch.getValue();
       ArrayList<Integer> promosIds = branch.getPromosIds();
       for (Integer promoId : promosIds) {
@@ -150,14 +152,16 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
   protected void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
     int promoId = v.getId();
-    Intent showPromoToRedeem = new Intent(UserPromoList.this,
-                                          PromoCardAnimator.class);
-    showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
-    showPromoToRedeem.putExtra("promo_id", promoId);
-    int branchId = searchPromoIdStoreName(promoId);
-    showPromoToRedeem.putExtra("branch_id", branchId);
-    showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    startActivity(showPromoToRedeem);
+    if (promoId != HEADER_ID) {
+      Intent showPromoToRedeem = new Intent(UserPromoList.this,
+                                            PromoCardAnimator.class);
+      showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
+      showPromoToRedeem.putExtra("promo_id", promoId);
+      int branchId = searchPromoIdStoreName(promoId);
+      showPromoToRedeem.putExtra("branch_id", branchId);
+      showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+      startActivity(showPromoToRedeem);
+    }
   }
 
   @Override
