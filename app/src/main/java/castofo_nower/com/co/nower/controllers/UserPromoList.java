@@ -20,13 +20,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Stack;
+import java.util.TreeMap;
 
 import castofo_nower.com.co.nower.R;
 
 import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
-import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
+import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
@@ -45,6 +46,8 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
   public static final String SHOW_PROMO_TO_REDEEM = "SHOW_PROMO_TO_REDEEM";
 
   public static final int HEADER_ID = -1;
+
+  private Map<Integer, Promo> promosMap = new TreeMap<>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -85,10 +88,10 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
 
     // Se agrega una Redemption inexistente como indicador de inicio de lista
     // para la promociones no redimidas.
-    userPromosNotRedeemed.add(new Redemption("0", 0, false));
+    userPromosNotRedeemed.add(new Redemption("0", 0, false, null));
     // Se agrega una Redemption inexistente como indicador de inicio de lista
     // para la promociones redimidas.
-    userPromosRedeemed.add(new Redemption("1", 0, true));
+    userPromosRedeemed.add(new Redemption("1", 0, true, null));
 
     // Se utiliza este ciclo para almacenar en dos pilas distintas las
     //promociones redimidas y no redimidas del usuario.
@@ -135,20 +138,6 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
     list.setEmptyView(empty);
   }
 
-  // Este método permite identificar a qué establecimiento pertence la
-  // promoción que ha tomado el usuario.
-  public static int searchPromoIdStoreName(int pId) {
-    for (Map.Entry<Integer, Branch> branchIdBranch
-         : MapData.getBranchesMap().entrySet()) {
-      Branch branch = branchIdBranch.getValue();
-      ArrayList<Integer> promosIds = branch.getPromosIds();
-      for (Integer promoId : promosIds) {
-        if (promoId == pId) return branch.getId();
-      }
-    }
-    return -1;
-  }
-
   protected void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
     int promoId = v.getId();
@@ -157,8 +146,8 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
                                             PromoCardAnimator.class);
       showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
       showPromoToRedeem.putExtra("promo_id", promoId);
-      int branchId = searchPromoIdStoreName(promoId);
-      showPromoToRedeem.putExtra("branch_id", branchId);
+      showPromoToRedeem.putExtra("store_name", User.getTakenPromos()
+                                 .get(promoId).getStoreName());
       showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
       startActivity(showPromoToRedeem);
     }
@@ -179,19 +168,41 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
         Log.i("responseJson", responseJson.toString());
         if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
         {
+          promosMap.clear();
+
           JSONArray userRedemptions = responseJson.getJSONArray("redemptions");
           for (int i = 0; i < userRedemptions.length(); ++i) {
             JSONObject internRedemption = userRedemptions.getJSONObject(i);
             int id = internRedemption.getInt("id");
             int user_id = internRedemption.getInt("user_id");
             String code = internRedemption.getString("code");
-            int promoId = internRedemption.getInt("promo_id");
             boolean redeemed = internRedemption.getBoolean("redeemed");
+            String storeName = internRedemption.getString("store_name");
 
-            Redemption redemption = new Redemption(code, promoId, redeemed);
+            // Se captura la información de la promoción asociada.
+            JSONObject redemptionPromo = internRedemption
+                                         .getJSONObject("promo");
+            int promoId = redemptionPromo.getInt("id");
+            String title = redemptionPromo.getString("title");
+            String expirationDate = redemptionPromo
+                                    .getString("expiration_date");
+            int availableRedemptions = redemptionPromo
+                                       .getInt("available_redemptions");
+
+
+            Redemption redemption = new Redemption(code, promoId, redeemed,
+                                                   storeName);
+
             // Se adiciona la promoción a la lista de promociones del usuario.
-            User.addPromoToTakenPromos(promoId, redemption);
+            User.addPromoToTakenPromos(redemption.getPromoId(), redemption);
+
+            Promo promo = new Promo(promoId, title, expirationDate,
+                                    availableRedemptions, null, null);
+            // Se adiciona la promoción del usuario a la lista de promociones
+            // general.
+            promosMap.put(promo.getId(), promo);
           }
+          MapData.setPromosMap(promosMap);
 
           // Ya con las promociones del usuario actualizadas, es posible
           // mostrar la lista de redimidas y no redimidas.

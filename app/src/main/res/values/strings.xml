@@ -10,7 +10,7 @@
   <string name="yes">Sí</string>
   <string name="no_thanks">No, gracias</string>
   <string name="internet_connection_required">Necesitas conexión a Internet para acceder a las promociones.</string>
-  <string name="loading_promos">Cargando promociones</string>
+  <string name="loading_promos">Cargando promociones cercanas</string>
   <string name="you_are_here">¡Estás aquí!</string>
   <string name="obtaining_promo_code">Obteniendo código de promoción</string>
   <string name="obtaining_promos">Obteniendo promociones</string>
@@ -70,5 +70,6 @@
   <string name="opening_promo">Abriendo promoción</string>
   <string name="activate">Activar</string>
   <string name="obtaining_your_location">Obteniendo tu localización</string>
+  <string name="go_to_my_promos">Ir a mis promociones</string>
 
 </resources>

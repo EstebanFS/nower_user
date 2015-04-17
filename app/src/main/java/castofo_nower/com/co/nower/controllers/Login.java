@@ -64,6 +64,7 @@ public class Login extends Activity implements SubscribedActivities {
   public void onDontHaveAccountClicked(View v) {
     Intent intent = new Intent(this, Register.class);
     intent.putExtra("email", emailView.getText().toString());
+    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
     startActivity(intent);
     finish();
   }
@@ -126,6 +127,7 @@ public class Login extends Activity implements SubscribedActivities {
 
   public void openNowerMap() {
     Intent openMap = new Intent(Login.this, TabsHandler.class);
+    openMap.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     startActivity(openMap);
     finish();
   }

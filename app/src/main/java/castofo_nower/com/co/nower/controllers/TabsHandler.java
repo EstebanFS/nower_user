@@ -80,7 +80,10 @@ ActionBar.TabListener {
         showTabContent = new Intent(TabsHandler.this, UserPromoList.class);
         break;
     }
-    if (showTabContent != null) startActivity(showTabContent);
+    if (showTabContent != null) {
+      showTabContent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+      startActivity(showTabContent);
+    }
   }
 
   @Override

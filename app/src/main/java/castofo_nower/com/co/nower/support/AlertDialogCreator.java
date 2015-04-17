@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.provider.Settings;
 
 import castofo_nower.com.co.nower.controllers.PromoCardAnimator;
+import castofo_nower.com.co.nower.controllers.UserPromoList;
 import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
 
 
@@ -48,11 +49,12 @@ public class AlertDialogCreator {
                                       Intent intent = new Intent
                                      (Settings.ACTION_LOCATION_SOURCE_SETTINGS);
                                       ((Activity) context).
-                                      startActivityForResult(intent,
-                                                   Geolocation.ENABLE_GPS_CODE);
+                                      startActivityForResult
+                                      (intent,Geolocation.ENABLE_GPS_CODE);
                                       break;
                                     case PromoCardAnimator.TAKE_PROMO:
-                                      listeningActivity.notifyToRespond(action);
+                                      listeningActivity
+                                      .notifyUserResponse(action);
                                       break;
                                   }
                                 }
@@ -67,7 +69,15 @@ public class AlertDialogCreator {
                                   public void onClick(DialogInterface dialog,
                                                       int which) {
                                     switch (action) {
-
+                                      case PromoCardAnimator.OBTAINED_PROMO:
+                                        Intent openUserPromosList =
+                                        new Intent(context,
+                                                   UserPromoList.class);
+                                        openUserPromosList.setFlags
+                                        (Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                                        ((Activity) context).startActivity
+                                        (openUserPromosList);
+                                        break;
                                     }
                                   }
                                 });
