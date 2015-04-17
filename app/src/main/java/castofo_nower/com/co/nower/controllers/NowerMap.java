@@ -19,6 +19,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -153,6 +154,7 @@ GoogleMap.OnInfoWindowClickListener {
                           putUserMarker(lat, lon);
                           // Con el mapa centrado en la localización del usuario
                           // es tiempo de mostrar las promociones.
+                          setUserLocationParams();
                           sendRequest(ACTION_PROMOS);
                         }
 
@@ -167,6 +169,7 @@ GoogleMap.OnInfoWindowClickListener {
     CameraPosition cameraPosition = setCameraPosition(lat, lon);
     map.moveCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     putUserMarker(lat, lon);
+    setUserLocationParams();
     sendRequest(ACTION_PROMOS);
   }
 
@@ -199,11 +202,18 @@ GoogleMap.OnInfoWindowClickListener {
     userMarker.showInfoWindow();
   }
 
+  // Este método construye un mapa con los datos de la localización del usuario,
+  // con el fin de mostrar únicamente las promociones cercanas a su ubicación.
+  public void setUserLocationParams() {
+    params.put("latitude", String.valueOf(MapData.userLat));
+    params.put("longitude", String.valueOf(MapData.userLong));
+  }
+
   public void sendRequest(String request) {
     if (httpHandler.isInternetConnectionAvailable(this)) {
       if (request.equals(ACTION_PROMOS)) {
         httpHandler.sendRequest(HttpHandler.API_V1, ACTION_PROMOS, "", params,
-                                new HttpGet(),NowerMap.this);
+                                new HttpPost(),NowerMap.this);
       }
       else if (request.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
         httpHandler.sendRequest(HttpHandler.API_V1,
@@ -326,21 +336,45 @@ GoogleMap.OnInfoWindowClickListener {
         Log.i("responseJson", responseJson.toString());
         if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
         {
+          promosMap.clear();
+
           JSONArray userRedemptions = responseJson.getJSONArray("redemptions");
           for (int i = 0; i < userRedemptions.length(); ++i) {
             JSONObject internRedemption = userRedemptions.getJSONObject(i);
             int id = internRedemption.getInt("id");
-            int user_id = internRedemption.getInt("user_id");
+            int userId = internRedemption.getInt("user_id");
             String code = internRedemption.getString("code");
-            int promoId = internRedemption.getInt("promo_id");
             boolean redeemed = internRedemption.getBoolean("redeemed");
+            String storeName = internRedemption.getString("store_name");
 
-            Redemption redemption = new Redemption(code, promoId, redeemed);
+            // Se captura la información de la promoción asociada.
+            JSONObject redemptionPromo = internRedemption
+                                         .getJSONObject("promo");
+            int promoId = redemptionPromo.getInt("id");
+            String title = redemptionPromo.getString("title");
+            String expirationDate = redemptionPromo
+                                    .getString("expiration_date");
+            int availableRedemptions = redemptionPromo
+                                       .getInt("available_redemptions");
+
+            Redemption redemption = new Redemption(code, promoId, redeemed,
+                                                   storeName);
+
             // Se adiciona la promoción a la lista de promociones del usuario.
             User.addPromoToTakenPromos(redemption.getPromoId(), redemption);
+
+            Promo promo = new Promo(promoId, title, expirationDate,
+                                    availableRedemptions, null, null);
+            // Se adiciona la promoción del usuario a la lista de promociones
+            // general.
+            promosMap.put(promo.getId(), promo);
           }
+          MapData.setPromosMap(promosMap);
         }
       }
+
+      params.clear();
+
     }
     catch (JSONException e) {
 

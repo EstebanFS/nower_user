@@ -179,13 +179,20 @@ public class HttpHandler {
           internJson.put("password", encodeString(params.get("password")));
           json.put("user", internJson);
           break;
+        case NowerMap.ACTION_PROMOS:
+          internJson.put("latitude",
+                         Double.parseDouble(params.get("latitude")));
+          internJson.put("longitude",
+                         Double.parseDouble(params.get("longitude")));
+          json.put("user_location", internJson);
+          break;
         case PromoCardAnimator.ACTION_PROMOS_DETAILS:
           internJsonArray = new JSONArray(params.get("promos_ids_list"));
           json.put("promos", internJsonArray);
           break;
         case PromoCardAnimator.ACTION_NOW:
-          json.put("promo_id", params.get("promo_id"));
-          json.put("user_id", params.get("user_id"));
+          json.put("promo_id", Integer.parseInt(params.get("promo_id")));
+          json.put("user_id", Integer.parseInt(params.get("user_id")));
           break;
       }
     } catch (JSONException e) {

@@ -57,12 +57,13 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         Redemption redemption = (Redemption) listData.get(position);
 
         // Se trata de un encabezado de sección.
-        if (redemption.getCode() == "0" || redemption.getCode() == "1") {
+        if (redemption.getCode().equals("0")
+            || redemption.getCode().equals("1")) {
           item = inflater.inflate(R.layout.redeemed_status_header, parent,
                                   false);
           title = (TextView) item.findViewById(R.id.redeemed_status_title);
           // Se trata del encabezado de promociones no redimidas.
-          if (redemption.getCode() == "0") {
+          if (redemption.getCode().equals("0")) {
             titleText = context.getResources().getString(R.string.not_redeemed);
           }
           // Se trata del encabezado de promoiones redimidas.
@@ -77,11 +78,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         else {
           int promoId = redemption.getPromoId();
           titleText = MapData.getPromosMap().get(promoId).getTitle();
-          // Se obtiene el id del establecimiento en donde podrá ser redimida
-          // la promoción tomada por el usuario, con el fin de mostrar su
-          // nombre.
-          int branchId = UserPromoList.searchPromoIdStoreName(promoId);
-          subtitleText = MapData.getBranchesMap().get(branchId).getStoreName();
+          subtitleText = redemption.getStoreName();
           // Se le pone el id de la promoción a redimir con el fin de poder
           // gestionarla al ser presionada por el usuario.
           item.setId(promoId);

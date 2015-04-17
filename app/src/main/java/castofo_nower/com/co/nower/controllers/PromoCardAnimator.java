@@ -151,8 +151,7 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
       int promoId = getIntent().getExtras().getInt("promo_id");
       code = User.getTakenPromos().get(promoId).getCode();
       isUserPromoRedeemed = User.getTakenPromos().get(promoId).isRedeemed();
-      branchId = getIntent().getExtras().getInt("branch_id");
-      storeName = MapData.getBranchesMap().get(branchId).getStoreName();
+      storeName = getIntent().getExtras().getString("store_name");
       Promo promo = MapData.getPromosMap().get(promoId);
       // En este punto se captura la promoción que desea redimir el usuario.
       promos.add(promo);
@@ -169,13 +168,19 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
 
   // Se construye la lista de promociones que debe ser actualizada localmente.
   public void setPromosIdsList() {
-    String pIdsList = "[";
+    JSONArray pIdsList = new JSONArray();
     for (int i = 0; i < promos.size(); ++i) {
-      pIdsList += ("{\"id\": " + promos.get(i).getId() + "},");
+      JSONObject promoId = new JSONObject();
+      try {
+        promoId.put("id", promos.get(i).getId());
+        pIdsList.put(promoId);
+      }
+      catch (JSONException e) {
+
+      }
     }
-    pIdsList = pIdsList.substring(0, pIdsList.length() - 1) + "]";
     // El String que se envía podrá ser traducido fácilmente a JSONArray.
-    params.put("promos_ids_list", pIdsList);
+    params.put("promos_ids_list", pIdsList.toString());
   }
 
   public void sendRequest(String request) {
@@ -234,7 +239,7 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
       promoTerms.setText(promo.getTerms());
 
       if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
-        if (userPromos != null && userPromos.containsKey(promo.getId())) {
+        if (userPromos.containsKey(promo.getId())) {
           // El usuario no debería poder tomar esta promoción porque ya la
           // tiene.
           code = User.getTakenPromos().get(promo.getId()).getCode();
@@ -325,13 +330,13 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
                                                      R.string.promo_obtained,
                                                      R.string.promo_now_in_list,
                                                      R.string.ok,
-                                           AlertDialogCreator.NO_BUTTON_TO_SHOW,
+                                                     R.string.go_to_my_promos,
                                                      OBTAINED_PROMO);
     promoObtainedAD.show();
   }
 
   @Override
-  public void notifyToRespond(String action) {
+  public void notifyUserResponse(String action) {
     if (action.equals(TAKE_PROMO)) {
       sendRequest(ACTION_NOW);
     }
@@ -362,7 +367,7 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
             // Se genera la lista de promociones para ser actualizada
             // localmente, ya incluyendo descripción y términos.
             Promo promo = new Promo(promoId, title, expirationDate,
-                                    availableRedemptions,description, terms);
+                                    availableRedemptions, description, terms);
             promos.add(promo);
             promosMap.put(promo.getId(), promo);
           }
@@ -384,7 +389,7 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
             int user_id = redemption.getInt("user_id");
             boolean redeemed = redemption.getBoolean("redeemed");
 
-            Redemption r = new Redemption(code, promoId, redeemed);
+            Redemption r = new Redemption(code, promoId, redeemed, storeName);
             // Se adiciona la promoción a la lista de promociones del usuario.
             User.addPromoToTakenPromos(promoId, r);
 
@@ -402,7 +407,8 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
             changeButtonToCode();
 
             showObtainedPromo();
-          } else {
+          }
+          else {
             Toast.makeText(getApplicationContext(),
                            getResources().getString(R.string.take_promo_error),
                            Toast.LENGTH_SHORT).show();

@@ -36,6 +36,7 @@ public class SplashActivity extends Activity {
             updateUserData();
             openApp = new Intent(SplashActivity.this, TabsHandler.class);
           }
+          openApp.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
           startActivity(openApp);
           finish();
         }
