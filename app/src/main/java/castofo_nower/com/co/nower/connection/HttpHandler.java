@@ -89,22 +89,26 @@ public class HttpHandler {
       httpGet = new HttpGet(url);
       httpGet.setHeader("Accept", "application/json");
       httpGet.setHeader("Content-type", "application/json");
-    } else if (httpRequest instanceof HttpPost) {
+    }
+    else if (httpRequest instanceof HttpPost) {
       httpPost = new HttpPost(url);
       httpPost.setHeader("Accept", "application/json");
       httpPost.setHeader("Content-type", "application/json");
       try {
         httpPost.setEntity(new StringEntity(jsonToSend.toString()));
-      } catch (UnsupportedEncodingException e) {
+      }
+      catch (UnsupportedEncodingException e) {
 
       }
-    } else if (httpRequest instanceof HttpPut) {
+    }
+    else if (httpRequest instanceof HttpPut) {
       httpPut = new HttpPut(url);
       httpPut.setHeader("Accept", "application/json");
       httpPut.setHeader("Content-type", "application/json");
       try {
         httpPut.setEntity(new StringEntity(jsonToSend.toString()));
-      } catch (UnsupportedEncodingException e) {
+      }
+      catch (UnsupportedEncodingException e) {
 
       }
     }
@@ -114,9 +118,11 @@ public class HttpHandler {
     try {
       if (httpRequest instanceof HttpGet) {
         httpResponse = httpClient.execute(httpGet);
-      } else if (httpRequest instanceof HttpPost) {
+      }
+      else if (httpRequest instanceof HttpPost) {
         httpResponse = httpClient.execute(httpPost);
-      } else if (httpRequest instanceof HttpPut) {
+      }
+      else if (httpRequest instanceof HttpPut) {
         httpResponse = httpClient.execute(httpPut);
       }
       // Se captura el código de respuesta a la petición.
@@ -126,7 +132,8 @@ public class HttpHandler {
         jsonString = convertInputStreamToString(inputStream);
       }
 
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
 
     }
 
@@ -135,7 +142,8 @@ public class HttpHandler {
     try {
       responseJson = new JSONObject(jsonString);
       responseJson.put(HTTP_STATUS, responseStatusCode);
-    } catch (JSONException e) {
+    }
+    catch (JSONException e) {
 
     }
 
@@ -166,8 +174,7 @@ public class HttpHandler {
         case Register.ACTION_REGISTER:
           internJson.put("email", encodeString(params.get("email")));
           internJson.put("name", encodeString(params.get("name")));
-          boolean gender = params.get("gender").equals("0") ? false : true;
-          internJson.put("gender", gender);
+          internJson.put("gender", params.get("gender"));
           internJson.put("birthday", encodeString(params.get("birthday")));
           internJson.put("password", encodeString(params.get("password")));
           internJson.put("password_confirmation",
@@ -195,7 +202,8 @@ public class HttpHandler {
           json.put("user_id", Integer.parseInt(params.get("user_id")));
           break;
       }
-    } catch (JSONException e) {
+    }
+    catch (JSONException e) {
 
     }
 
@@ -235,7 +243,8 @@ public class HttpHandler {
     String out = "";
     try {
       out = new String(s.getBytes("UTF-8"), "ISO-8859-1");
-    } catch (java.io.UnsupportedEncodingException e) {
+    }
+    catch (java.io.UnsupportedEncodingException e) {
 
     }
 

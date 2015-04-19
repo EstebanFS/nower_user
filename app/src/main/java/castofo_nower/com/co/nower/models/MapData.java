@@ -2,6 +2,7 @@ package castofo_nower.com.co.nower.models;
 
 import com.google.android.gms.maps.model.Marker;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
@@ -66,6 +67,20 @@ public class MapData {
   public static Map<Integer, Promo> getPromosMap() {
     if (promosMap == null) promosMap = new TreeMap<>();
     return promosMap;
+  }
+
+  // Este método se encarga de borrar los ids de las promociones que ya
+  // expiraron, dentro de un establecimiento.
+  public static void removePromoIdInBranch(int branchId, int promoId) {
+    boolean continueSearchingPromo = true;
+    ArrayList<Integer> promosIds = getBranchesMap().get(branchId)
+                                   .getPromosIds();
+    for (int i = 0; i < promosIds.size() && continueSearchingPromo; ++i) {
+      if (promosIds.get(i) == promoId) {
+        promosIds.remove(i);
+        continueSearchingPromo = false;
+      }
+    }
   }
 
 }
