@@ -2,13 +2,29 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context="castofo_nower.com.co.nower.controllers.PromoCardAnimator">
+  tools:context="castofo_nower.com.co.nower.controllers.PromoCardAnimator"
+  android:orientation="vertical">
 
   <ViewFlipper
     android:id="@+id/promos_flipper"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent"
+    android:visibility="visible">
 
   </ViewFlipper>
+
+  <TextView
+    android:id="@+id/empty_promos_message"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="@string/no_available_promos"
+    android:layout_centerVertical="true"
+    android:layout_centerHorizontal="true"
+    android:gravity="center"
+    android:textStyle="bold"
+    android:textColor="@color/gray"
+    android:layout_gravity="center"
+    android:visibility="gone"/>
 
 </LinearLayout>

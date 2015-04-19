@@ -71,5 +71,6 @@
   <string name="activate">Activar</string>
   <string name="obtaining_your_location">Obteniendo tu localización</string>
   <string name="go_to_my_promos">Ir a mis promociones</string>
+  <string name="no_available_promos">Esta tienda no tiene promociones disponibles en el momento</string>
 
 </resources>
