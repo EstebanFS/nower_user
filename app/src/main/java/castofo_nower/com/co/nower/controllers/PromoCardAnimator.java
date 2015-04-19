@@ -104,8 +104,14 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
 
     setFlipperAnimation();
     capturePromos();
-    setPromosIdsList();
-    sendRequest(ACTION_PROMOS_DETAILS);
+    if (!promos.isEmpty()) {
+      setPromosIdsList();
+      sendRequest(ACTION_PROMOS_DETAILS);
+    }
+    else {
+      // El establecimiento no tiene promociones vigentes.
+      showEmptyMessage();
+    }
   }
 
   public void initView() {
@@ -202,60 +208,69 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
     }
   }
 
+  public void showEmptyMessage() {
+
+  }
+
   public void addPromosToFlipper() {
-    for (int i = 0; i < promos.size(); ++i) {
-      Promo promo = promos.get(i);
-      LayoutInflater inflater = (LayoutInflater) this.getSystemService
-                                (Context.LAYOUT_INFLATER_SERVICE);
-      View promoCard = inflater.inflate(R.layout.promo_card, null);
-      // Con este ID se identificará la promoción actual que visualiza el
-      // usuario.
-      promoCard.setId(promo.getId());
+    if (!promos.isEmpty()) {
+      for (int i = 0; i < promos.size(); ++i) {
+        Promo promo = promos.get(i);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService
+                (Context.LAYOUT_INFLATER_SERVICE);
+        View promoCard = inflater.inflate(R.layout.promo_card, null);
+        // Con este ID se identificará la promoción actual que visualiza el
+        // usuario.
+        promoCard.setId(promo.getId());
 
-      // Se agrega una nueva tarjeta de promoción.
-      promosFlipper.addView(promoCard);
+        // Se agrega una nueva tarjeta de promoción.
+        promosFlipper.addView(promoCard);
 
-      // Se capturan los campos que se van a modificar.
-      promoTitle = (TextView) promoCard.findViewById(R.id.promo_title);
-      promoStoreName = (TextView) promoCard.findViewById(R.id.promo_store_name);
-      final TextView promoExpirationDate = (TextView) promoCard.findViewById
-                                           (R.id.promo_expiration_date);
-      promoAvailableRedemptions = (TextView) promoCard.findViewById
-                                  (R.id.promo_available_redemptions);
-      promoDescription = (TextView) promoCard.findViewById
-                         (R.id.promo_description);
-      promoTerms = (TextView) promoCard.findViewById(R.id.promo_terms);
+        // Se capturan los campos que se van a modificar.
+        promoTitle = (TextView) promoCard.findViewById(R.id.promo_title);
+        promoStoreName = (TextView) promoCard.findViewById(R.id.promo_store_name);
+        final TextView promoExpirationDate = (TextView) promoCard.findViewById
+                (R.id.promo_expiration_date);
+        promoAvailableRedemptions = (TextView) promoCard.findViewById
+                (R.id.promo_available_redemptions);
+        promoDescription = (TextView) promoCard.findViewById
+                (R.id.promo_description);
+        promoTerms = (TextView) promoCard.findViewById(R.id.promo_terms);
 
-      nowButton = (Button) promoCard.findViewById(R.id.now_button);
-      redemptionCode = (TextView) promoCard.findViewById(R.id.redemption_code);
+        nowButton = (Button) promoCard.findViewById(R.id.now_button);
+        redemptionCode = (TextView) promoCard.findViewById(R.id.redemption_code);
 
-      // Se modifica la información de la promoción a mostrar.
-      promoTitle.setText(promo.getTitle());
-      promoStoreName.setText(storeName);
-      promoExpirationDate.setText(promo.getExpirationDate());
-      promoAvailableRedemptions.setText
-      (String.valueOf(promo.getAvailableRedemptions()));
-      promoDescription.setText(promo.getDescription());
-      promoTerms.setText(promo.getTerms());
+        // Se modifica la información de la promoción a mostrar.
+        promoTitle.setText(promo.getTitle());
+        promoStoreName.setText(storeName);
+        promoExpirationDate.setText(promo.getExpirationDate());
+        promoAvailableRedemptions.setText
+                (String.valueOf(promo.getAvailableRedemptions()));
+        promoDescription.setText(promo.getDescription());
+        promoTerms.setText(promo.getTerms());
 
-      if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
-        if (userPromos.containsKey(promo.getId())) {
-          // El usuario no debería poder tomar esta promoción porque ya la
-          // tiene.
-          code = User.getTakenPromos().get(promo.getId()).getCode();
-          isUserPromoRedeemed = User.getTakenPromos().get(promo.getId())
-                                .isRedeemed();
+        if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
+          if (userPromos.containsKey(promo.getId())) {
+            // El usuario no debería poder tomar esta promoción porque ya la
+            // tiene.
+            code = User.getTakenPromos().get(promo.getId()).getCode();
+            isUserPromoRedeemed = User.getTakenPromos().get(promo.getId())
+                    .isRedeemed();
+            changeButtonToCode();
+          }
+        }
+        else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
           changeButtonToCode();
         }
-      }
-      else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
-        changeButtonToCode();
-      }
 
-      CountDownTimer countDownTimer = createCountDownTimer
-                                      (promoExpirationDate,
-                                       promo.getExpirationDate());
-      countDownTimer.start();
+        CountDownTimer countDownTimer = createCountDownTimer
+                (promoExpirationDate,
+                        promo.getExpirationDate());
+        countDownTimer.start();
+      }
+    }
+    else {
+      showEmptyMessage();
     }
   }
 
@@ -363,13 +378,31 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
                                        .getInt("available_redemptions");
             String description = internPromo.getString("description");
             String terms = internPromo.getString("terms");
+            boolean hasExpired = internPromo.getBoolean("has_expired");
 
             // Se genera la lista de promociones para ser actualizada
             // localmente, ya incluyendo descripción y términos.
             Promo promo = new Promo(promoId, title, expirationDate,
                                     availableRedemptions, description, terms);
-            promos.add(promo);
             promosMap.put(promo.getId(), promo);
+
+            if (PromoCardAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
+              // Si la promoción no ha expirado, entonces se adiciona a las que
+              // serán mostradas.
+              if (!hasExpired) {
+                promos.add(promo);
+              }
+              else {
+                // Se elimina el id de la promoción dentro del establecimiento,
+                // y no se muestra, ya que ha expirado.
+                MapData.removePromoIdInBranch(branchId, promoId);
+              }
+            }
+            // Siempre se mostrará una promoción que el usuario ya haya tomado.
+            else if (PromoCardAnimator.action
+                     .equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
+              promos.add(promo);
+            }
           }
 
           // Se actualiza la lista de promociones para el establecimiento en
@@ -378,7 +411,8 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
 
           addPromosToFlipper();
         }
-      } else if (action.equals(ACTION_NOW)) {
+      }
+      else if (action.equals(ACTION_NOW)) {
         Log.i("responseJson", responseJson.toString());
         if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
         {

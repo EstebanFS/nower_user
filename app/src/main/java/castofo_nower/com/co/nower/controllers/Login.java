@@ -77,12 +77,15 @@ public class Login extends Activity implements SubscribedActivities {
       emailView.setError(getResources().getString(R.string.write_your_email));
       passwordView.setError(getResources()
                             .getString(R.string.write_your_password));
-    } else if (email.isEmpty() && !password.isEmpty()) {
+    }
+    else if (email.isEmpty() && !password.isEmpty()) {
       emailView.setError(getResources().getString(R.string.write_your_email));
-    } else if (!email.isEmpty() && password.isEmpty()) {
+    }
+    else if (!email.isEmpty() && password.isEmpty()) {
       passwordView.setError(getResources()
                             .getString(R.string.write_your_password));
-    } else {
+    }
+    else {
       setParamsForLogin();
     }
   }
@@ -145,24 +148,22 @@ public class Login extends Activity implements SubscribedActivities {
             int id = user.getInt("id");
             String email = user.getString("email");
             String name = user.getString("name");
-            boolean gender = user.getBoolean("gender");
+            String gender = user.getString("gender");
             String birthday = user.getString("birthday");
 
-            // Es necesario convertir el género a String para poderlo almacenar.
-            String genderString = "0";
-            if (gender) genderString = "1";
-
-            saveUserData(id, email, name, genderString, birthday);
+            saveUserData(id, email, name, gender, birthday);
 
             openNowerMap();
-          } else {
+          }
+          else {
             JSONArray errors = responseJson.getJSONArray("errors");
             String error = errors.get(0).toString();
             if (error.equalsIgnoreCase("Login failed")) {
               Toast.makeText(getApplicationContext(),
                              getResources().getString(R.string.login_failed),
                              Toast.LENGTH_SHORT).show();
-            } else {
+            }
+            else {
               Toast.makeText(getApplicationContext(),
                              getResources().getString(R.string.login_error),
                              Toast.LENGTH_SHORT).show();

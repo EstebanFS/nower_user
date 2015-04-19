@@ -332,7 +332,8 @@ GoogleMap.OnInfoWindowClickListener {
           // Se hace para actualizar las promociones que el usuario ha obtenido.
           sendRequest(UserPromoList.ACTION_USER_REDEMPTIONS);
         }
-      } else if (action.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
+      }
+      else if (action.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
         Log.i("responseJson", responseJson.toString());
         if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
         {

@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
@@ -57,6 +58,8 @@ public class Register extends FragmentActivity implements SubscribedActivities {
   private HttpHandler httpHandler = new HttpHandler();
   public static final String ACTION_REGISTER = "/users";
   private Map<String, String> params = new HashMap<String, String>();
+
+  public static final int NO_GENDER_SELECTED = -1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -136,7 +139,8 @@ public class Register extends FragmentActivity implements SubscribedActivities {
     if (everythingOkToRegister) {
       if (password.equals(passwordConfirmation)) {
         setParamsForRegister();
-      } else {
+      }
+      else {
         Toast.makeText(getApplicationContext(),
                        getResources()
                        .getString(R.string.passwords_not_matching),
@@ -149,12 +153,12 @@ public class Register extends FragmentActivity implements SubscribedActivities {
     int selected = genderRadio.getCheckedRadioButtonId();
     switch (selected) {
       case maleOptionId:
-        gender = "1";
+        gender = "m";
         break;
       case femaleOptionId:
-        gender = "0";
+        gender = "f";
         break;
-      case -1:
+      case NO_GENDER_SELECTED:
         //No se seleccionó ninguno.
         return false;
     }
@@ -177,8 +181,24 @@ public class Register extends FragmentActivity implements SubscribedActivities {
       int month = c.get(Calendar.MONTH);
       int day = c.get(Calendar.DAY_OF_MONTH);
 
-      // Create a new instance of DatePickerDialog and return it.
-      return new DatePickerDialog(getActivity(), this, year, month, day);
+      // Se crea una nueva instancia de DatePickerDialog.
+      DatePickerDialog datePickerDialog = new DatePickerDialog
+                                          (getActivity(), this, year, month,
+                                           day);
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+        DatePicker datePicker = datePickerDialog.getDatePicker();
+        Calendar calendarForLimits = Calendar.getInstance();
+        // La máxima edad permitida son 100 años.
+        calendarForLimits.add(Calendar.YEAR, -100);
+        datePicker.setMinDate(calendarForLimits.getTimeInMillis());
+        // La mínima edad permitida son 12 años. Por eso se retorna el
+        // calendario a la fecha actual y se le restan 12 años.
+        calendarForLimits.add(Calendar.YEAR, 100 - 12);
+        datePicker.setMaxDate(calendarForLimits.getTimeInMillis());
+      }
+
+      return datePickerDialog;
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
@@ -266,24 +286,22 @@ public class Register extends FragmentActivity implements SubscribedActivities {
             int id = user.getInt("id");
             String email = user.getString("email");
             String name = user.getString("name");
-            boolean gender = user.getBoolean("gender");
+            String gender = user.getString("gender");
             String birthday = user.getString("birthday");
 
-            // Es necesario convertir el género a String para poderlo almacenar.
-            String genderString = "0";
-            if (gender) genderString = "1";
-
-            saveUserData(id, email, name, genderString, birthday);
+            saveUserData(id, email, name, gender, birthday);
 
             openNowerMap();
-          } else {
+          }
+          else {
             JSONObject errors = responseJson.getJSONObject("errors");
             JSONArray email = errors.getJSONArray("email");
             String emailError = email.get(0).toString();
             if (emailError.equalsIgnoreCase("has already been taken")) {
               emailView.setError(getResources()
                                  .getString(R.string.email_already_taken));
-            } else {
+            }
+            else {
               Toast.makeText(getApplicationContext(),
                              getResources().getString(R.string.register_error),
                              Toast.LENGTH_SHORT).show();

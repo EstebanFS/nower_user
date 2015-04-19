@@ -19,7 +19,7 @@ public class SharedPreferencesManager {
   public static final String USER_GENDER = "USER_GENDER";
   public static final String USER_BIRTHDAY = "USER_BIRTHDAY";
 
-  private static int noValueSaved = -1;
+  public static final int NO_VALUE_SAVED = -1;
 
   public static void setup(Context context) {
     SharedPreferencesManager.context = context;
@@ -41,7 +41,7 @@ public class SharedPreferencesManager {
   }
 
   public static int getIntegerValue(String key) {
-    return sharedPreferences.getInt(key, noValueSaved);
+    return sharedPreferences.getInt(key, NO_VALUE_SAVED);
   }
 
   public static void clearSharedPreferences() {
