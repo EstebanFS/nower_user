@@ -66,6 +66,7 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
   private TextView promoAvailableRedemptions;
   private TextView promoDescription;
   private TextView promoTerms;
+  private TextView emptyPromosMessage;
 
   private Button nowButton;
   private TextView redemptionCode;
@@ -209,7 +210,9 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
   }
 
   public void showEmptyMessage() {
-
+    emptyPromosMessage = (TextView) findViewById(R.id.empty_promos_message);
+    promosFlipper.setVisibility(View.GONE);
+    emptyPromosMessage.setVisibility(View.VISIBLE);
   }
 
   public void addPromosToFlipper() {
