@@ -6,7 +6,6 @@ import android.content.SharedPreferences;
 
 public class SharedPreferencesManager {
 
-
   private static Context context;
   private static final String PREFS_NAME = "castofo_nower.com.co.nower";
   private static SharedPreferences sharedPreferences;

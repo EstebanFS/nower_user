@@ -25,16 +25,19 @@ import java.util.TreeMap;
 import castofo_nower.com.co.nower.R;
 
 import castofo_nower.com.co.nower.connection.HttpHandler;
+import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
+import castofo_nower.com.co.nower.support.RequestErrorsHandler;
+import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
 
 
-public class UserPromoList extends ListActivity implements SubscribedActivities
-{
+public class UserPromoList extends ListActivity implements SubscribedActivities,
+ParsedErrors {
 
   private ListItemsCreator userPromosListToShow;
 
@@ -42,12 +45,15 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
   public static final String ACTION_USER_REDEMPTIONS = "/user/redemptions";
   private Map<String, String> params = new HashMap<String, String>();
 
+  private RequestErrorsHandler requestErrorsHandler = new
+                                                      RequestErrorsHandler();
+
   public static final String LIST_USER_PROMOS = "LIST_USER_PROMOS";
   public static final String SHOW_PROMO_TO_REDEEM = "SHOW_PROMO_TO_REDEEM";
 
-  public static final int HEADER_ID = -1;
+  private static Map<Integer, Promo> promosMap = new TreeMap<>();
 
-  private Map<Integer, Promo> promosMap = new TreeMap<>();
+  public static final int HEADER_ID = -1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -58,24 +64,18 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
     // a la petición.
     httpHandler.addListeningActivity(this);
 
+    requestErrorsHandler.addListeningActivity(this);
+
     // Se hace para actualizar el estado de las promociones que ha obtenido el
     // usuario.
     sendRequest(ACTION_USER_REDEMPTIONS);
   }
 
   public void sendRequest(String request) {
-    if (httpHandler.isInternetConnectionAvailable(this)) {
-      if (request.equals(ACTION_USER_REDEMPTIONS)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_USER_REDEMPTIONS,
-                                "/" + User.id, params, new HttpGet(),
-                                UserPromoList.this);
-      }
-    }
-    else {
-      Toast.makeText(getApplicationContext(),
-                     getResources()
-                     .getString(R.string.internet_connection_required),
-                     Toast.LENGTH_SHORT).show();
+    if (request.equals(ACTION_USER_REDEMPTIONS)) {
+      httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_USER_REDEMPTIONS,
+                              "/" + User.id, params, new HttpGet(),
+                              UserPromoList.this);
     }
   }
 
@@ -138,18 +138,42 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
     list.setEmptyView(empty);
   }
 
-  protected void onListItemClick(ListView l, View v, int position, long id) {
-    super.onListItemClick(l, v, position, id);
-    int promoId = v.getId();
-    if (promoId != HEADER_ID) {
-      Intent showPromoToRedeem = new Intent(UserPromoList.this,
-                                            PromoCardAnimator.class);
-      showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
-      showPromoToRedeem.putExtra("promo_id", promoId);
-      showPromoToRedeem.putExtra("store_name", User.getTakenPromos()
-                                 .get(promoId).getStoreName());
-      showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-      startActivity(showPromoToRedeem);
+  public static void updateUserRedemptions(JSONArray userRedemptions) {
+    try {
+      promosMap.clear();
+      for (int i = 0; i < userRedemptions.length(); ++i) {
+        JSONObject internRedemption = userRedemptions.getJSONObject(i);
+        int id = internRedemption.getInt("id");
+        int user_id = internRedemption.getInt("user_id");
+        String code = internRedemption.getString("code");
+        boolean redeemed = internRedemption.getBoolean("redeemed");
+        String storeName = internRedemption.getString("store_name");
+
+        // Se captura la información de la promoción asociada.
+        JSONObject redemptionPromo = internRedemption.getJSONObject("promo");
+        int promoId = redemptionPromo.getInt("id");
+        String title = redemptionPromo.getString("title");
+        String expirationDate = redemptionPromo.getString("expiration_date");
+        int availableRedemptions = redemptionPromo
+                                   .getInt("available_redemptions");
+
+
+        Redemption redemption = new Redemption(code, promoId, redeemed,
+                                               storeName);
+
+        // Se adiciona la promoción a la lista de promociones del usuario.
+        User.addPromoToTakenPromos(redemption.getPromoId(), redemption);
+
+        Promo promo = new Promo(promoId, title, expirationDate,
+                                availableRedemptions, null, null);
+        // Se adiciona la promoción del usuario a la lista de promociones
+        // general.
+        promosMap.put(promo.getId(), promo);
+      }
+      MapData.setPromosMap(promosMap);
+    }
+    catch (JSONException e) {
+
     }
   }
 
@@ -162,62 +186,63 @@ public class UserPromoList extends ListActivity implements SubscribedActivities
   }
 
   @Override
+  public void notifyParsedErrors(String action,
+                                 Map<String, String> errorsMessages) {
+    switch (action) {
+      case ACTION_USER_REDEMPTIONS:
+        if (errorsMessages.containsKey("user")) {
+          UserFeedback.showToastMessage(getApplicationContext(),
+                                        errorsMessages.get("user"),
+                                        Toast.LENGTH_LONG);
+        }
+        //TODO cerrar sesión porque se intentó utilizar un usuario inválido.
+        break;
+    }
+  }
+
+  @Override
   public void notify(String action, JSONObject responseJson) {
     try {
+      Log.i("responseJson", responseJson.toString());
+      int responseStatusCode = responseJson.getInt(HttpHandler.HTTP_STATUS);
       if (action.equals(ACTION_USER_REDEMPTIONS)) {
-        Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
-        {
-          promosMap.clear();
+        switch (responseStatusCode) {
+          case HttpHandler.OK:
+            updateUserRedemptions(responseJson.getJSONArray("redemptions"));
+            // Ya con las promociones del usuario actualizadas, es posible
+            // mostrar la lista de redimidas y no redimidas.
+            userPromosListToShow = new ListItemsCreator
+                                   (this, R.layout.promo_item, generateData(),
+                                    LIST_USER_PROMOS);
 
-          JSONArray userRedemptions = responseJson.getJSONArray("redemptions");
-          for (int i = 0; i < userRedemptions.length(); ++i) {
-            JSONObject internRedemption = userRedemptions.getJSONObject(i);
-            int id = internRedemption.getInt("id");
-            int user_id = internRedemption.getInt("user_id");
-            String code = internRedemption.getString("code");
-            boolean redeemed = internRedemption.getBoolean("redeemed");
-            String storeName = internRedemption.getString("store_name");
+            setListAdapter(userPromosListToShow);
 
-            // Se captura la información de la promoción asociada.
-            JSONObject redemptionPromo = internRedemption
-                                         .getJSONObject("promo");
-            int promoId = redemptionPromo.getInt("id");
-            String title = redemptionPromo.getString("title");
-            String expirationDate = redemptionPromo
-                                    .getString("expiration_date");
-            int availableRedemptions = redemptionPromo
-                                       .getInt("available_redemptions");
-
-
-            Redemption redemption = new Redemption(code, promoId, redeemed,
-                                                   storeName);
-
-            // Se adiciona la promoción a la lista de promociones del usuario.
-            User.addPromoToTakenPromos(redemption.getPromoId(), redemption);
-
-            Promo promo = new Promo(promoId, title, expirationDate,
-                                    availableRedemptions, null, null);
-            // Se adiciona la promoción del usuario a la lista de promociones
-            // general.
-            promosMap.put(promo.getId(), promo);
-          }
-          MapData.setPromosMap(promosMap);
-
-          // Ya con las promociones del usuario actualizadas, es posible
-          // mostrar la lista de redimidas y no redimidas.
-          userPromosListToShow = new ListItemsCreator(this, R.layout.promo_item,
-                                                      generateData(),
-                                                      LIST_USER_PROMOS);
-
-          setListAdapter(userPromosListToShow);
-
-          setEmptyListMessage();
+            setEmptyListMessage();
+            break;
+          case HttpHandler.UNAUTHORIZED:
+            RequestErrorsHandler
+            .parseErrors(action, responseJson.getJSONObject("errors"));
+            break;
         }
       }
     }
     catch (JSONException e) {
 
+    }
+  }
+
+  protected void onListItemClick(ListView l, View v, int position, long id) {
+    super.onListItemClick(l, v, position, id);
+    int promoId = v.getId();
+    if (promoId != HEADER_ID) {
+      Intent showPromoToRedeem = new Intent(UserPromoList.this,
+              PromoCardAnimator.class);
+      showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
+      showPromoToRedeem.putExtra("promo_id", promoId);
+      showPromoToRedeem.putExtra("store_name", User.getTakenPromos()
+              .get(promoId).getStoreName());
+      showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+      startActivity(showPromoToRedeem);
     }
   }
 

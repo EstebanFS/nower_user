@@ -12,7 +12,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.apache.http.client.methods.HttpPost;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -21,12 +20,16 @@ import java.util.Map;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
+import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.User;
+import castofo_nower.com.co.nower.support.RequestErrorsHandler;
+import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.SharedPreferencesManager;
 
 
-public class Login extends Activity implements SubscribedActivities {
+public class Login extends Activity implements SubscribedActivities,
+ParsedErrors {
 
   private TextView emailView;
   private TextView passwordView;
@@ -38,12 +41,17 @@ public class Login extends Activity implements SubscribedActivities {
   public static final String ACTION_LOGIN = "/users/login";
   private Map<String, String> params = new HashMap<String, String>();
 
+  private RequestErrorsHandler requestErrorsHandler = new
+                                                      RequestErrorsHandler();
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_login);
 
     httpHandler.addListeningActivity(this);
+
+    requestErrorsHandler.addListeningActivity(this);
 
     SharedPreferencesManager.setup(this);
 
@@ -97,17 +105,9 @@ public class Login extends Activity implements SubscribedActivities {
   }
 
   public void sendRequest(String request) {
-    if (httpHandler.isInternetConnectionAvailable(this)) {
-      if (request.equals(ACTION_LOGIN)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_LOGIN, "", params,
-                                new HttpPost(), Login.this);
-      }
-    }
-    else {
-      Toast.makeText(getApplicationContext(),
-                     getResources()
-                     .getString(R.string.internet_connection_required),
-                     Toast.LENGTH_SHORT).show();
+    if (request.equals(ACTION_LOGIN)) {
+      httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_LOGIN, "", params,
+                              new HttpPost(), Login.this);
     }
   }
 
@@ -136,39 +136,45 @@ public class Login extends Activity implements SubscribedActivities {
   }
 
   @Override
+  public void notifyParsedErrors(String action,
+                                 Map<String, String> errorsMessages) {
+    switch (action) {
+      case ACTION_LOGIN:
+        if (errorsMessages.containsKey("login")) {
+          UserFeedback.showToastMessage(getApplicationContext(),
+                                        errorsMessages.get("login"),
+                                        Toast.LENGTH_SHORT);
+        }
+        break;
+    }
+  }
+
+  @Override
   public void notify(String action, JSONObject responseJson) {
     try {
+      Log.i("responseJson", responseJson.toString());
+      int responseStatusCode = responseJson.getInt(HttpHandler.HTTP_STATUS);
       if (action.equals(ACTION_LOGIN)) {
-        Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
-        {
-          if (responseJson.getBoolean("success")) {
-            String token = responseJson.getString("token");
-            JSONObject user = responseJson.getJSONObject("user");
-            int id = user.getInt("id");
-            String email = user.getString("email");
-            String name = user.getString("name");
-            String gender = user.getString("gender");
-            String birthday = user.getString("birthday");
+        switch (responseStatusCode) {
+          case HttpHandler.OK:
+            if (responseJson.getBoolean("success")) {
+              String token = responseJson.getString("token");
+              JSONObject user = responseJson.getJSONObject("user");
+              int id = user.getInt("id");
+              String email = user.getString("email");
+              String name = user.getString("name");
+              String gender = user.getString("gender");
+              String birthday = user.getString("birthday");
 
-            saveUserData(id, email, name, gender, birthday);
+              saveUserData(id, email, name, gender, birthday);
 
-            openNowerMap();
-          }
-          else {
-            JSONArray errors = responseJson.getJSONArray("errors");
-            String error = errors.get(0).toString();
-            if (error.equalsIgnoreCase("Login failed")) {
-              Toast.makeText(getApplicationContext(),
-                             getResources().getString(R.string.login_failed),
-                             Toast.LENGTH_SHORT).show();
+              openNowerMap();
             }
-            else {
-              Toast.makeText(getApplicationContext(),
-                             getResources().getString(R.string.login_error),
-                             Toast.LENGTH_SHORT).show();
-            }
-          }
+            break;
+          case HttpHandler.BAD_REQUEST:
+            RequestErrorsHandler
+            .parseErrors(action, responseJson.getJSONObject("errors"));
+            break;
         }
       }
 
@@ -179,7 +185,6 @@ public class Login extends Activity implements SubscribedActivities {
 
     }
   }
-
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
