@@ -38,7 +38,8 @@ public class BranchesList extends ListActivity {
 
   public static ArrayList<Object> generateData() {
     ArrayList<Object> branches = new ArrayList<Object>();
-    Map<String, Branch> lexicOrderedBranches = new TreeMap<>();
+    Map<String, Branch> lexicOrderedBranches = new TreeMap<>
+                                               (String.CASE_INSENSITIVE_ORDER);
     // Con este ciclo se ponen los establecimientos en orden lexicográfico
     // según su nombre completo.
     for (Map.Entry<Integer, Branch> branchIdBranch

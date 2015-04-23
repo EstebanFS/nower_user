@@ -1,7 +1,7 @@
 package castofo_nower.com.co.nower.models;
 
+import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
 
 public class User {
@@ -26,12 +26,12 @@ public class User {
 
   public static void addPromoToTakenPromos(Integer promoId,
                                            Redemption redemption) {
-    if (takenPromos == null) takenPromos = new TreeMap<>();
+    if (takenPromos == null) takenPromos = new LinkedHashMap<>();
     takenPromos.put(promoId, redemption);
   }
 
   public static Map<Integer, Redemption> getTakenPromos() {
-    if (takenPromos == null) takenPromos = new TreeMap<>();
+    if (takenPromos == null) takenPromos = new LinkedHashMap<>();
     return takenPromos;
   }
 

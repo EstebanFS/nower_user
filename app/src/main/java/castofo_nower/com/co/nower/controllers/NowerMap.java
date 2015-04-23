@@ -32,17 +32,19 @@ import java.util.TreeMap;
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.GeolocationInterface;
+import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.Branch;
-import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
+import castofo_nower.com.co.nower.support.RequestErrorsHandler;
+import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.Geolocation;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
 
 
 public class NowerMap extends FragmentActivity implements SubscribedActivities,
-GeolocationInterface, GoogleMap.OnMarkerClickListener,
+GeolocationInterface, ParsedErrors, GoogleMap.OnMarkerClickListener,
 GoogleMap.OnInfoWindowClickListener {
 
   private GoogleMap map;
@@ -56,8 +58,10 @@ GoogleMap.OnInfoWindowClickListener {
   public static final String ACTION_PROMOS = "/promos/locations";
   private Map<String, String> params = new HashMap<String, String>();
 
-  public static final int OP_SUCCEEDED = 0;
-  public static final String SHOW_BRANCH_PROMOS = "SHOW_BRANCH_PROMOS";
+  private ProgressDialog progressDialog = null;
+
+  private RequestErrorsHandler requestErrorsHandler = new
+                                                      RequestErrorsHandler();
 
   // Para la gestión de los marcadores no es posible utilizar TreeMap, ya que
   // los marcadores no son comparables.
@@ -68,8 +72,8 @@ GoogleMap.OnInfoWindowClickListener {
   public static final double NO_USER_LAT = -1.0;
   public static final double NO_USER_LONG = -1.0;
 
-  private ProgressDialog progressDialog = null;
-
+  public static final int OP_SUCCEEDED = 0;
+  public static final String SHOW_BRANCH_PROMOS = "SHOW_BRANCH_PROMOS";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -83,6 +87,8 @@ GoogleMap.OnInfoWindowClickListener {
     // Se indica al HttpHandler la actividad que estará esperando la respuesta
     // a la petición.
     httpHandler.addListeningActivity(this);
+
+    requestErrorsHandler.addListeningActivity(this);
 
     // Se captura el mapa dentro de la variable map para poderlo gestionar.
     map = ((SupportMapFragment) getSupportFragmentManager()
@@ -210,23 +216,38 @@ GoogleMap.OnInfoWindowClickListener {
   }
 
   public void sendRequest(String request) {
-    if (httpHandler.isInternetConnectionAvailable(this)) {
-      if (request.equals(ACTION_PROMOS)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_PROMOS, "", params,
-                                new HttpPost(),NowerMap.this);
-      }
-      else if (request.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
-        httpHandler.sendRequest(HttpHandler.API_V1,
-                                UserPromoList.ACTION_USER_REDEMPTIONS, "/"
-                                + User.id, params, new HttpGet(),
-                                NowerMap.this);
-      }
+    if (request.equals(ACTION_PROMOS)) {
+      httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_PROMOS, "", params,
+                              new HttpPost(),NowerMap.this);
     }
-    else {
-      Toast.makeText(getApplicationContext(),
-                     getResources()
-                     .getString(R.string.internet_connection_required),
-                     Toast.LENGTH_SHORT).show();
+    else if (request.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
+      httpHandler.sendRequest(HttpHandler.NAME_SPACE,
+                              UserPromoList.ACTION_USER_REDEMPTIONS, "/"
+                              + User.id, params, new HttpGet(), NowerMap.this);
+    }
+  }
+
+  // Este método se encarga de poner todas las promociones en el mapa y
+  // guardarlas los establecimientos localmente.
+  public void putMarkerAndSaveBranch(Branch branch) {
+    Marker branchMarker = map.addMarker(new MarkerOptions()
+            .position
+                    (new LatLng(branch.getLatitude(),
+                            branch.getLongitude()))
+            .title(branch.getStoreName() + " - " +
+                    branch.getName())
+            .icon(BitmapDescriptorFactory
+                    .fromResource
+                            (R.drawable.nower_marker)));
+
+    // Se asocia cada establecimiento a un marcador diferente.
+    branchesIdsMap.put(branchMarker, branch.getId());
+  }
+
+  public void clearPreviousMarkers() {
+    for (Map.Entry<Marker, Integer> markerBranchId
+         : MapData.getBranchesIdsMap().entrySet()) {
+      markerBranchId.getKey().remove();
     }
   }
 
@@ -261,116 +282,107 @@ GoogleMap.OnInfoWindowClickListener {
   }
 
   @Override
+  public void notifyParsedErrors(String action,
+                                 Map<String, String> errorsMessages) {
+    switch (action) {
+      case UserPromoList.ACTION_USER_REDEMPTIONS:
+        if (errorsMessages.containsKey("user")) {
+          UserFeedback.showToastMessage(getApplicationContext(),
+                                        errorsMessages.get("user"),
+                                        Toast.LENGTH_LONG);
+        }
+        //TODO cerrar sesión porque se intentó utilizar un usuario inválido.
+        break;
+    }
+  }
+
+  @Override
   public void notify(String action, JSONObject responseJson) {
     try {
+      Log.i("responseJson", responseJson.toString());
+      int responseStatusCode = responseJson.getInt(HttpHandler.HTTP_STATUS);
       if (action.equals(ACTION_PROMOS)) {
-        Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
-        {
-          branchesIdsMap.clear();
-          branchesMap.clear();
-          promosMap.clear();
+        switch (responseStatusCode) {
+          case HttpHandler.OK:
+            branchesIdsMap.clear();
+            branchesMap.clear();
+            promosMap.clear();
 
-          JSONArray locations = responseJson.getJSONArray("locations");
-          // Se recorren todas las promociones obtenidas para dibujarlas en
-          // el mapa.
-          for (int i = 0; i < locations.length(); ++i) {
-            ArrayList<Integer> promoList = new ArrayList<>();
+            JSONArray locations = responseJson.getJSONArray("locations");
+            // Se recorren todas las promociones obtenidas para dibujarlas en
+            // el mapa.
+            for (int i = 0; i < locations.length(); ++i) {
+              ArrayList<Integer> promoList = new ArrayList<>();
 
-            JSONObject internLocation = locations.getJSONObject(i);
-            int id = internLocation.getInt("id");
-            String name = internLocation.getString("name");
-            double latitude = internLocation.getDouble("latitude");
-            double longitude = internLocation.getDouble("longitude");
-            int storeId = internLocation.getInt("store_id");
-            String storeName = internLocation.getString("store_name");
+              JSONObject internLocation = locations.getJSONObject(i);
+              int id = internLocation.getInt("id");
+              String name = internLocation.getString("name");
+              double latitude = internLocation.getDouble("latitude");
+              double longitude = internLocation.getDouble("longitude");
+              int storeId = internLocation.getInt("store_id");
+              String storeName = internLocation.getString("store_name");
 
-            JSONArray promos = internLocation.getJSONArray("promos");
-            for (int j = 0; j < promos.length(); ++j) {
-              JSONObject internPromo = promos.getJSONObject(j);
-              int promoId = internPromo.getInt("id");
-              String title = internPromo.getString("title");
-              String expirationDate = internPromo.getString("expiration_date");
-              int availableRedemptions = internPromo
-                                         .getInt("available_redemptions");
-              // Se genera la lista de promociones para esa localización,
-              // aún sin descripción ni términos.
-              Promo promo = new Promo(promoId, title, expirationDate,
-                                      availableRedemptions, null, null);
-              promoList.add(promo.getId());
+              JSONArray promos = internLocation.getJSONArray("promos");
+              for (int j = 0; j < promos.length(); ++j) {
+                JSONObject internPromo = promos.getJSONObject(j);
+                int promoId = internPromo.getInt("id");
+                String title = internPromo.getString("title");
+                String expirationDate = internPromo
+                                        .getString("expiration_date");
+                int availableRedemptions = internPromo
+                                           .getInt("available_redemptions");
+                // Se genera la lista de promociones para esa localización,
+                // aún sin descripción ni términos.
+                Promo promo = new Promo(promoId, title, expirationDate,
+                                        availableRedemptions, null, null);
+                promoList.add(promo.getId());
 
-              // Se agrega la promoción a un mapa de promociones.
-              promosMap.put(promoId, promo);
+                // Se agrega la promoción a un mapa de promociones.
+                promosMap.put(promoId, promo);
+              }
+
+              Branch branch = new Branch(id, name, latitude, longitude, storeId,
+                                         storeName, promoList);
+              branchesMap.put(branch.getId(), branch);
+
+              putMarkerAndSaveBranch(branch);
             }
 
-            Branch branch = new Branch(id, name, latitude, longitude, storeId,
-                                       storeName, promoList);
-            branchesMap.put(branch.getId(), branch);
+            // Se borran los marcadores previos que indicaban la ubicación de
+            // los estabecimientos.
+            clearPreviousMarkers();
 
-            putMarkerAndSaveBranch(branch);
-          }
+            // Se envían los mapas construidos al modelo MapData para que
+            // puedan ser accedidos desde otras actividades.
+            // Se debe borrar explícitamente este branchesIdsMap debido a que
+            // cada marcador agregado tiene un ID diferente. De no hacer esto,
+            // los marcadores no se soobreescribirían sino que se agregarían
+            // infinitamente.
+            MapData.clearBranchesIdsMap();
+            MapData.setBranchesIdsMap(branchesIdsMap);
 
-          // Se borran los marcadores previos que indicaban la ubicación de los
-          // estabecimientos.
-          clearPreviousMarkers();
+            MapData.clearBranchesMap();
+            MapData.setBranchesMap(branchesMap);
 
-          // Se envían los mapas construidos al modelo MapData para que puedan
-          // ser accedidos desde otras actividades.
-          // Se debe borrar explícitamente este branchesIdsMap debido a que
-          // cada marcador agregado tiene un ID diferente. De no hacer esto,
-          // los marcadores no se soobreescribirían sino que se agregarían
-          // infinitamente.
-          MapData.clearBranchesIdsMap();
-          MapData.setBranchesIdsMap(branchesIdsMap);
+            MapData.clearPromosMap();
+            MapData.setPromosMap(promosMap);
 
-          MapData.clearBranchesMap();
-          MapData.setBranchesMap(branchesMap);
-
-          MapData.clearPromosMap();
-          MapData.setPromosMap(promosMap);
-
-          // Se hace para actualizar las promociones que el usuario ha obtenido.
-          sendRequest(UserPromoList.ACTION_USER_REDEMPTIONS);
+            // Se hace para actualizar las promociones que el usuario ha
+            // obtenido.
+            sendRequest(UserPromoList.ACTION_USER_REDEMPTIONS);
+            break;
         }
       }
       else if (action.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
-        Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
-        {
-          promosMap.clear();
-
-          JSONArray userRedemptions = responseJson.getJSONArray("redemptions");
-          for (int i = 0; i < userRedemptions.length(); ++i) {
-            JSONObject internRedemption = userRedemptions.getJSONObject(i);
-            int id = internRedemption.getInt("id");
-            int userId = internRedemption.getInt("user_id");
-            String code = internRedemption.getString("code");
-            boolean redeemed = internRedemption.getBoolean("redeemed");
-            String storeName = internRedemption.getString("store_name");
-
-            // Se captura la información de la promoción asociada.
-            JSONObject redemptionPromo = internRedemption
-                                         .getJSONObject("promo");
-            int promoId = redemptionPromo.getInt("id");
-            String title = redemptionPromo.getString("title");
-            String expirationDate = redemptionPromo
-                                    .getString("expiration_date");
-            int availableRedemptions = redemptionPromo
-                                       .getInt("available_redemptions");
-
-            Redemption redemption = new Redemption(code, promoId, redeemed,
-                                                   storeName);
-
-            // Se adiciona la promoción a la lista de promociones del usuario.
-            User.addPromoToTakenPromos(redemption.getPromoId(), redemption);
-
-            Promo promo = new Promo(promoId, title, expirationDate,
-                                    availableRedemptions, null, null);
-            // Se adiciona la promoción del usuario a la lista de promociones
-            // general.
-            promosMap.put(promo.getId(), promo);
-          }
-          MapData.setPromosMap(promosMap);
+        switch (responseStatusCode) {
+          case HttpHandler.OK:
+            UserPromoList
+            .updateUserRedemptions(responseJson.getJSONArray("redemptions"));
+            break;
+          case HttpHandler.UNAUTHORIZED:
+            RequestErrorsHandler
+            .parseErrors(action, responseJson.getJSONObject("errors"));
+            break;
         }
       }
 
@@ -379,30 +391,6 @@ GoogleMap.OnInfoWindowClickListener {
     }
     catch (JSONException e) {
 
-    }
-  }
-
-  // Este método se encarga de poner todas las promociones en el mapa y
-  // guardarlas los establecimientos localmente.
-  public void putMarkerAndSaveBranch(Branch branch) {
-    Marker branchMarker = map.addMarker(new MarkerOptions()
-                                        .position
-                                        (new LatLng(branch.getLatitude(),
-                                                    branch.getLongitude()))
-                                        .title(branch.getStoreName() + " - " +
-                                                branch.getName())
-                                        .icon(BitmapDescriptorFactory
-                                                .fromResource
-                                                        (R.drawable.nower_marker)));
-
-    // Se asocia cada establecimiento a un marcador diferente.
-    branchesIdsMap.put(branchMarker, branch.getId());
-  }
-
-  public void clearPreviousMarkers() {
-    for (Map.Entry<Marker, Integer> markerBranchId
-         : MapData.getBranchesIdsMap().entrySet()) {
-      markerBranchId.getKey().remove();
     }
   }
 

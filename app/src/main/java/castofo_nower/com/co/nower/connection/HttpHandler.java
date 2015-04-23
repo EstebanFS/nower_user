@@ -33,21 +33,10 @@ import castofo_nower.com.co.nower.controllers.PromoCardAnimator;
 import castofo_nower.com.co.nower.controllers.Register;
 import castofo_nower.com.co.nower.controllers.UserPromoList;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
+import castofo_nower.com.co.nower.support.UserFeedback;
 
 
 public class HttpHandler {
-
-  // Códigos HTTP.
-  public static final String HTTP_STATUS = "http_status";
-  public static final int SUCCESS = 200;
-  public static final int UNAUTHORIZED = 401;
-  public static final int SERVER_INTERNAL_ERROR = 500;
-
-  // Dominio del servidor.
-  private static final String DOMAIN = "http://nowerserver.herokuapp.com";
-  public static final String API_V1 = "";
-
-  private SubscribedActivities listeningActivity;
 
   // Parámetros necesarios para cumplir con las peticiones al Servidor.
   private String nameSpace;
@@ -56,6 +45,23 @@ public class HttpHandler {
   private Map<String, String> params = new HashMap<String, String>();
   private HttpRequest httpRequest;
   private Context context;
+
+  private SubscribedActivities listeningActivity;
+
+  // Códigos HTTP.
+  public static final String HTTP_STATUS = "http_status";
+  public static final int OK = 200;
+  public static final int CREATED = 201;
+  public static final int BAD_REQUEST = 400;
+  public static final int UNAUTHORIZED = 401;
+  public static final int UNPROCESSABLE_ENTITY = 422;
+  public static final int SERVER_INTERNAL_ERROR = 500;
+
+  // Dominio del servidor.
+  private static final String DOMAIN = "http://nowerserver.herokuapp.com";
+  public static final String NAME_SPACE = "";
+
+  public static final String NO_INTERNET = "NO_INTERNET";
 
   // En este punto se determina a qué Activity será enviado el resultado de la
   // petición.
@@ -153,14 +159,23 @@ public class HttpHandler {
   public void sendRequest(String nameSpace, String action, String urlParams,
                           Map<String, String> params, HttpRequest httpRequest,
                           Context context) {
-    this.nameSpace = nameSpace;
-    this.action = action;
-    this.urlParams = urlParams;
-    this.params.clear();
-    this.params.putAll(params);
-    this.httpRequest = httpRequest;
-    this.context = context;
-    new ServerConnection().execute();
+    if (isInternetConnectionAvailable(context)) {
+      this.nameSpace = nameSpace;
+      this.action = action;
+      this.urlParams = urlParams;
+      this.params.clear();
+      this.params.putAll(params);
+      this.httpRequest = httpRequest;
+      this.context = context;
+      new ServerConnection().execute();
+    }
+    else {
+      UserFeedback.createAlertDialog(context, R.string.internet_connection,
+                                     R.string.internet_connection_required,
+                                     R.string.got_it,
+                                     UserFeedback.NO_BUTTON_TO_SHOW,
+                                     NO_INTERNET);
+    }
   }
 
   public JSONObject createJsonObject(String action, Map<String, String> params)

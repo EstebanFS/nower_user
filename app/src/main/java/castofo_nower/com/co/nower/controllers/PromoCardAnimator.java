@@ -1,8 +1,8 @@
 package castofo_nower.com.co.nower.controllers;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.CountDownTimer;
 import android.support.v4.view.GestureDetectorCompat;
 import android.os.Bundle;
@@ -30,6 +30,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -37,19 +38,21 @@ import java.util.TreeMap;
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
+import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
-import castofo_nower.com.co.nower.support.AlertDialogCreator;
+import castofo_nower.com.co.nower.support.RequestErrorsHandler;
+import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.DateManager;
 
 import com.manuelpeinado.fadingactionbar.FadingActionBarHelper;
 
 
 public class PromoCardAnimator extends Activity implements SubscribedActivities,
-AlertDialogsResponses, GestureDetector.OnGestureListener {
+GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
 
   private GestureDetectorCompat gestureDetector;
   private ViewFlipper promosFlipper;
@@ -61,6 +64,11 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
   public static final String ACTION_NOW = "/promo/now";
   private Map<String, String> params = new HashMap<String, String>();
 
+  private UserFeedback userFeedback = new UserFeedback();
+
+  private RequestErrorsHandler requestErrorsHandler = new
+                                                      RequestErrorsHandler();
+
   private TextView promoTitle;
   private TextView promoStoreName;
   private TextView promoAvailableRedemptions;
@@ -71,8 +79,6 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
   private Button nowButton;
   private TextView redemptionCode;
 
-  private AlertDialogCreator alertDialogCreator = new AlertDialogCreator();
-
   // Indicador para saber qué acción se está tratando de ejecutar.
   public static String action;
 
@@ -81,7 +87,7 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
   private String storeName;
   private boolean isUserPromoRedeemed;
   private ArrayList<Promo> promos = new ArrayList<>();
-  private Map<Integer, Redemption> userPromos = new TreeMap<>();
+  private Map<Integer, Redemption> userPromos = new LinkedHashMap<>();
   private Map<Integer, Promo> promosMap = new TreeMap<>();
 
   public static final String TAKE_PROMO = "TAKE_PROMO";
@@ -99,19 +105,23 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
     // a la petición.
     httpHandler.addListeningActivity(this);
 
-    // Se indica al AlertDialogCreator la actividad que estará esperando la
+    // Se indica al UserFeedback la actividad que estará esperando la
     // respuesta de la elección del usuario..
-    alertDialogCreator.addListeningActivity(this);
+    userFeedback.addListeningActivity(this);
+
+    requestErrorsHandler.addListeningActivity(this);
 
     setFlipperAnimation();
     capturePromos();
+    // Si el establecimiento no tiene promociones vigentes no tiene sentido
+    // actualizar nada.
     if (!promos.isEmpty()) {
       setPromosIdsList();
       sendRequest(ACTION_PROMOS_DETAILS);
     }
     else {
       // El establecimiento no tiene promociones vigentes.
-      showEmptyMessage();
+      showEmptyBranchMessage();
     }
   }
 
@@ -191,25 +201,17 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
   }
 
   public void sendRequest(String request) {
-    if (httpHandler.isInternetConnectionAvailable(this)) {
-      if (request.equals(ACTION_PROMOS_DETAILS)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_PROMOS_DETAILS, "",
-                                params, new HttpPost(), PromoCardAnimator.this);
-      }
-      else if (request.equals(ACTION_NOW)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_NOW, "", params,
-                                new HttpPost(), PromoCardAnimator.this);
-      }
+    if (request.equals(ACTION_PROMOS_DETAILS)) {
+      httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_PROMOS_DETAILS, "",
+                              params, new HttpPost(), PromoCardAnimator.this);
     }
-    else {
-      Toast.makeText(getApplicationContext(),
-                     getResources()
-                     .getString(R.string.internet_connection_required),
-                     Toast.LENGTH_SHORT).show();
+    else if (request.equals(ACTION_NOW)) {
+      httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_NOW, "", params,
+                              new HttpPost(), PromoCardAnimator.this);
     }
   }
 
-  public void showEmptyMessage() {
+  public void showEmptyBranchMessage() {
     emptyPromosMessage = (TextView) findViewById(R.id.empty_promos_message);
     promosFlipper.setVisibility(View.GONE);
     emptyPromosMessage.setVisibility(View.VISIBLE);
@@ -231,7 +233,8 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
 
         // Se capturan los campos que se van a modificar.
         promoTitle = (TextView) promoCard.findViewById(R.id.promo_title);
-        promoStoreName = (TextView) promoCard.findViewById(R.id.promo_store_name);
+        promoStoreName = (TextView) promoCard.findViewById
+                         (R.id.promo_store_name);
         final TextView promoExpirationDate = (TextView) promoCard.findViewById
                 (R.id.promo_expiration_date);
         promoAvailableRedemptions = (TextView) promoCard.findViewById
@@ -241,7 +244,8 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
         promoTerms = (TextView) promoCard.findViewById(R.id.promo_terms);
 
         nowButton = (Button) promoCard.findViewById(R.id.now_button);
-        redemptionCode = (TextView) promoCard.findViewById(R.id.redemption_code);
+        redemptionCode = (TextView) promoCard.findViewById
+                         (R.id.redemption_code);
 
         // Se modifica la información de la promoción a mostrar.
         promoTitle.setText(promo.getTitle());
@@ -273,7 +277,7 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
       }
     }
     else {
-      showEmptyMessage();
+      showEmptyBranchMessage();
     }
   }
 
@@ -304,6 +308,7 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
       @Override
       public void onFinish() {
         countDownView.setText(getResources().getString(R.string.promo_expired));
+        //TODO desactivar botón de now
       }};
 
     return countDownTimer;
@@ -332,125 +337,162 @@ AlertDialogsResponses, GestureDetector.OnGestureListener {
   public void askToTakePromo() {
     // Se muestra un diálogo al usuario para que decida si desea tomar la
     // promoción actual o no.
-    AlertDialog promoNowAD = AlertDialogCreator
-                             .createAlertDialog(this, R.string.promo,
-                                                R.string.confirm_taking_promo,
-                                                R.string._continue,
-                                                R.string.cancel, TAKE_PROMO);
-    promoNowAD.show();
+    UserFeedback.createAlertDialog(this, R.string.promo,
+                                   R.string.confirm_taking_promo,
+                                   R.string._continue, R.string.cancel,
+                                   TAKE_PROMO);
   }
 
   public void showObtainedPromo() {
     // Se muestra un diálogo al usuario para indicarle que ya ha sido acreedor
     // de la promoción.
-    AlertDialog promoObtainedAD = AlertDialogCreator
-                                  .createAlertDialog(this,
-                                                     R.string.promo_obtained,
-                                                     R.string.promo_now_in_list,
-                                                     R.string.ok,
-                                                     R.string.go_to_my_promos,
-                                                     OBTAINED_PROMO);
-    promoObtainedAD.show();
+    UserFeedback.createAlertDialog(this, R.string.promo_obtained,
+                                   R.string.promo_now_in_list, R.string.ok,
+                                   R.string.go_to_my_promos, OBTAINED_PROMO);
   }
 
   @Override
-  public void notifyUserResponse(String action) {
-    if (action.equals(TAKE_PROMO)) {
-      sendRequest(ACTION_NOW);
+  public void notifyUserResponse(String action, int buttonPressedId) {
+    switch (action) {
+      case TAKE_PROMO:
+        if (buttonPressedId == R.string._continue) sendRequest(ACTION_NOW);
+        break;
+      case OBTAINED_PROMO:
+        if (buttonPressedId == R.string.go_to_my_promos) {
+          Intent openUserPromosList = new Intent(this, UserPromoList.class);
+          openUserPromosList.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+          startActivity(openUserPromosList);
+        }
+        break;
+    }
+  }
+
+  @Override
+  public void notifyParsedErrors(String action,
+                                 Map<String, String> errorsMessages) {
+    switch (action) {
+      case ACTION_PROMOS_DETAILS:
+        if (errorsMessages.containsKey("ids")) {
+          UserFeedback.showToastMessage(getApplicationContext(),
+                                        errorsMessages.get("ids"),
+                                        Toast.LENGTH_SHORT);
+        }
+        break;
+      case ACTION_NOW:
+        if (errorsMessages.containsKey("user")) {
+          UserFeedback.showToastMessage(getApplicationContext(),
+                                        errorsMessages.get("user"),
+                                        Toast.LENGTH_LONG);
+          //TODO cerrar sesión porque se intentó utilizar un usuario inválido.
+        }
+        else if (errorsMessages.containsKey("promo")) {
+          UserFeedback
+          .createAlertDialog(this, R.string.never, R.string.app_name,
+                             R.string.ok, UserFeedback.NO_BUTTON_TO_SHOW,
+                             action);
+          //TODO cambiar mensaje y parametrización de createAlertDialog.
+        }
+        break;
     }
   }
 
   @Override
   public void notify(String action, JSONObject responseJson) {
     try {
+      Log.i("responseJson", responseJson.toString());
+      int responseStatusCode = responseJson.getInt(HttpHandler.HTTP_STATUS);
       if (action.equals(ACTION_PROMOS_DETAILS)) {
-        Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
-        {
-          promos.clear();
-          promosMap.clear();
+       switch (responseStatusCode) {
+         case HttpHandler.OK:
+           promos.clear();
+           promosMap.clear();
 
-          JSONArray promosDescriptionAndTerms = responseJson
-                                                .getJSONArray("promos");
-          for (int i = 0; i < promosDescriptionAndTerms.length(); ++i) {
-            JSONObject internPromo = promosDescriptionAndTerms.getJSONObject(i);
-            int promoId = internPromo.getInt("id");
-            String title = internPromo.getString("title");
-            String expirationDate = internPromo.getString("expiration_date");
-            int availableRedemptions = internPromo
-                                       .getInt("available_redemptions");
-            String description = internPromo.getString("description");
-            String terms = internPromo.getString("terms");
-            boolean hasExpired = internPromo.getBoolean("has_expired");
+           JSONArray promosDescriptionAndTerms = responseJson
+                                                 .getJSONArray("promos");
+           for (int i = 0; i < promosDescriptionAndTerms.length(); ++i) {
+             JSONObject internPromo = promosDescriptionAndTerms
+                                      .getJSONObject(i);
+             int promoId = internPromo.getInt("id");
+             String title = internPromo.getString("title");
+             String expirationDate = internPromo.getString("expiration_date");
+             int availableRedemptions = internPromo
+                                        .getInt("available_redemptions");
+             String description = internPromo.getString("description");
+             String terms = internPromo.getString("terms");
+             boolean hasExpired = internPromo.getBoolean("has_expired");
 
-            // Se genera la lista de promociones para ser actualizada
-            // localmente, ya incluyendo descripción y términos.
-            Promo promo = new Promo(promoId, title, expirationDate,
-                                    availableRedemptions, description, terms);
-            promosMap.put(promo.getId(), promo);
+             // Se genera la lista de promociones para ser actualizada
+             // localmente, ya incluyendo descripción y términos.
+             Promo promo = new Promo(promoId, title, expirationDate,
+                                     availableRedemptions, description, terms);
+             promosMap.put(promo.getId(), promo);
 
-            if (PromoCardAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
-              // Si la promoción no ha expirado, entonces se adiciona a las que
-              // serán mostradas.
-              if (!hasExpired) {
-                promos.add(promo);
-              }
-              else {
-                // Se elimina el id de la promoción dentro del establecimiento,
-                // y no se muestra, ya que ha expirado.
-                MapData.removePromoIdInBranch(branchId, promoId);
-              }
-            }
-            // Siempre se mostrará una promoción que el usuario ya haya tomado.
-            else if (PromoCardAnimator.action
-                     .equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
-              promos.add(promo);
-            }
-          }
+             if (PromoCardAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
+               // Si la promoción no ha expirado ni la han tomado el número
+               // máximo de personas, entonces se adiciona a las que serán
+               // mostradas.
+               if (!hasExpired && availableRedemptions > 0) {
+                 promos.add(promo);
+               }
+               else {
+                 // Se elimina el id de la promoción dentro del establecimiento,
+                 // y no se muestra, ya que ha expirado.
+                 MapData.removePromoIdInBranch(branchId, promoId);
+               }
+             }
+             // Siempre se mostrará una promoción que el usuario ya haya tomado.
+             else if (PromoCardAnimator.action
+                      .equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
+               promos.add(promo);
+             }
+           }
 
-          // Se actualiza la lista de promociones para el establecimiento en
-          // cuestión.
-          MapData.setPromosMap(promosMap);
+           // Se actualiza la lista de promociones para el establecimiento en
+           // cuestión.
+           MapData.setPromosMap(promosMap);
 
-          addPromosToFlipper();
-        }
+           addPromosToFlipper();
+           break;
+         case HttpHandler.UNPROCESSABLE_ENTITY:
+           RequestErrorsHandler
+           .parseErrors(action, responseJson.getJSONObject("errors"));
+           break;
+       }
       }
       else if (action.equals(ACTION_NOW)) {
-        Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
-        {
-          if (responseJson.getBoolean("success")) {
-            JSONObject redemption = responseJson.getJSONObject("redemption");
-            String code = redemption.getString("code");
-            int promoId = redemption.getInt("promo_id");
-            int user_id = redemption.getInt("user_id");
-            boolean redeemed = redemption.getBoolean("redeemed");
+        switch (responseStatusCode) {
+          case HttpHandler.OK:
+            if (responseJson.getBoolean("success")) {
+              JSONObject redemption = responseJson.getJSONObject("redemption");
+              String code = redemption.getString("code");
+              int promoId = redemption.getInt("promo_id");
+              int user_id = redemption.getInt("user_id");
+              boolean redeemed = redemption.getBoolean("redeemed");
 
-            Redemption r = new Redemption(code, promoId, redeemed, storeName);
-            // Se adiciona la promoción a la lista de promociones del usuario.
-            User.addPromoToTakenPromos(promoId, r);
+              Redemption r = new Redemption(code, promoId, redeemed, storeName);
+              // Se adiciona la promoción a la lista de promociones del usuario.
+              User.addPromoToTakenPromos(promoId, r);
 
-            // Se ponen estos valores en las variables como los actuales para
-            // poder simular la obtención de la promoción para el usuario.
-            this.code = code;
-            isUserPromoRedeemed = redeemed;
+              // Se ponen estos valores en las variables como los actuales para
+              // poder simular la obtención de la promoción para el usuario.
+              this.code = code;
+              isUserPromoRedeemed = redeemed;
 
-            // Se capturan botón y código de la vista actual para realizar el
-            // intercambio.
-            nowButton = (Button) promosFlipper.getCurrentView()
-                        .findViewById(R.id.now_button);
-            redemptionCode = (TextView) promosFlipper.getCurrentView()
-                             .findViewById(R.id.redemption_code);
-            changeButtonToCode();
+              // Se capturan botón y código de la vista actual para realizar el
+              // intercambio.
+              nowButton = (Button) promosFlipper.getCurrentView()
+                          .findViewById(R.id.now_button);
+              redemptionCode = (TextView) promosFlipper.getCurrentView()
+                               .findViewById(R.id.redemption_code);
+              changeButtonToCode();
 
-            showObtainedPromo();
-          }
-          else {
-            Toast.makeText(getApplicationContext(),
-                           getResources().getString(R.string.take_promo_error),
-                           Toast.LENGTH_SHORT).show();
-            //TODO acciones cuando no se pudo tomar la promoción.
-          }
+              showObtainedPromo();
+            }
+            break;
+          case HttpHandler.UNPROCESSABLE_ENTITY:
+            RequestErrorsHandler
+            .parseErrors(action, responseJson.getJSONObject("errors"));
+            break;
         }
       }
 

@@ -1,6 +1,6 @@
 package castofo_nower.com.co.nower.support;
 
-import android.app.AlertDialog;
+import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -9,16 +9,24 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.provider.Settings;
 import android.util.Log;
 
 import castofo_nower.com.co.nower.R;
+import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
 import castofo_nower.com.co.nower.helpers.GeolocationInterface;
 
 
-public class Geolocation extends Service implements LocationListener {
+public class Geolocation extends Service implements LocationListener,
+AlertDialogsResponses {
 
   private final Context context;
   private GeolocationInterface listeningActivity;
+  private UserFeedback userFeedback = new UserFeedback();
+
+  // LocationManager es la clase de Android encargada de gestionar la
+  // geolocalización del usuario.
+  protected LocationManager locationManager;
 
   private boolean isGPSEnabled = false;
   private boolean isNetworkEnabled = false;
@@ -35,12 +43,9 @@ public class Geolocation extends Service implements LocationListener {
   public static final String ENABLE_GPS = "ENABLE_GPS";
   public static final int ENABLE_GPS_CODE = 0;
 
-  // LocationManager es la clase de Android encargada de gestionar la
-  // geolocalización del usuario.
-  protected LocationManager locationManager;
-
   public Geolocation(Context context) {
     this.context = context;
+    userFeedback.addListeningActivity(this);
     verifyLocationPossibilities();
   }
 
@@ -153,13 +158,25 @@ public class Geolocation extends Service implements LocationListener {
 
   public void askToEnableGPS() {
     // Se muestra un diálogo al usuario para que active el GPS.
-    AlertDialog geolocationAD = AlertDialogCreator
-                                .createAlertDialog(context, R.string.gps,
-                                                 R.string.enable_gps_suggestion,
-                                                   R.string.activate,
-                                           AlertDialogCreator.NO_BUTTON_TO_SHOW,
-                                                   ENABLE_GPS);
-    geolocationAD.show();
+    UserFeedback.createAlertDialog(context, R.string.gps,
+                                   R.string.enable_gps_suggestion,
+                                   R.string.activate,
+                                   UserFeedback.NO_BUTTON_TO_SHOW, ENABLE_GPS);
+  }
+
+  @Override
+  public void notifyUserResponse(String action, int buttonPressedId) {
+    switch (action) {
+      case ENABLE_GPS:
+        if (buttonPressedId == R.string.activate) {
+          // El usuario decidió activar su GPS y se le redirige a la
+          // configuración del dispositivo.
+          Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+          ((Activity) context).startActivityForResult
+          (intent, Geolocation.ENABLE_GPS_CODE);
+        }
+        break;
+    }
   }
 
   @Override
@@ -175,24 +192,18 @@ public class Geolocation extends Service implements LocationListener {
 
   @Override
   public void onProviderDisabled(String arg0) {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
   public void onProviderEnabled(String arg0) {
-    // TODO Auto-generated method stub
   }
 
   @Override
   public void onStatusChanged(String arg0, int arg1, Bundle arg2) {
-    // TODO Auto-generated method stub
-
   }
 
   @Override
   public IBinder onBind(Intent intent) {
-    // TODO Auto-generated method stub
     return null;
   }
 

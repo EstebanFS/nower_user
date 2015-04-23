@@ -9,7 +9,7 @@
   <string name="enable_gps_suggestion">Es necesario activar el GPS para acceder a las promociones.</string>
   <string name="yes">Sí</string>
   <string name="no_thanks">No, gracias</string>
-  <string name="internet_connection_required">Necesitas conexión a Internet para acceder a las promociones.</string>
+  <string name="internet_connection_required">Necesitas conexión a Internet para utilizar Nower.</string>
   <string name="loading_promos">Cargando promociones cercanas</string>
   <string name="you_are_here">¡Estás aquí!</string>
   <string name="obtaining_promo_code">Obteniendo código de promoción</string>
@@ -32,7 +32,7 @@
   <string name="not_redeemed">POR REDIMIR</string>
   <string name="redeemed">REDIMIDAS</string>
   <string name="obtaining_your_promos">Obteniendo tus promociones</string>
-  <string name="empty_branches_list">No fue posible mostrar las tiendas</string>
+  <string name="empty_branches_list">No hay tiendas con promociones cercanas a tu ubicación</string>
   <string name="full_name">Nombre completo</string>
   <string name="email">Correo electrónico</string>
   <string name="password">Contraseña</string>
@@ -55,8 +55,6 @@
   <string name="title_activity_register">RegisterActivity</string>
   <string name="write_your_email">Escribe tu correo</string>
   <string name="write_your_password">Escribe tu contraseña</string>
-  <string name="login_failed">Correo o contraseña inválidos</string>
-  <string name="take_promo_error">Error obteniendo promoción</string>
   <string name="logging_in">Ingresando</string>
   <string name="write_your_name">Escribe tu nombre</string>
   <string name="write_your_password_again">Escribe tu contraseña nuevamente</string>
@@ -64,13 +62,13 @@
   <string name="select_your_gender">Selecciona tu género</string>
   <string name="passwords_not_matching">Las contraseñas no coinciden</string>
   <string name="registering">Registrando</string>
-  <string name="email_already_taken">Este correo ya fue utilizado por otra persona</string>
-  <string name="register_error">Error registrando</string>
-  <string name="login_error">Error ingresando</string>
   <string name="opening_promo">Abriendo promoción</string>
   <string name="activate">Activar</string>
   <string name="obtaining_your_location">Obteniendo tu localización</string>
   <string name="go_to_my_promos">Ir a mis promociones</string>
   <string name="no_available_promos">Esta tienda no tiene promociones disponibles en el momento</string>
+  <string name="internet_connection">Conexión a Internet</string>
+  <string name="got_it">Entiendo</string>
+  <string name="never">Never</string>
 
 </resources>

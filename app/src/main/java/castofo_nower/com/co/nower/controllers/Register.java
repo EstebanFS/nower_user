@@ -17,8 +17,8 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import org.apache.http.client.methods.HttpPost;
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,13 +28,17 @@ import java.util.Map;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
+import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.User;
+import castofo_nower.com.co.nower.support.RequestErrorsHandler;
+import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.DateManager;
 import castofo_nower.com.co.nower.support.SharedPreferencesManager;
 
 
-public class Register extends FragmentActivity implements SubscribedActivities {
+public class Register extends FragmentActivity implements SubscribedActivities,
+ParsedErrors {
 
   private TextView nameView;
   private TextView emailView;
@@ -50,7 +54,6 @@ public class Register extends FragmentActivity implements SubscribedActivities {
   private String passwordConfirmation;
   private String gender;
 
-
   private RadioGroup genderRadio;
   private final int maleOptionId = R.id.male;
   private final int femaleOptionId = R.id.female;
@@ -58,6 +61,9 @@ public class Register extends FragmentActivity implements SubscribedActivities {
   private HttpHandler httpHandler = new HttpHandler();
   public static final String ACTION_REGISTER = "/users";
   private Map<String, String> params = new HashMap<String, String>();
+
+  private RequestErrorsHandler requestErrorsHandler = new
+                                                      RequestErrorsHandler();
 
   public static final int NO_GENDER_SELECTED = -1;
 
@@ -67,6 +73,8 @@ public class Register extends FragmentActivity implements SubscribedActivities {
     setContentView(R.layout.activity_register);
 
     httpHandler.addListeningActivity(this);
+
+    requestErrorsHandler.addListeningActivity(this);
 
     SharedPreferencesManager.setup(this);
 
@@ -130,9 +138,10 @@ public class Register extends FragmentActivity implements SubscribedActivities {
       everythingOkToRegister = false;
     }
     if (!isGenderSelected) {
-      Toast.makeText(getApplicationContext(),
-                     getResources().getString(R.string.select_your_gender),
-                     Toast.LENGTH_SHORT).show();
+      UserFeedback
+      .showToastMessage(getApplicationContext(), getResources()
+                        .getString(R.string.select_your_gender),
+                        Toast.LENGTH_SHORT);
       everythingOkToRegister = false;
     }
 
@@ -141,10 +150,10 @@ public class Register extends FragmentActivity implements SubscribedActivities {
         setParamsForRegister();
       }
       else {
-        Toast.makeText(getApplicationContext(),
-                       getResources()
-                       .getString(R.string.passwords_not_matching),
-                       Toast.LENGTH_SHORT).show();
+        UserFeedback
+        .showToastMessage(getApplicationContext(), getResources()
+                          .getString(R.string.passwords_not_matching),
+                          Toast.LENGTH_SHORT);
       }
     }
   }
@@ -236,17 +245,9 @@ public class Register extends FragmentActivity implements SubscribedActivities {
   }
 
   public void sendRequest(String request) {
-    if (httpHandler.isInternetConnectionAvailable(this)) {
-      if (request.equals(ACTION_REGISTER)) {
-        httpHandler.sendRequest(HttpHandler.API_V1, ACTION_REGISTER, "", params,
-                                new HttpPost(), Register.this);
-      }
-    }
-    else {
-      Toast.makeText(getApplicationContext(),
-                     getResources()
-                     .getString(R.string.internet_connection_required),
-                     Toast.LENGTH_SHORT).show();
+    if (request.equals(ACTION_REGISTER)) {
+      httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_REGISTER, "",
+                              params, new HttpPost(), Register.this);
     }
   }
 
@@ -275,38 +276,65 @@ public class Register extends FragmentActivity implements SubscribedActivities {
   }
 
   @Override
+  public void notifyParsedErrors(String action,
+                                 Map<String, String> errorsMessages) {
+    switch (action) {
+      case ACTION_REGISTER:
+        for (Map.Entry<String, String> errorMessage : errorsMessages.entrySet())
+        {
+          switch (errorMessage.getKey()) {
+            case "name":
+              nameView.setError(errorsMessages.get("name"));
+              break;
+            case "email":
+              emailView.setError(errorsMessages.get("email"));
+              break;
+            case "password":
+              passwordView.setError(errorsMessages.get("password"));
+              break;
+            case "password_confirmation":
+              passwordConfirmationView.setError(errorsMessages
+                      .get("password_confirmation"));
+              break;
+            case "birthday":
+              birthdayView.setError(errorsMessages.get("birthday"));
+              break;
+            case "gender":
+              UserFeedback.showToastMessage(getApplicationContext(),
+                                            errorsMessages.get("gender"),
+                                            Toast.LENGTH_SHORT);
+              break;
+          }
+        }
+        break;
+    }
+  }
+
+  @Override
   public void notify(String action, JSONObject responseJson) {
     try {
+      Log.i("responseJson", responseJson.toString());
+      int responseStatusCode = responseJson.getInt(HttpHandler.HTTP_STATUS);
       if (action.equals(ACTION_REGISTER)) {
-        Log.i("responseJson", responseJson.toString());
-        if (responseJson.getInt(HttpHandler.HTTP_STATUS) == HttpHandler.SUCCESS)
-        {
-          if (responseJson.getBoolean("success")) {
-            JSONObject user = responseJson.getJSONObject("user");
-            int id = user.getInt("id");
-            String email = user.getString("email");
-            String name = user.getString("name");
-            String gender = user.getString("gender");
-            String birthday = user.getString("birthday");
+        switch (responseStatusCode) {
+          case HttpHandler.CREATED:
+            if (responseJson.getBoolean("success")) {
+              JSONObject user = responseJson.getJSONObject("user");
+              int id = user.getInt("id");
+              String email = user.getString("email");
+              String name = user.getString("name");
+              String gender = user.getString("gender");
+              String birthday = user.getString("birthday");
 
-            saveUserData(id, email, name, gender, birthday);
+              saveUserData(id, email, name, gender, birthday);
 
-            openNowerMap();
-          }
-          else {
-            JSONObject errors = responseJson.getJSONObject("errors");
-            JSONArray email = errors.getJSONArray("email");
-            String emailError = email.get(0).toString();
-            if (emailError.equalsIgnoreCase("has already been taken")) {
-              emailView.setError(getResources()
-                                 .getString(R.string.email_already_taken));
+              openNowerMap();
             }
-            else {
-              Toast.makeText(getApplicationContext(),
-                             getResources().getString(R.string.register_error),
-                             Toast.LENGTH_SHORT).show();
-            }
-          }
+            break;
+          case HttpHandler.UNPROCESSABLE_ENTITY:
+            RequestErrorsHandler
+            .parseErrors(action, responseJson.getJSONObject("errors"));
+            break;
         }
       }
 
