@@ -354,6 +354,16 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
                      R.string.ok, R.string.go_to_my_promos, OBTAINED_PROMO);
   }
 
+  public void disableNowButtonDueToNoMoreStock() {
+    TextView availableRedemptions =  (TextView) promosFlipper.getCurrentView()
+                                     .findViewById
+                                     (R.id.promo_available_redemptions);
+    availableRedemptions.setText(getResources().getString(R.string.zero));
+    Button nowButton = (Button) promosFlipper.getCurrentView()
+                       .findViewById(R.id.now_button);
+    nowButton.setEnabled(false);
+  }
+
   @Override
   public void notifyUserResponse(String action, int buttonPressedId) {
     switch (action) {
@@ -389,10 +399,13 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
           //TODO cerrar sesión porque se intentó utilizar un usuario inválido.
         }
         else if (errorsMessages.containsKey("promo")) {
+          if (errorsMessages.get("promo")
+              .contains(getResources().getString(R.string.no_more_stock))) {
+            disableNowButtonDueToNoMoreStock();
+          }
           UserFeedback
           .showAlertDialog(this, R.string.never, errorsMessages.get("promo"),
                            R.string.ok, UserFeedback.NO_BUTTON_TO_SHOW, action);
-          //TODO desactivar el botón y poner personas límite en cero.
         }
         break;
     }

@@ -72,5 +72,7 @@
   <string name="sorry">Lo sentimos</string>
   <string name="error_loading_map">No fue posible cargar el mapa.</string>
   <string name="exit">Salir</string>
+  <string name="no_more_stock">has no more stock</string>
+  <string name="zero">0</string>
 
 </resources>
