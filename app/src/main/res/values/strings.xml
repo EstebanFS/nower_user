@@ -24,7 +24,6 @@
   <string name="ok">OK</string>
   <string name="title_activity_user_promo_list">Mis promociones</string>
   <string name="title_activity_branches_list">Tiendas</string>
-  <string name="promo_expired">Vencida</string>
   <string name="empty_user_promo_list">Aún no has obtenido ninguna promoción</string>
   <string name="expand_reviews">VER COMENTARIOS Y PUNTUACIÓN</string>
   <string name="promo_description">DESCRIPCIÓN</string>
@@ -70,5 +69,8 @@
   <string name="internet_connection">Conexión a Internet</string>
   <string name="got_it">Entiendo</string>
   <string name="never">Never</string>
+  <string name="sorry">Lo sentimos</string>
+  <string name="error_loading_map">No fue posible cargar el mapa.</string>
+  <string name="exit">Salir</string>
 
 </resources>

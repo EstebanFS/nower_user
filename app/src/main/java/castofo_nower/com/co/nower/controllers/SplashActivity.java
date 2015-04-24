@@ -1,6 +1,7 @@
 package castofo_nower.com.co.nower.controllers;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -18,32 +19,34 @@ public class SplashActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_splash);
 
-    SharedPreferencesManager.setup(this);
+    // La aplicación se debe cerrar porque el usuario decidió salir.
+    if (getIntent().getExtras() != null) finish();
+    else {
+      SharedPreferencesManager.setup(this);
 
-    Thread splashTimer = new Thread() {
-      public void run() {
-        try {
-          // Se muestra el splash durante un segundo.
-          sleep(1000);
-        }
-        catch (InterruptedException e) {
-          e.printStackTrace();
-        }
-        finally {
-          // Luego se ingresa propiamente a la aplicación.
-          Intent openApp = new Intent(SplashActivity.this, Login.class);
-          if (isThereLoginInstance()) {
-            updateUserData();
-            openApp = new Intent(SplashActivity.this, TabsHandler.class);
+      Thread splashTimer = new Thread() {
+        public void run() {
+          try {
+            // Se muestra el splash durante un segundo.
+            sleep(1000);
+          } catch (InterruptedException e) {
+
+          } finally {
+            // Luego se ingresa propiamente a la aplicación.
+            Intent openApp = new Intent(SplashActivity.this, Login.class);
+            if (isThereLoginInstance()) {
+              updateUserData();
+              openApp = new Intent(SplashActivity.this, TabsHandler.class);
+            }
+            openApp.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            startActivity(openApp);
+            finish();
           }
-          openApp.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-          startActivity(openApp);
-          finish();
         }
-      }
-    };
+      };
 
-    splashTimer.start();
+      splashTimer.start();
+    }
   }
 
   public boolean isThereLoginInstance() {
@@ -69,6 +72,15 @@ public class SplashActivity extends Activity {
                       .getStringValue(SharedPreferencesManager.USER_BIRTHDAY);
 
     User.setUserData(id, email, name, gender, birthday);
+  }
+
+  public static void exitApp(Context context) {
+    Intent exitApp = new Intent(context, SplashActivity.class);
+    exitApp.putExtra("exit_app", true);
+    exitApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                     | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    context.startActivity(exitApp);
+    ((Activity) context).finish();
   }
 
   @Override

@@ -54,15 +54,15 @@ import com.manuelpeinado.fadingactionbar.FadingActionBarHelper;
 public class PromoCardAnimator extends Activity implements SubscribedActivities,
 GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
 
-  private GestureDetectorCompat gestureDetector;
-  private ViewFlipper promosFlipper;
-
-  Animation slide_in_left, slide_out_right, slide_in_right, slide_out_left;
-
   private HttpHandler httpHandler = new HttpHandler();
   public static final String ACTION_PROMOS_DETAILS = "/promos/details";
   public static final String ACTION_NOW = "/promo/now";
   private Map<String, String> params = new HashMap<String, String>();
+
+  private GestureDetectorCompat gestureDetector;
+  private ViewFlipper promosFlipper;
+
+  Animation slide_in_left, slide_out_right, slide_in_right, slide_out_left;
 
   private UserFeedback userFeedback = new UserFeedback();
 
@@ -76,7 +76,6 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
   private TextView promoTerms;
   private TextView emptyPromosMessage;
 
-  private Button nowButton;
   private TextView redemptionCode;
 
   // Indicador para saber qué acción se está tratando de ejecutar.
@@ -99,7 +98,6 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
     initView();
 
     gestureDetector = new GestureDetectorCompat(this, this);
-
 
     // Se indica al HttpHandler la actividad que estará esperando la respuesta
     // a la petición.
@@ -222,7 +220,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
       for (int i = 0; i < promos.size(); ++i) {
         Promo promo = promos.get(i);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService
-                (Context.LAYOUT_INFLATER_SERVICE);
+                                  (Context.LAYOUT_INFLATER_SERVICE);
         View promoCard = inflater.inflate(R.layout.promo_card, null);
         // Con este ID se identificará la promoción actual que visualiza el
         // usuario.
@@ -236,14 +234,15 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
         promoStoreName = (TextView) promoCard.findViewById
                          (R.id.promo_store_name);
         final TextView promoExpirationDate = (TextView) promoCard.findViewById
-                (R.id.promo_expiration_date);
+                                             (R.id.promo_expiration_date);
         promoAvailableRedemptions = (TextView) promoCard.findViewById
-                (R.id.promo_available_redemptions);
+                                    (R.id.promo_available_redemptions);
         promoDescription = (TextView) promoCard.findViewById
-                (R.id.promo_description);
+                           (R.id.promo_description);
         promoTerms = (TextView) promoCard.findViewById(R.id.promo_terms);
 
-        nowButton = (Button) promoCard.findViewById(R.id.now_button);
+        final Button nowButton = (Button) promoCard
+                                 .findViewById(R.id.now_button);
         redemptionCode = (TextView) promoCard.findViewById
                          (R.id.redemption_code);
 
@@ -251,8 +250,8 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
         promoTitle.setText(promo.getTitle());
         promoStoreName.setText(storeName);
         promoExpirationDate.setText(promo.getExpirationDate());
-        promoAvailableRedemptions.setText
-                (String.valueOf(promo.getAvailableRedemptions()));
+        promoAvailableRedemptions
+        .setText(String.valueOf(promo.getAvailableRedemptions()));
         promoDescription.setText(promo.getDescription());
         promoTerms.setText(promo.getTerms());
 
@@ -262,17 +261,17 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
             // tiene.
             code = User.getTakenPromos().get(promo.getId()).getCode();
             isUserPromoRedeemed = User.getTakenPromos().get(promo.getId())
-                    .isRedeemed();
-            changeButtonToCode();
+                                  .isRedeemed();
+            changeButtonToCode(nowButton);
           }
         }
         else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
-          changeButtonToCode();
+          changeButtonToCode(nowButton);
         }
 
         CountDownTimer countDownTimer = createCountDownTimer
-                (promoExpirationDate,
-                        promo.getExpirationDate());
+                                        (promoExpirationDate,
+                                         promo.getExpirationDate(), nowButton);
         countDownTimer.start();
       }
     }
@@ -281,8 +280,9 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
     }
   }
 
-  public CountDownTimer createCountDownTimer(final TextView countDownView,
-                                             String expirationDate) {
+  public CountDownTimer createCountDownTimer
+  (final TextView countDownView, String expirationDate, final Button nowButton)
+  {
     long millisUntilFinished, promoDeadLine;
     try {
       promoDeadLine = DateManager.getTimeStamp(expirationDate);
@@ -307,14 +307,16 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
 
       @Override
       public void onFinish() {
-        countDownView.setText(getResources().getString(R.string.promo_expired));
-        //TODO desactivar botón de now
+        countDownView.setText(getResources().getString(R.string.never));
+        // Se desactiva el botón cuando el tiempo límite para tomar la
+        // promoción se haya cumplido.
+        nowButton.setEnabled(false);
       }};
 
     return countDownTimer;
   }
 
-  public void changeButtonToCode() {
+  public void changeButtonToCode(final Button nowButton) {
     // El usuario está tratando de visualizar una promoción que ya obtuvo.
     // Por eso, desaparece el botón de Now y aparece el código para redimirla.
     nowButton.setVisibility(View.GONE);
@@ -337,18 +339,19 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
   public void askToTakePromo() {
     // Se muestra un diálogo al usuario para que decida si desea tomar la
     // promoción actual o no.
-    UserFeedback.createAlertDialog(this, R.string.promo,
-                                   R.string.confirm_taking_promo,
-                                   R.string._continue, R.string.cancel,
-                                   TAKE_PROMO);
+    UserFeedback
+    .showAlertDialog(this, R.string.promo,
+                     getResources().getString(R.string.confirm_taking_promo),
+                     R.string._continue, R.string.cancel, TAKE_PROMO);
   }
 
   public void showObtainedPromo() {
     // Se muestra un diálogo al usuario para indicarle que ya ha sido acreedor
     // de la promoción.
-    UserFeedback.createAlertDialog(this, R.string.promo_obtained,
-                                   R.string.promo_now_in_list, R.string.ok,
-                                   R.string.go_to_my_promos, OBTAINED_PROMO);
+    UserFeedback
+    .showAlertDialog(this, R.string.promo_obtained,
+                     getResources().getString(R.string.promo_now_in_list),
+                     R.string.ok, R.string.go_to_my_promos, OBTAINED_PROMO);
   }
 
   @Override
@@ -387,10 +390,9 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
         }
         else if (errorsMessages.containsKey("promo")) {
           UserFeedback
-          .createAlertDialog(this, R.string.never, R.string.app_name,
-                             R.string.ok, UserFeedback.NO_BUTTON_TO_SHOW,
-                             action);
-          //TODO cambiar mensaje y parametrización de createAlertDialog.
+          .showAlertDialog(this, R.string.never, errorsMessages.get("promo"),
+                           R.string.ok, UserFeedback.NO_BUTTON_TO_SHOW, action);
+          //TODO desactivar el botón y poner personas límite en cero.
         }
         break;
     }
@@ -480,11 +482,11 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
 
               // Se capturan botón y código de la vista actual para realizar el
               // intercambio.
-              nowButton = (Button) promosFlipper.getCurrentView()
-                          .findViewById(R.id.now_button);
+              Button nowButton = (Button) promosFlipper.getCurrentView()
+                                 .findViewById(R.id.now_button);
               redemptionCode = (TextView) promosFlipper.getCurrentView()
                                .findViewById(R.id.redemption_code);
-              changeButtonToCode();
+              changeButtonToCode(nowButton);
 
               showObtainedPromo();
             }
