@@ -33,7 +33,7 @@ public class SplashActivity extends Activity {
 
           } finally {
             // Luego se ingresa propiamente a la aplicación.
-            Intent openApp = new Intent(SplashActivity.this, Login.class);
+            Intent openApp = new Intent(SplashActivity.this, Register.class);
             if (isThereLoginInstance()) {
               updateUserData();
               openApp = new Intent(SplashActivity.this, TabsHandler.class);

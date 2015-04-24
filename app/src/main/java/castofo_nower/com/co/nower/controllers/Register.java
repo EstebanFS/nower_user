@@ -45,7 +45,7 @@ ParsedErrors {
   private TextView passwordView;
   private TextView passwordConfirmationView;
   // Calendario donde se almacena la fecha escogida.
-  private Calendar birthday;
+  private static Calendar birthday;
   private TextView birthdayView;
 
   private String name;
@@ -182,9 +182,13 @@ ParsedErrors {
   public static class DatePickerFragment extends DialogFragment implements
   DatePickerDialog.OnDateSetListener {
 
+    public static final int MAX_AGE = 100;
+    public static final int MIN_AGE = 12;
+    public static final int MAX_DAY = 31;
+    public static final int MIN_DAY = 1;
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-      // Use the current date as the default date in the picker.
       final Calendar c = Calendar.getInstance();
       int year = c.get(Calendar.YEAR);
       int month = c.get(Calendar.MONTH);
@@ -199,12 +203,21 @@ ParsedErrors {
         DatePicker datePicker = datePickerDialog.getDatePicker();
         Calendar calendarForLimits = Calendar.getInstance();
         // La máxima edad permitida son 100 años.
-        calendarForLimits.add(Calendar.YEAR, -100);
+        calendarForLimits.add(Calendar.YEAR, -MAX_AGE);
+        calendarForLimits.set(Calendar.MONTH, Calendar.JANUARY);
+        calendarForLimits.set(Calendar.DAY_OF_MONTH, MIN_DAY);
         datePicker.setMinDate(calendarForLimits.getTimeInMillis());
-        // La mínima edad permitida son 12 años. Por eso se retorna el
-        // calendario a la fecha actual y se le restan 12 años.
-        calendarForLimits.add(Calendar.YEAR, 100 - 12);
+        // La mínima edad permitida son 12 años.
+        calendarForLimits.add(Calendar.YEAR, MAX_AGE - MIN_AGE);
+        calendarForLimits.set(Calendar.MONTH, Calendar.DECEMBER);
+        calendarForLimits.set(Calendar.DAY_OF_MONTH, MAX_DAY);
         datePicker.setMaxDate(calendarForLimits.getTimeInMillis());
+      }
+
+      if (birthday != null) {
+        datePickerDialog.updateDate(birthday.get(Calendar.YEAR),
+                                    birthday.get(Calendar.MONTH),
+                                    birthday.get(Calendar.DAY_OF_MONTH));
       }
 
       return datePickerDialog;

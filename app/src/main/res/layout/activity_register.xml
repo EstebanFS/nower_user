@@ -108,7 +108,8 @@
       android:gravity="center_vertical"
       android:onClick="showDatePickerDialog"
       android:clickable="true"
-      android:editable="false"/>
+      android:editable="false"
+      android:focusableInTouchMode="false"/>
 
     <RadioGroup
       android:id="@+id/gender"
