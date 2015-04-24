@@ -22,11 +22,12 @@ AlertDialogsResponses {
 
   private final Context context;
   private GeolocationInterface listeningActivity;
-  private UserFeedback userFeedback = new UserFeedback();
 
   // LocationManager es la clase de Android encargada de gestionar la
   // geolocalización del usuario.
   protected LocationManager locationManager;
+
+  private UserFeedback userFeedback = new UserFeedback();
 
   private boolean isGPSEnabled = false;
   private boolean isNetworkEnabled = false;
@@ -45,7 +46,6 @@ AlertDialogsResponses {
 
   public Geolocation(Context context) {
     this.context = context;
-    userFeedback.addListeningActivity(this);
     verifyLocationPossibilities();
   }
 
@@ -157,11 +157,13 @@ AlertDialogsResponses {
   }
 
   public void askToEnableGPS() {
+    userFeedback.addListeningActivity(this);
     // Se muestra un diálogo al usuario para que active el GPS.
-    UserFeedback.createAlertDialog(context, R.string.gps,
-                                   R.string.enable_gps_suggestion,
-                                   R.string.activate,
-                                   UserFeedback.NO_BUTTON_TO_SHOW, ENABLE_GPS);
+    UserFeedback
+    .showAlertDialog(context, R.string.gps, context.getResources()
+                     .getString(R.string.enable_gps_suggestion),
+                     R.string.activate, UserFeedback.NO_BUTTON_TO_SHOW,
+                     ENABLE_GPS);
   }
 
   @Override

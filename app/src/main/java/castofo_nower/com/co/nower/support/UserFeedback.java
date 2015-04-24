@@ -20,16 +20,15 @@ public class UserFeedback {
     this.listeningActivity = activity;
   }
 
-  public static void createAlertDialog(final Context context, int titleId,
-                                       int messageId,
-                                       final int positiveButtonId,
-                                       final int negativeButtonId,
-                                       final String action) {
+  public static void showAlertDialog
+  (final Context context, int titleId, String message,
+   final int positiveButtonId, final int negativeButtonId, final String action)
+  {
     android.app.AlertDialog.Builder builder = new android.app.AlertDialog
                                               .Builder(context);
 
     builder.setTitle(context.getResources().getString(titleId));
-    builder.setMessage(context.getResources().getString(messageId));
+    builder.setMessage(message);
 
     builder.setPositiveButton(context.getResources()
                               .getString(positiveButtonId),
@@ -63,8 +62,8 @@ public class UserFeedback {
     alertDialog.show();
   }
 
-  public static void showToastMessage(Context context, String message,
-                                      int duration) {
+  public static void showToastMessage
+  (Context context, String message, int duration) {
     Toast.makeText(context, message, duration).show();
   }
 

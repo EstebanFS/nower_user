@@ -144,7 +144,7 @@ ParsedErrors {
       for (int i = 0; i < userRedemptions.length(); ++i) {
         JSONObject internRedemption = userRedemptions.getJSONObject(i);
         int id = internRedemption.getInt("id");
-        int user_id = internRedemption.getInt("user_id");
+        int userId = internRedemption.getInt("user_id");
         String code = internRedemption.getString("code");
         boolean redeemed = internRedemption.getBoolean("redeemed");
         String storeName = internRedemption.getString("store_name");

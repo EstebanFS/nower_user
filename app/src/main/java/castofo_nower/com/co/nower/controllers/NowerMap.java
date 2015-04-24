@@ -31,6 +31,7 @@ import java.util.TreeMap;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
+import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
 import castofo_nower.com.co.nower.helpers.GeolocationInterface;
 import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
@@ -44,8 +45,8 @@ import castofo_nower.com.co.nower.models.Promo;
 
 
 public class NowerMap extends FragmentActivity implements SubscribedActivities,
-GeolocationInterface, ParsedErrors, GoogleMap.OnMarkerClickListener,
-GoogleMap.OnInfoWindowClickListener {
+GeolocationInterface, AlertDialogsResponses, ParsedErrors,
+GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
   private GoogleMap map;
   private int ZOOM_LEVEL = 14;
@@ -59,6 +60,8 @@ GoogleMap.OnInfoWindowClickListener {
   private Map<String, String> params = new HashMap<String, String>();
 
   private ProgressDialog progressDialog = null;
+
+  private UserFeedback userFeedback = new UserFeedback();
 
   private RequestErrorsHandler requestErrorsHandler = new
                                                       RequestErrorsHandler();
@@ -75,6 +78,8 @@ GoogleMap.OnInfoWindowClickListener {
   public static final int OP_SUCCEEDED = 0;
   public static final String SHOW_BRANCH_PROMOS = "SHOW_BRANCH_PROMOS";
 
+  public static final String NO_MAP = "NO_MAP";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -90,6 +95,8 @@ GoogleMap.OnInfoWindowClickListener {
 
     requestErrorsHandler.addListeningActivity(this);
 
+    userFeedback.addListeningActivity(this);
+
     // Se captura el mapa dentro de la variable map para poderlo gestionar.
     map = ((SupportMapFragment) getSupportFragmentManager()
            .findFragmentById(R.id.map)).getMap();
@@ -104,7 +111,10 @@ GoogleMap.OnInfoWindowClickListener {
       verifyLocationProviders();
     }
     else {
-      //TODO acción en caso de que el mapa no haya cargado
+      UserFeedback
+      .showAlertDialog(this, R.string.sorry,
+                       getResources().getString(R.string.error_loading_map),
+                       R.string.exit, UserFeedback.NO_BUTTON_TO_SHOW, NO_MAP);
     }
   }
 
@@ -279,6 +289,15 @@ GoogleMap.OnInfoWindowClickListener {
     MapData.userLat = latitude;
     MapData.userLong = longitude;
     animateCameraToPosition(latitude, longitude);
+  }
+
+  @Override
+  public void notifyUserResponse(String action, int buttonPressedId) {
+    switch (action) {
+      case NO_MAP:
+        if (buttonPressedId == R.string.exit) SplashActivity.exitApp(this);
+        break;
+    }
   }
 
   @Override

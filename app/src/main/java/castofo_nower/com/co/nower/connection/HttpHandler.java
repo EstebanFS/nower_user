@@ -170,11 +170,12 @@ public class HttpHandler {
       new ServerConnection().execute();
     }
     else {
-      UserFeedback.createAlertDialog(context, R.string.internet_connection,
-                                     R.string.internet_connection_required,
-                                     R.string.got_it,
-                                     UserFeedback.NO_BUTTON_TO_SHOW,
-                                     NO_INTERNET);
+      UserFeedback
+      .showAlertDialog(context, R.string.internet_connection,
+                       context.getResources()
+                       .getString(R.string.internet_connection_required),
+                       R.string.got_it, UserFeedback.NO_BUTTON_TO_SHOW,
+                       NO_INTERNET);
     }
   }
 
