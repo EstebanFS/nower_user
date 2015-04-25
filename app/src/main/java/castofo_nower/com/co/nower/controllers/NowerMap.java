@@ -340,6 +340,7 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
               double longitude = internLocation.getDouble("longitude");
               int storeId = internLocation.getInt("store_id");
               String storeName = internLocation.getString("store_name");
+              String storeLogoURL = internLocation.getString("store_logo");
 
               JSONArray promos = internLocation.getJSONArray("promos");
               for (int j = 0; j < promos.length(); ++j) {
@@ -361,7 +362,7 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
               }
 
               Branch branch = new Branch(id, name, latitude, longitude, storeId,
-                                         storeName, promoList);
+                                         storeName, storeLogoURL, promoList);
               branchesMap.put(branch.getId(), branch);
 
               putMarkerAndSaveBranch(branch);

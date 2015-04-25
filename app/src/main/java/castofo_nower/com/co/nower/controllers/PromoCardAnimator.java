@@ -41,6 +41,7 @@ import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
 import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
+import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
@@ -88,6 +89,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
   private int branchId;
   private String code;
   private String storeName;
+  private String storeLogoURL;
   private boolean isUserPromoRedeemed;
   private ArrayList<Promo> promos = new ArrayList<>();
   private Map<Integer, Redemption> userPromos = new LinkedHashMap<>();
@@ -157,7 +159,9 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
     action = getIntent().getExtras().getString("action");
     if (action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
       branchId = getIntent().getExtras().getInt("branch_id");
-      storeName = MapData.getBranchesMap().get(branchId).getStoreName();
+      Branch currentBranch = MapData.getBranchesMap().get(branchId);
+      storeName = currentBranch.getStoreName();
+      storeLogoURL = currentBranch.getStoreLogoURL();
       // En este punto se capturan las promociones correspondientes al
       // establecimiento seleccionado por el usuario.
       setBranchPromos();
@@ -171,6 +175,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
       code = User.getTakenPromos().get(promoId).getCode();
       isUserPromoRedeemed = User.getTakenPromos().get(promoId).isRedeemed();
       storeName = getIntent().getExtras().getString("store_name");
+      storeLogoURL = getIntent().getExtras().getString("store_logo");
       Promo promo = MapData.getPromosMap().get(promoId);
       // En este punto se captura la promoción que desea redimir el usuario.
       promos.add(promo);
@@ -254,11 +259,10 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
                          (R.id.redemption_code);
 
         // Se modifica la información de la promoción a mostrar.
-        if (/*coger el store logo url != null*/true) {
-          String storeLogoUrl = "/uploads/store/logo/142/small_f83e705c24f60" +
-                  "848897ed90bea805652228f8d7670fe7097290202051b4950d4.png";
-          new ImageDownloader(storeLogo, storeLogoProgress)
-                  .execute(storeLogoUrl);
+        if (storeLogoURL != null) {
+          ImageDownloader imageDownloader = new ImageDownloader(storeLogo,
+                  storeLogoProgress, storeLogoURL);
+          imageDownloader.execute();
         }
         else {
           // Poner el storeLogoProgress en GONE, y poner una foto genérica
@@ -508,7 +512,8 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
               int user_id = redemption.getInt("user_id");
               boolean redeemed = redemption.getBoolean("redeemed");
 
-              Redemption r = new Redemption(code, promoId, redeemed, storeName);
+              Redemption r = new Redemption(code, promoId, redeemed, storeName,
+                                            storeLogoURL);
               // Se adiciona la promoción a la lista de promociones del usuario.
               User.addPromoToTakenPromos(promoId, r);
 

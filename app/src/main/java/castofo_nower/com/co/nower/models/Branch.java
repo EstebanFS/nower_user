@@ -10,16 +10,19 @@ public class Branch {
   private double longitude;
   private int storeId;
   private String storeName;
+  private String storeLogoURL;
   private ArrayList<Integer> promosIds;
 
   public Branch(int id, String name, double latitude, double longitude,
-                int storeId, String storeName, ArrayList<Integer> promosIds) {
+                int storeId, String storeName, String storeLogoURL,
+                ArrayList<Integer> promosIds) {
     this.id = id;
     this.name = name;
     this.latitude = latitude;
     this.longitude = longitude;
     this.storeId = storeId;
     this.storeName = storeName;
+    this.storeLogoURL = storeLogoURL;
     this.promosIds = promosIds;
   }
 
@@ -45,6 +48,10 @@ public class Branch {
 
   public String getStoreName() {
     return storeName;
+  }
+
+  public String getStoreLogoURL() {
+    return storeLogoURL;
   }
 
   public ArrayList<Integer> getPromosIds() {
@@ -73,6 +80,10 @@ public class Branch {
 
   public void setStoreName(String storeName) {
     this.storeName = storeName;
+  }
+
+  public void setStoreLogoURL(String storeLogoURL) {
+    this.storeLogoURL = storeLogoURL;
   }
 
   public void setPromosIds(ArrayList<Integer> promosIds) {

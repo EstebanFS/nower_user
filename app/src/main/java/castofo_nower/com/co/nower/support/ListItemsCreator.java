@@ -1,7 +1,11 @@
 package castofo_nower.com.co.nower.support;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
+import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -40,7 +44,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
 
     LayoutInflater inflater = (LayoutInflater) context
                               .getSystemService
-                              (Context.LAYOUT_INFLATER_SERVICE);
+                                      (Context.LAYOUT_INFLATER_SERVICE);
 
     View item = inflater.inflate(resource, parent, false);
 
@@ -82,7 +86,17 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
           // Se le pone el id de la promoción a redimir con el fin de poder
           // gestionarla al ser presionada por el usuario.
           item.setId(promoId);
-          iconImg = context.getResources().getDrawable(R.drawable.promo_icon);
+          // Se recupera el logo de la tienda
+          if (redemption.getStoreLogoURL() != null) {
+            ImageDownloader imageDownloader = new ImageDownloader(icon, null,
+                    redemption.getStoreLogoURL());
+            imageDownloader.execute();
+          }
+          else {
+            // La tienda no tiene logo, se pone una imagen por defecto
+            iconImg = context.getResources()
+                    .getDrawable(R.drawable.nower_marker);
+          }
         }
         break;
       case BranchesList.LIST_BRANCHES:
@@ -95,7 +109,19 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         // Se le pone el ID del establecimiento para poder gestionarlo al ser
         // presionado por el usuario.
         item.setId(b.getId());
-        iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
+        // Se recupera el logo de la tienda
+
+        if (b.getStoreLogoURL() != null) {
+          ImageDownloader imageDownloader = new ImageDownloader(icon, null,
+                  b.getStoreLogoURL());
+          imageDownloader.execute();
+        }
+        else {
+          // La tienda no tiene logo, se pone una imagen por defecto
+          iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
+        }
+
+        //iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
         break;
     }
 
