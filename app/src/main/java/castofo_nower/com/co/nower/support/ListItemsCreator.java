@@ -86,7 +86,17 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
           // Se le pone el id de la promoción a redimir con el fin de poder
           // gestionarla al ser presionada por el usuario.
           item.setId(promoId);
-          iconImg = context.getResources().getDrawable(R.drawable.promo_icon);
+          // Se recupera el logo de la tienda
+          if (redemption.getStoreLogoURL() != null) {
+            ImageDownloader imageDownloader = new ImageDownloader(icon, null,
+                    redemption.getStoreLogoURL());
+            imageDownloader.execute();
+          }
+          else {
+            // La tienda no tiene logo, se pone una imagen por defecto
+            iconImg = context.getResources()
+                    .getDrawable(R.drawable.nower_marker);
+          }
         }
         break;
       case BranchesList.LIST_BRANCHES:
@@ -101,9 +111,16 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         item.setId(b.getId());
         // Se recupera el logo de la tienda
 
-        ImageDownloader imageDownloader = new ImageDownloader(icon, null,
-                b.getStoreLogoURL());
-        imageDownloader.execute();
+        if (b.getStoreLogoURL() != null) {
+          ImageDownloader imageDownloader = new ImageDownloader(icon, null,
+                  b.getStoreLogoURL());
+          imageDownloader.execute();
+        }
+        else {
+          // La tienda no tiene logo, se pone una imagen por defecto
+          iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
+        }
+
         //iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
         break;
     }

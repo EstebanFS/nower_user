@@ -175,6 +175,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
       code = User.getTakenPromos().get(promoId).getCode();
       isUserPromoRedeemed = User.getTakenPromos().get(promoId).isRedeemed();
       storeName = getIntent().getExtras().getString("store_name");
+      storeLogoURL = getIntent().getExtras().getString("store_logo");
       Promo promo = MapData.getPromosMap().get(promoId);
       // En este punto se captura la promoción que desea redimir el usuario.
       promos.add(promo);
@@ -511,7 +512,8 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
               int user_id = redemption.getInt("user_id");
               boolean redeemed = redemption.getBoolean("redeemed");
 
-              Redemption r = new Redemption(code, promoId, redeemed, storeName);
+              Redemption r = new Redemption(code, promoId, redeemed, storeName,
+                                            storeLogoURL);
               // Se adiciona la promoción a la lista de promociones del usuario.
               User.addPromoToTakenPromos(promoId, r);
 

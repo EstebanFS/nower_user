@@ -88,10 +88,10 @@ ParsedErrors {
 
     // Se agrega una Redemption inexistente como indicador de inicio de lista
     // para la promociones no redimidas.
-    userPromosNotRedeemed.add(new Redemption("0", 0, false, null));
+    userPromosNotRedeemed.add(new Redemption("0", 0, false, null, null));
     // Se agrega una Redemption inexistente como indicador de inicio de lista
     // para la promociones redimidas.
-    userPromosRedeemed.add(new Redemption("1", 0, true, null));
+    userPromosRedeemed.add(new Redemption("1", 0, true, null, null));
 
     // Se utiliza este ciclo para almacenar en dos pilas distintas las
     //promociones redimidas y no redimidas del usuario.
@@ -148,6 +148,7 @@ ParsedErrors {
         String code = internRedemption.getString("code");
         boolean redeemed = internRedemption.getBoolean("redeemed");
         String storeName = internRedemption.getString("store_name");
+        String storeLogoURL = internRedemption.getString("store_logo");
 
         // Se captura la información de la promoción asociada.
         JSONObject redemptionPromo = internRedemption.getJSONObject("promo");
@@ -159,7 +160,7 @@ ParsedErrors {
 
 
         Redemption redemption = new Redemption(code, promoId, redeemed,
-                                               storeName);
+                                               storeName, storeLogoURL);
 
         // Se adiciona la promoción a la lista de promociones del usuario.
         User.addPromoToTakenPromos(redemption.getPromoId(), redemption);
@@ -241,6 +242,8 @@ ParsedErrors {
       showPromoToRedeem.putExtra("promo_id", promoId);
       showPromoToRedeem.putExtra("store_name", User.getTakenPromos()
               .get(promoId).getStoreName());
+      showPromoToRedeem.putExtra("store_logo", User.getTakenPromos()
+              .get(promoId).getStoreLogoURL());
       showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
       startActivity(showPromoToRedeem);
     }

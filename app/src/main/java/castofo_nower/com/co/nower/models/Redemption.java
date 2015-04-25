@@ -6,13 +6,15 @@ public class Redemption {
   private int promoId;
   private boolean isRedeemed;
   private String storeName;
+  private String storeLogoURL;
 
   public Redemption(String code, int promoId, boolean isRedeemed,
-                    String storeName) {
+                    String storeName, String storeLogoURL) {
     this.code = code;
     this.promoId = promoId;
     this.isRedeemed = isRedeemed;
     this.storeName = storeName;
+    this.storeLogoURL = storeLogoURL;
   }
 
   public String getCode() {
@@ -27,6 +29,11 @@ public class Redemption {
     return isRedeemed;
   }
 
-  public String getStoreName() { return storeName; }
+  public String getStoreName() {
+    return storeName;
+  }
 
+  public String getStoreLogoURL() {
+    return storeLogoURL;
+  }
 }
