@@ -39,8 +39,8 @@
   <string name="birthday_date">Fecha de nacimiento</string>
   <string name="log_in">Ingresar</string>
   <string name="register">Registrarse</string>
-  <string name="dont_have_account">No tengo una cuenta, crear una</string>
-  <string name="already_have_account">Ya tengo una cuenta, ingresar</string>
+  <string name="dont_have_account"><u>No tengo una cuenta, crear una</u></string>
+  <string name="already_have_account"><u>Ya tengo una cuenta, ingresar</u></string>
   <string name="male">Hombre</string>
   <string name="female">Mujer</string>
 
