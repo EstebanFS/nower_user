@@ -18,15 +18,25 @@
       android:layout_height="wrap_content"
       android:layout_weight="1"
       android:orientation="vertical"
-      android:layout_gravity="center">
+      android:layout_gravity="center"
+      android:gravity="center">
+
+      <ProgressBar
+        android:id="@+id/store_logo_progress"
+        android:layout_width="60dp"
+        android:layout_height="60dp"/>
 
       <ImageView
+        android:id="@+id/store_logo"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:maxHeight="60dp"
         android:maxWidth="60dp"
+        android:minWidth="60dp"
+        android:minHeight="60dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/bk_logo"/>
+        android:src="@drawable/bk_logo"
+        android:visibility="gone"/>
 
     </LinearLayout>
 

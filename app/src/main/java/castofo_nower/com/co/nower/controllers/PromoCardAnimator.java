@@ -17,6 +17,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -44,6 +45,7 @@ import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
+import castofo_nower.com.co.nower.support.ImageDownloader;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.DateManager;
@@ -69,6 +71,8 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
   private RequestErrorsHandler requestErrorsHandler = new
                                                       RequestErrorsHandler();
 
+  private ProgressBar storeLogoProgress;
+  private ImageView storeLogo;
   private TextView promoTitle;
   private TextView promoStoreName;
   private TextView promoAvailableRedemptions;
@@ -230,6 +234,9 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
         promosFlipper.addView(promoCard);
 
         // Se capturan los campos que se van a modificar.
+        storeLogoProgress = (ProgressBar) promoCard
+                .findViewById(R.id.store_logo_progress);
+        storeLogo = (ImageView) promoCard.findViewById(R.id.store_logo);
         promoTitle = (TextView) promoCard.findViewById(R.id.promo_title);
         promoStoreName = (TextView) promoCard.findViewById
                          (R.id.promo_store_name);
@@ -247,6 +254,16 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
                          (R.id.redemption_code);
 
         // Se modifica la información de la promoción a mostrar.
+        if (/*coger el store logo url != null*/true) {
+          String storeLogoUrl = "/uploads/store/logo/142/small_f83e705c24f60" +
+                  "848897ed90bea805652228f8d7670fe7097290202051b4950d4.png";
+          new ImageDownloader(storeLogo, storeLogoProgress)
+                  .execute(storeLogoUrl);
+        }
+        else {
+          // Poner el storeLogoProgress en GONE, y poner una foto genérica
+          // en storeLogo.
+        }
         promoTitle.setText(promo.getTitle());
         promoStoreName.setText(storeName);
         promoExpirationDate.setText(promo.getExpirationDate());
@@ -315,6 +332,8 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
 
     return countDownTimer;
   }
+
+
 
   public void changeButtonToCode(final Button nowButton) {
     // El usuario está tratando de visualizar una promoción que ya obtuvo.

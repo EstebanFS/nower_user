@@ -58,8 +58,8 @@ public class HttpHandler {
   public static final int SERVER_INTERNAL_ERROR = 500;
 
   // Dominio del servidor.
-  private static final String DOMAIN = "http://nowerserver.tk";
-                                       //http://nowerserver.herokuapp.com";
+  public static final String DOMAIN = "http://nowerserver.tk";
+                                      //http://nowerserver.herokuapp.com";
   public static final String NAME_SPACE = "";
 
   public static final String NO_INTERNET = "NO_INTERNET";
