@@ -355,6 +355,11 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
   }
 
   public void disableNowButtonDueToNoMoreStock() {
+    ImageView availableRedemptionsIcon = (ImageView) promosFlipper
+                                         .getCurrentView().findViewById
+                                         (R.id.available_redemptions_icon);
+    availableRedemptionsIcon.setImageDrawable
+    (getResources().getDrawable(R.drawable.ic_people_limit_reached));
     TextView availableRedemptions =  (TextView) promosFlipper.getCurrentView()
                                      .findViewById
                                      (R.id.promo_available_redemptions);
