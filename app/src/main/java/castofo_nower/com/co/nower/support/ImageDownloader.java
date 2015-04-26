@@ -12,7 +12,9 @@ import java.io.InputStream;
 
 import castofo_nower.com.co.nower.connection.HttpHandler;
 
+
 public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
+
   private ImageView imageView;
   private ProgressBar progress;
   private String imageURL;
@@ -47,6 +49,8 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
     Bitmap cachedImage = ImageDownloader.imagesCache.get(imageURL);
     if (cachedImage != null) {
       showResultImage(cachedImage);
+      // Esta operación aborta el AsyncTask para evitar volver a descargar la
+      // imagen, ya que se encontraba en disponible en caché.
       this.cancel(true);
     }
   }
@@ -74,4 +78,5 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
     imageView.setImageBitmap(result);
     imageView.setVisibility(View.VISIBLE);
   }
+
 }

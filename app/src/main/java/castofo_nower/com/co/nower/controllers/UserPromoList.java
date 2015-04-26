@@ -237,13 +237,9 @@ ParsedErrors {
     int promoId = v.getId();
     if (promoId != HEADER_ID) {
       Intent showPromoToRedeem = new Intent(UserPromoList.this,
-              PromoCardAnimator.class);
+                                            PromoCardAnimator.class);
       showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
       showPromoToRedeem.putExtra("promo_id", promoId);
-      showPromoToRedeem.putExtra("store_name", User.getTakenPromos()
-              .get(promoId).getStoreName());
-      showPromoToRedeem.putExtra("store_logo", User.getTakenPromos()
-              .get(promoId).getStoreLogoURL());
       showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
       startActivity(showPromoToRedeem);
     }

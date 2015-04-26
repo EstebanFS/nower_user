@@ -215,11 +215,12 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
                                  .icon(BitmapDescriptorFactory
                                        .fromResource(R.drawable.user_marker)));
       userRange = map.addCircle(new CircleOptions()
-              .center(new LatLng(latitude, longitude))
-              .radius(RANGE_IN_METERS)
-              .strokeWidth(1f)
-              .strokeColor(Color.BLUE)
-              .fillColor(getResources().getColor(R.color.transparent_blue)));
+                                .center(new LatLng(latitude, longitude))
+                                .radius(RANGE_IN_METERS)
+                                .strokeWidth(1f)
+                                .strokeColor(Color.BLUE)
+                                .fillColor(getResources().getColor
+                                           (R.color.transparent_blue)));
     }
     // El marcador ya existía pero se debe mover, ya que la localización del
     // usuario cambió.

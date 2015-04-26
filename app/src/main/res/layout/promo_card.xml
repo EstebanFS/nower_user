@@ -35,7 +35,7 @@
         android:minWidth="60dp"
         android:minHeight="60dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/bk_logo"
+        android:src="@drawable/nower_marker"
         android:visibility="gone"/>
 
     </LinearLayout>
