@@ -2,6 +2,7 @@ package castofo_nower.com.co.nower.controllers;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +15,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -51,9 +54,11 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
   private GoogleMap map;
   private int ZOOM_LEVEL = 14;
   private int TILT_LEVEL = 60;
+  private int RANGE_IN_METERS = 3100;
   private Geolocation geolocation;
   public Marker userMarker = null;
   public Marker currentMarker = null;
+  public Circle userRange;
 
   private HttpHandler httpHandler = new HttpHandler();
   public static final String ACTION_PROMOS = "/promos/locations";
@@ -209,11 +214,18 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
                                         .getString(R.string.you_are_here))
                                  .icon(BitmapDescriptorFactory
                                        .fromResource(R.drawable.user_marker)));
+      userRange = map.addCircle(new CircleOptions()
+              .center(new LatLng(latitude, longitude))
+              .radius(RANGE_IN_METERS)
+              .strokeWidth(1f)
+              .strokeColor(Color.BLUE)
+              .fillColor(getResources().getColor(R.color.transparent_blue)));
     }
     // El marcador ya existía pero se debe mover, ya que la localización del
     // usuario cambió.
     else {
       userMarker.setPosition(new LatLng(latitude, longitude));
+      userRange.setCenter(new LatLng(latitude, longitude));
     }
     userMarker.showInfoWindow();
   }
