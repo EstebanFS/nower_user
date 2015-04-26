@@ -2,6 +2,7 @@ package castofo_nower.com.co.nower.models;
 
 import java.util.ArrayList;
 
+
 public class Branch {
 
   private int id;

@@ -76,6 +76,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
   private ImageView storeLogo;
   private TextView promoTitle;
   private TextView promoStoreName;
+  private ImageView promoAvailableRedemptionsIcon;
   private TextView promoAvailableRedemptions;
   private TextView promoDescription;
   private TextView promoTerms;
@@ -174,8 +175,8 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
       int promoId = getIntent().getExtras().getInt("promo_id");
       code = User.getTakenPromos().get(promoId).getCode();
       isUserPromoRedeemed = User.getTakenPromos().get(promoId).isRedeemed();
-      storeName = getIntent().getExtras().getString("store_name");
-      storeLogoURL = getIntent().getExtras().getString("store_logo");
+      storeName = User.getTakenPromos().get(promoId).getStoreName();
+      storeLogoURL = User.getTakenPromos().get(promoId).getStoreLogoURL();
       Promo promo = MapData.getPromosMap().get(promoId);
       // En este punto se captura la promoción que desea redimir el usuario.
       promos.add(promo);
@@ -240,15 +241,18 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
 
         // Se capturan los campos que se van a modificar.
         storeLogoProgress = (ProgressBar) promoCard
-                .findViewById(R.id.store_logo_progress);
+                            .findViewById(R.id.store_logo_progress);
         storeLogo = (ImageView) promoCard.findViewById(R.id.store_logo);
         promoTitle = (TextView) promoCard.findViewById(R.id.promo_title);
         promoStoreName = (TextView) promoCard.findViewById
                          (R.id.promo_store_name);
         final TextView promoExpirationDate = (TextView) promoCard.findViewById
                                              (R.id.promo_expiration_date);
+
         promoAvailableRedemptions = (TextView) promoCard.findViewById
                                     (R.id.promo_available_redemptions);
+        promoAvailableRedemptionsIcon = (ImageView) promoCard.findViewById
+                                        (R.id.available_redemptions_icon);
         promoDescription = (TextView) promoCard.findViewById
                            (R.id.promo_description);
         promoTerms = (TextView) promoCard.findViewById(R.id.promo_terms);
@@ -258,19 +262,27 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
         redemptionCode = (TextView) promoCard.findViewById
                          (R.id.redemption_code);
 
-        // Se modifica la información de la promoción a mostrar.
+        // Se recupera el logo de la tienda.
         if (storeLogoURL != null) {
-          ImageDownloader imageDownloader = new ImageDownloader(storeLogo,
-                  storeLogoProgress, storeLogoURL);
+          ImageDownloader imageDownloader
+          = new ImageDownloader(storeLogo, storeLogoProgress, storeLogoURL);
           imageDownloader.execute();
         }
         else {
-          // Poner el storeLogoProgress en GONE, y poner una foto genérica
-          // en storeLogo.
+          storeLogoProgress.setVisibility(View.GONE);
+          storeLogo.setVisibility(View.VISIBLE);
         }
+
+        // Se modifica la información de la promoción a mostrar.
         promoTitle.setText(promo.getTitle());
         promoStoreName.setText(storeName);
         promoExpirationDate.setText(promo.getExpirationDate());
+        // Si se trata de una promoción que ya tomó el usuario, es necesario
+        // de todas formas cerrar el candado de las promociones disponibles en
+        // caso de que ya se hayan agotado.
+        if (promo.getAvailableRedemptions() == 0) {
+          closeAvailablePromos(promoAvailableRedemptionsIcon);
+        }
         promoAvailableRedemptions
         .setText(String.valueOf(promo.getAvailableRedemptions()));
         promoDescription.setText(promo.getDescription());
@@ -337,8 +349,6 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
     return countDownTimer;
   }
 
-
-
   public void changeButtonToCode(final Button nowButton) {
     // El usuario está tratando de visualizar una promoción que ya obtuvo.
     // Por eso, desaparece el botón de Now y aparece el código para redimirla.
@@ -357,6 +367,11 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
                                           .getId()));
     params.put("user_id", String.valueOf(User.id));
     askToTakePromo();
+  }
+
+  public void closeAvailablePromos(ImageView availableRedemptionsIcon) {
+    availableRedemptionsIcon.setImageDrawable
+    (getResources().getDrawable(R.drawable.ic_people_limit_reached));
   }
 
   public void askToTakePromo() {
@@ -378,15 +393,13 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
   }
 
   public void disableNowButtonDueToNoMoreStock() {
-    ImageView availableRedemptionsIcon = (ImageView) promosFlipper
-                                         .getCurrentView().findViewById
-                                         (R.id.available_redemptions_icon);
-    availableRedemptionsIcon.setImageDrawable
-    (getResources().getDrawable(R.drawable.ic_people_limit_reached));
-    TextView availableRedemptions =  (TextView) promosFlipper.getCurrentView()
-                                     .findViewById
-                                     (R.id.promo_available_redemptions);
-    availableRedemptions.setText(getResources().getString(R.string.zero));
+    promoAvailableRedemptionsIcon = (ImageView) promosFlipper
+                                    .getCurrentView().findViewById
+                                    (R.id.available_redemptions_icon);
+    promoAvailableRedemptions = (TextView) promosFlipper.getCurrentView()
+                                .findViewById(R.id.promo_available_redemptions);
+    closeAvailablePromos(promoAvailableRedemptionsIcon);
+    promoAvailableRedemptions.setText(getResources().getString(R.string.zero));
     Button nowButton = (Button) promosFlipper.getCurrentView()
                        .findViewById(R.id.now_button);
     nowButton.setEnabled(false);
@@ -509,13 +522,20 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
               JSONObject redemption = responseJson.getJSONObject("redemption");
               String code = redemption.getString("code");
               int promoId = redemption.getInt("promo_id");
-              int user_id = redemption.getInt("user_id");
+              int userId = redemption.getInt("user_id");
               boolean redeemed = redemption.getBoolean("redeemed");
+
+              JSONObject promo = responseJson.getJSONObject("promo");
+              int availableRedemptions = promo.getInt("available_redemptions");
 
               Redemption r = new Redemption(code, promoId, redeemed, storeName,
                                             storeLogoURL);
               // Se adiciona la promoción a la lista de promociones del usuario.
               User.addPromoToTakenPromos(promoId, r);
+
+              // Se actualiza la cantidad de promociones disponibles.
+              MapData.getPromosMap().get(promoId)
+              .setAvailableRedemptions(availableRedemptions);
 
               // Se ponen estos valores en las variables como los actuales para
               // poder simular la obtención de la promoción para el usuario.
@@ -529,6 +549,21 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
               redemptionCode = (TextView) promosFlipper.getCurrentView()
                                .findViewById(R.id.redemption_code);
               changeButtonToCode(nowButton);
+
+              promoAvailableRedemptions = (TextView) promosFlipper
+                                          .getCurrentView().findViewById
+                                          (R.id.promo_available_redemptions);
+              promoAvailableRedemptions.setText(String.valueOf
+                                                (availableRedemptions));
+
+              if (availableRedemptions == 0) {
+                // Es necesario cerrar el candado de las promociones
+                // disponibles.
+                promoAvailableRedemptionsIcon
+                = (ImageView) promosFlipper.getCurrentView().findViewById
+                  (R.id.available_redemptions_icon);
+                closeAvailablePromos(promoAvailableRedemptionsIcon);
+              }
 
               showObtainedPromo();
             }

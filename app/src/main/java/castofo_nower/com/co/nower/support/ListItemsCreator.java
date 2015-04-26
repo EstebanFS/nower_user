@@ -1,11 +1,7 @@
 package castofo_nower.com.co.nower.support;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,16 +82,11 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
           // Se le pone el id de la promoción a redimir con el fin de poder
           // gestionarla al ser presionada por el usuario.
           item.setId(promoId);
-          // Se recupera el logo de la tienda
+          // Se recupera el logo de la tienda.
           if (redemption.getStoreLogoURL() != null) {
-            ImageDownloader imageDownloader = new ImageDownloader(icon, null,
-                    redemption.getStoreLogoURL());
+            ImageDownloader imageDownloader
+            = new ImageDownloader(icon, null, redemption.getStoreLogoURL());
             imageDownloader.execute();
-          }
-          else {
-            // La tienda no tiene logo, se pone una imagen por defecto
-            iconImg = context.getResources()
-                    .getDrawable(R.drawable.nower_marker);
           }
         }
         break;
@@ -109,18 +100,13 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         // Se le pone el ID del establecimiento para poder gestionarlo al ser
         // presionado por el usuario.
         item.setId(b.getId());
-        // Se recupera el logo de la tienda
 
+        // Se recupera el logo de la tienda.
         if (b.getStoreLogoURL() != null) {
-          ImageDownloader imageDownloader = new ImageDownloader(icon, null,
-                  b.getStoreLogoURL());
+          ImageDownloader imageDownloader
+          = new ImageDownloader(icon, null, b.getStoreLogoURL());
           imageDownloader.execute();
         }
-        else {
-          // La tienda no tiene logo, se pone una imagen por defecto
-          iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
-        }
-
         //iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
         break;
     }
@@ -129,46 +115,6 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
     subtitle.setText(subtitleText);
 
     if (iconImg != null) icon.setImageDrawable(iconImg);
-
-        /*
-        Drawable categoryIcon = null;
-        switch(itemsArrayList.get(position).getCategory()){
-            case "biblioteca":
-                categoryIcon = context.getResources().getDrawable(R.drawable.library);
-                break;
-            case "bloque":
-                categoryIcon = context.getResources().getDrawable(R.drawable.block);
-                break;
-            case "auditorio":
-                categoryIcon = context.getResources().getDrawable(R.drawable.auditorium);
-                break;
-            case "idiomas":
-                categoryIcon = context.getResources().getDrawable(R.drawable.language_center);
-                break;
-            case "cec":
-                categoryIcon = context.getResources().getDrawable(R.drawable.cec);
-                break;
-            case "portería":
-                categoryIcon = context.getResources().getDrawable(R.drawable.entrance);
-                break;
-            case "no resultados":
-                categoryIcon = context.getResources().getDrawable(R.drawable.no_results);
-                break;
-            case "nueva nota":
-                categoryIcon = context.getResources().getDrawable(R.drawable.new_note);
-                break;
-            case "marcador usuario":
-                categoryIcon = context.getResources().getDrawable(R.drawable.user_marker);
-                break;
-            case "nota usuario":
-                categoryIcon = context.getResources().getDrawable(R.drawable.user_note);
-                break;
-
-            default:
-                break;
-        }
-        categoryView.setImageDrawable(categoryIcon);
-        */
 
     //Se retorna el item que va a ser mostrado para cada fila de la lista.
     return item;

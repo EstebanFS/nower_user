@@ -36,4 +36,5 @@ public class Redemption {
   public String getStoreLogoURL() {
     return storeLogoURL;
   }
+
 }
