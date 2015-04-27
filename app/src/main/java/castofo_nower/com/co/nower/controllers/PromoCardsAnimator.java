@@ -50,8 +50,6 @@ import castofo_nower.com.co.nower.support.RequestErrorsHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.DateManager;
 
-import com.manuelpeinado.fadingactionbar.FadingActionBarHelper;
-
 
 public class PromoCardsAnimator extends Activity implements
 SubscribedActivities, AlertDialogsResponse, ParsedErrors {
@@ -63,6 +61,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
   private ViewPager promosFlipper;
   private ArrayList<View> promoCards = new ArrayList<>();
+  private View requestingView;
 
   Animation slide_in_left, slide_out_right, slide_in_right, slide_out_left;
 
@@ -128,19 +127,37 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   }
 
   public void initView() {
-    FadingActionBarHelper helper = new FadingActionBarHelper()
-                                   .actionBarBackground
-                                   (R.drawable.ab_background)
-                                   .headerLayout(R.layout.header)
-                                   .contentLayout
-                                   (R.layout.activity_promo_card_animator);
-    setContentView(helper.createView(this));
-    ImageView headerImage = ((ImageView) findViewById(R.id.header_image));
-    headerImage.setImageResource(R.drawable.promo);
-    helper.initActionBar(this);
+    setContentView(R.layout.activity_promo_card_animator);
     getActionBar().setDisplayHomeAsUpEnabled(true);
-
+    promoCards.clear();
     promosFlipper = (ViewPager) findViewById(R.id.promos_flipper);
+    promosFlipper.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+      public void onPageScrollStateChanged(int state) { }
+      public void onPageScrolled(int position, float positionOffset,
+                                 int positionOffsetPixels) {
+        int padding = 40;
+        // Si no hay ninguna vista.
+        if (promoCards.isEmpty()) {
+          promosFlipper.setPadding(0, 0, 0, 0);
+        }
+        // Si la vista es la última.
+        else if (position == promoCards.size() - 1) {
+          // Si existe algún elemento anterior se utiliza padding hacia la
+          // izquierda.
+          if (position - 1 >= 0) {
+            promosFlipper.setPadding(padding, 0, 0, 0);
+          }
+          // Si no existe elemento anterior, no se pone padding en ninguna
+          // dirección (acá se incluye cuando es un único elemento).
+          else {
+            promosFlipper.setPadding(0, 0, 0, 0);
+          }
+        }
+        // Si no es la última vista se pone padding a la derecha
+        else promosFlipper.setPadding(0, 0, padding, 0);
+      }
+      public void onPageSelected(int position) { }
+    });
   }
 
   public void setFlipperAnimation() {
@@ -370,7 +387,6 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
     // Se hacen visibles las tarjetas de promoción.
     promosFlipper.setAdapter(adapter);
     promosFlipper.setClipToPadding(false);
-    promosFlipper.setPadding(50, 0, 50, 0);
   }
 
   public View getPagerCurrentView() {
@@ -381,9 +397,13 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   }
 
   public void now(View v) {
-    params.put("promo_id", String.valueOf(getPagerCurrentView().getId()));
-    params.put("user_id", String.valueOf(User.id));
-    askToTakePromo();
+    // Solamente se puede tomar la promoción actualmente visible.
+    if (v == getPagerCurrentView().findViewById(R.id.now_button)) {
+      requestingView = getPagerCurrentView();
+      params.put("promo_id", String.valueOf(requestingView.getId()));
+      params.put("user_id", String.valueOf(User.id));
+      askToTakePromo();
+    }
   }
 
   public void askToTakePromo() {
@@ -405,15 +425,13 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   }
 
   public void disableNowButtonDueToNoMoreStock() {
-    promoAvailableRedemptionsIcon = (ImageView) getPagerCurrentView()
-                                    .findViewById
+    promoAvailableRedemptionsIcon = (ImageView) requestingView.findViewById
                                     (R.id.available_redemptions_icon);
-    promoAvailableRedemptions = (TextView) getPagerCurrentView().findViewById
+    promoAvailableRedemptions = (TextView) requestingView.findViewById
                                 (R.id.promo_available_redemptions);
     closeAvailablePromos(promoAvailableRedemptionsIcon);
     promoAvailableRedemptions.setText(getResources().getString(R.string.zero));
-    Button nowButton = (Button) getPagerCurrentView().findViewById
-                       (R.id.now_button);
+    Button nowButton = (Button) requestingView.findViewById(R.id.now_button);
     nowButton.setEnabled(false);
   }
 
@@ -557,14 +575,13 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
               // Se capturan botón y código de la vista actual para realizar el
               // intercambio.
-              Button nowButton = (Button) getPagerCurrentView().findViewById
+              Button nowButton = (Button) requestingView.findViewById
                                  (R.id.now_button);
-              redemptionCode = (TextView) getPagerCurrentView().findViewById
+              redemptionCode = (TextView) requestingView.findViewById
                                (R.id.redemption_code);
               changeButtonToCode(nowButton);
 
-              promoAvailableRedemptions = (TextView) getPagerCurrentView()
-                                          .findViewById
+              promoAvailableRedemptions = (TextView) requestingView.findViewById
                                           (R.id.promo_available_redemptions);
               promoAvailableRedemptions.setText(String.valueOf
                                                 (availableRedemptions));
@@ -573,7 +590,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
                 // Es necesario cerrar el candado de las promociones
                 // disponibles.
                 promoAvailableRedemptionsIcon
-                = (ImageView) getPagerCurrentView().findViewById
+                = (ImageView) requestingView.findViewById
                   (R.id.available_redemptions_icon);
                 closeAvailablePromos(promoAvailableRedemptionsIcon);
               }
