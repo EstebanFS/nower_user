@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="50dp"
+              android:layout_height="50dp">
+  <ImageView
+    android:layout_width="47dp"
+    android:layout_height="50dp"
+    android:minHeight="50dp"
+    android:maxHeight="50dp"
+    android:minWidth="47dp"
+    android:maxWidth="47dp"
+    android:adjustViewBounds="true"
+    android:src="@drawable/marker_background"/>
+
+  <ImageView
+    android:id="@+id/marker_logo"
+    android:layout_width="32dp"
+    android:layout_height="22dp"
+    android:layout_marginLeft="7dp"
+    android:layout_marginTop="10dp"
+    android:maxWidth="32dp"
+    android:maxHeight="22dp"
+    android:adjustViewBounds="true" />
+</RelativeLayout>

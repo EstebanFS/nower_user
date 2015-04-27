@@ -85,7 +85,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
           // Se recupera el logo de la tienda.
           if (redemption.getStoreLogoURL() != null) {
             ImageDownloader imageDownloader
-            = new ImageDownloader(icon, null, redemption.getStoreLogoURL());
+            = new ImageDownloader(icon, redemption.getStoreLogoURL());
             imageDownloader.execute();
           }
         }
@@ -104,7 +104,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         // Se recupera el logo de la tienda.
         if (b.getStoreLogoURL() != null) {
           ImageDownloader imageDownloader
-          = new ImageDownloader(icon, null, b.getStoreLogoURL());
+          = new ImageDownloader(icon, b.getStoreLogoURL());
           imageDownloader.execute();
         }
         //iconImg = context.getResources().getDrawable(R.drawable.nower_marker);

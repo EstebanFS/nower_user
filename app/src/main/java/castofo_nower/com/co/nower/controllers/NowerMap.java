@@ -1,13 +1,21 @@
 package castofo_nower.com.co.nower.controllers;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -40,6 +48,7 @@ import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.User;
+import castofo_nower.com.co.nower.support.ImageDownloader;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.Geolocation;
@@ -253,18 +262,39 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
   // Este método se encarga de poner todas las promociones en el mapa y
   // guardarlas los establecimientos localmente.
   public void putMarkerAndSaveBranch(Branch branch) {
+    View bubbleMarker =
+            ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+            .inflate(R.layout.bubble_marker, null);
+
+    Bitmap markerIcon =
+            ImageDownloader.createBitmapFromView(this, bubbleMarker);
+
+    // Se muestra un marker (burbuja) sin logo inicialmente, hasta cargar
+    // la imagen.
     Marker branchMarker = map.addMarker(new MarkerOptions()
-            .position
-                    (new LatLng(branch.getLatitude(),
-                            branch.getLongitude()))
-            .title(branch.getStoreName() + " - " +
-                    branch.getName())
-            .icon(BitmapDescriptorFactory
-                    .fromResource
-                            (R.drawable.nower_marker)));
+            .position(new LatLng(branch.getLatitude(), branch.getLongitude()))
+            .title(branch.getStoreName() + " - " + branch.getName())
+            .icon(BitmapDescriptorFactory.fromBitmap(markerIcon)));
+
 
     // Se asocia cada establecimiento a un marcador diferente.
     branchesIdsMap.put(branchMarker, branch.getId());
+
+    // Se solicita obtener la imagen del establecimiento, una vez se obtenga,
+    // la clase ImageDownloader se encargará de reemplazar el ícono del marker
+    if (branch.getStoreLogoURL() != null) {
+      ImageDownloader imageDownloader
+      = new ImageDownloader(bubbleMarker, branchMarker, this,
+                            branch.getStoreLogoURL());
+      imageDownloader.execute();
+    }
+    else {
+      ImageView logoView =
+              (ImageView) bubbleMarker.findViewById(R.id.marker_logo);
+      logoView.setImageResource(R.drawable.nower_marker);
+      markerIcon = ImageDownloader.createBitmapFromView(this, bubbleMarker);
+      branchMarker.setIcon(BitmapDescriptorFactory.fromBitmap(markerIcon));
+    }
   }
 
   public void clearPreviousMarkers() {
@@ -353,7 +383,9 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
               double longitude = internLocation.getDouble("longitude");
               int storeId = internLocation.getInt("store_id");
               String storeName = internLocation.getString("store_name");
-              String storeLogoURL = internLocation.getString("store_logo");
+              String storeLogoURL;
+              if (internLocation.isNull("store_logo")) storeLogoURL = null;
+              else storeLogoURL = internLocation.getString("store_logo");
 
               JSONArray promos = internLocation.getJSONArray("promos");
               for (int j = 0; j < promos.length(); ++j) {
