@@ -2,16 +2,15 @@
   xmlns:tools="http://schemas.android.com/tools"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  tools:context="castofo_nower.com.co.nower.controllers.PromoCardAnimator"
+  tools:context="castofo_nower.com.co.nower.controllers.PromoCardsAnimator"
   android:orientation="vertical">
 
-  <ViewFlipper
-    android:id="@+id/promos_flipper"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:visibility="visible">
-
-  </ViewFlipper>
+  <android.support.v4.view.ViewPager
+      android:id="@+id/promos_flipper"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:visibility="visible">
+  </android.support.v4.view.ViewPager>
 
   <TextView
     android:id="@+id/empty_promos_message"

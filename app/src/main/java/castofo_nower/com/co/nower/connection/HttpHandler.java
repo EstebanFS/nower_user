@@ -29,9 +29,9 @@ import java.util.Map;
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.controllers.Login;
 import castofo_nower.com.co.nower.controllers.NowerMap;
-import castofo_nower.com.co.nower.controllers.PromoCardAnimator;
+import castofo_nower.com.co.nower.controllers.PromoCardsAnimator;
 import castofo_nower.com.co.nower.controllers.Register;
-import castofo_nower.com.co.nower.controllers.UserPromoList;
+import castofo_nower.com.co.nower.controllers.UserPromosList;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.support.UserFeedback;
 
@@ -210,11 +210,11 @@ public class HttpHandler {
                          Double.parseDouble(params.get("longitude")));
           json.put("user_location", internJson);
           break;
-        case PromoCardAnimator.ACTION_PROMOS_DETAILS:
+        case PromoCardsAnimator.ACTION_PROMOS_DETAILS:
           internJsonArray = new JSONArray(params.get("promos_ids_list"));
           json.put("promos", internJsonArray);
           break;
-        case PromoCardAnimator.ACTION_NOW:
+        case PromoCardsAnimator.ACTION_NOW:
           json.put("promo_id", Integer.parseInt(params.get("promo_id")));
           json.put("user_id", Integer.parseInt(params.get("user_id")));
           break;
@@ -292,22 +292,22 @@ public class HttpHandler {
         case NowerMap.ACTION_PROMOS:
           progressDialog.setMessage(context.getString(R.string.loading_promos));
           break;
-        case PromoCardAnimator.ACTION_PROMOS_DETAILS:
-          if (PromoCardAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
+        case PromoCardsAnimator.ACTION_PROMOS_DETAILS:
+          if (PromoCardsAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
             progressDialog.setMessage(context
                                       .getString(R.string.obtaining_promos));
           }
-          else if (PromoCardAnimator.action.equals(UserPromoList
-                                                   .SHOW_PROMO_TO_REDEEM)) {
+          else if (PromoCardsAnimator.action.equals(UserPromosList
+                                                    .SHOW_PROMO_TO_REDEEM)) {
             progressDialog.setMessage(context
                                       .getString(R.string.opening_promo));
           }
           break;
-        case PromoCardAnimator.ACTION_NOW:
+        case PromoCardsAnimator.ACTION_NOW:
           progressDialog.setMessage(context
                                     .getString(R.string.obtaining_promo_code));
           break;
-        case UserPromoList.ACTION_USER_REDEMPTIONS:
+        case UserPromosList.ACTION_USER_REDEMPTIONS:
           progressDialog.setMessage(context
                                     .getString(R.string.obtaining_your_promos));
           break;
