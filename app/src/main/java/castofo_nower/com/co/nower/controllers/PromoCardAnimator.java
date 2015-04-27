@@ -131,16 +131,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
   }
 
   public void initView() {
-    FadingActionBarHelper helper = new FadingActionBarHelper()
-                                   .actionBarBackground
-                                   (R.drawable.ab_background)
-                                   .headerLayout(R.layout.header)
-                                   .contentLayout
-                                   (R.layout.activity_promo_card_animator);
-    setContentView(helper.createView(this));
-    ImageView headerImage = ((ImageView) findViewById(R.id.header_image));
-    headerImage.setImageResource(R.drawable.promo);
-    helper.initActionBar(this);
+    setContentView(R.layout.activity_promo_card_animator);
     getActionBar().setDisplayHomeAsUpEnabled(true);
 
     promosFlipper = (ViewFlipper) findViewById(R.id.promos_flipper);
