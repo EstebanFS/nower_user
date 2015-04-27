@@ -65,7 +65,6 @@
     <activity
       android:name=".controllers.PromoCardsAnimator"
       android:label="@string/promo"
-      android:theme="@style/AppTheme.TranslucentActionBar"
       android:screenOrientation="portrait">
     </activity>
     <activity

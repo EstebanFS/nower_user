@@ -168,7 +168,9 @@
                 android:textColor="@color/red"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
                 android:textSize="25sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:ellipsize="start"/>
 
             </LinearLayout>
 
@@ -212,7 +214,9 @@
                 android:textColor="@color/red"
                 android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
                 android:textSize="25sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold"
+                android:singleLine="true"
+                android:ellipsize="start"/>
 
             </LinearLayout>
           </LinearLayout>
