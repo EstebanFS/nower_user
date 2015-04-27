@@ -68,7 +68,7 @@ public class BranchesList extends ListActivity {
   protected void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
     int branchId = v.getId();
-    Intent showPromos = new Intent(BranchesList.this, PromoCardAnimator.class);
+    Intent showPromos = new Intent(BranchesList.this, PromoCardsAnimator.class);
     showPromos.putExtra("action", NowerMap.SHOW_BRANCH_PROMOS);
     showPromos.putExtra("branch_id", branchId);
     showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

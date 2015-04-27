@@ -5,18 +5,18 @@ import android.content.DialogInterface;
 import android.widget.Toast;
 
 import castofo_nower.com.co.nower.connection.HttpHandler;
-import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
+import castofo_nower.com.co.nower.helpers.AlertDialogsResponse;
 
 
 public class UserFeedback {
 
-  private static AlertDialogsResponses listeningActivity;
+  private static AlertDialogsResponse listeningActivity;
 
   public static final int NO_BUTTON_TO_SHOW = -1;
 
   // En este punto se determina a qué Activity será enviado el aviso de la
   // elección del usuario.
-  public void addListeningActivity(AlertDialogsResponses activity) {
+  public void addListeningActivity(AlertDialogsResponse activity) {
     this.listeningActivity = activity;
   }
 

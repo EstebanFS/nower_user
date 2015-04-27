@@ -13,12 +13,12 @@ import android.provider.Settings;
 import android.util.Log;
 
 import castofo_nower.com.co.nower.R;
-import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
+import castofo_nower.com.co.nower.helpers.AlertDialogsResponse;
 import castofo_nower.com.co.nower.helpers.GeolocationInterface;
 
 
 public class Geolocation extends Service implements LocationListener,
-AlertDialogsResponses {
+AlertDialogsResponse {
 
   private final Context context;
   private GeolocationInterface listeningActivity;

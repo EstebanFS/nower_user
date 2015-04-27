@@ -13,7 +13,7 @@ import java.util.ArrayList;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.controllers.BranchesList;
-import castofo_nower.com.co.nower.controllers.UserPromoList;
+import castofo_nower.com.co.nower.controllers.UserPromosList;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Redemption;
@@ -52,7 +52,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
     String subtitleText = "";
     Drawable iconImg = null;
     switch (action) {
-      case UserPromoList.LIST_USER_PROMOS:
+      case UserPromosList.LIST_USER_PROMOS:
         // Se obtiene el título de la promoción actual.
         Redemption redemption = (Redemption) listData.get(position);
 
@@ -72,7 +72,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
           }
           // Es un encabezado y por tanto no debe hacerse nada cuando el
           // usuario lo presiona.
-          item.setId(UserPromoList.HEADER_ID);
+          item.setId(UserPromosList.HEADER_ID);
         }
         // Se trata de un item.
         else {
