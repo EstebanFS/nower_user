@@ -148,7 +148,10 @@ ParsedErrors {
         String code = internRedemption.getString("code");
         boolean redeemed = internRedemption.getBoolean("redeemed");
         String storeName = internRedemption.getString("store_name");
-        String storeLogoURL = internRedemption.getString("store_logo");
+        String storeLogoURL;
+        if (internRedemption.isNull("store_logo")) storeLogoURL = null;
+        else storeLogoURL = internRedemption.getString("store_logo");
+
 
         // Se captura la información de la promoción asociada.
         JSONObject redemptionPromo = internRedemption.getJSONObject("promo");
