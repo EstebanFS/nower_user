@@ -36,7 +36,7 @@ import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
 
 
-public class UserPromoList extends ListActivity implements SubscribedActivities,
+public class UserPromosList extends ListActivity implements SubscribedActivities,
 ParsedErrors {
 
   private ListItemsCreator userPromosListToShow;
@@ -75,7 +75,7 @@ ParsedErrors {
     if (request.equals(ACTION_USER_REDEMPTIONS)) {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_USER_REDEMPTIONS,
                               "/" + User.id, params, new HttpGet(),
-                              UserPromoList.this);
+                              UserPromosList.this);
     }
   }
 
@@ -236,8 +236,8 @@ ParsedErrors {
     super.onListItemClick(l, v, position, id);
     int promoId = v.getId();
     if (promoId != HEADER_ID) {
-      Intent showPromoToRedeem = new Intent(UserPromoList.this,
-                                            PromoCardAnimator.class);
+      Intent showPromoToRedeem = new Intent(UserPromosList.this,
+                                            PromoCardsAnimator.class);
       showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
       showPromoToRedeem.putExtra("promo_id", promoId);
       showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

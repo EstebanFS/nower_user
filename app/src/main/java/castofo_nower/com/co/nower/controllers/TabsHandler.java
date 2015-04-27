@@ -77,7 +77,7 @@ ActionBar.TabListener {
         showTabContent = new Intent(TabsHandler.this, BranchesList.class);
         break;
       case 2:
-        showTabContent = new Intent(TabsHandler.this, UserPromoList.class);
+        showTabContent = new Intent(TabsHandler.this, UserPromosList.class);
         break;
     }
     if (showTabContent != null) {

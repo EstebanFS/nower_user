@@ -4,14 +4,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.CountDownTimer;
-import android.support.v4.view.GestureDetectorCompat;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -20,7 +19,6 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
@@ -38,7 +36,7 @@ import java.util.TreeMap;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
-import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
+import castofo_nower.com.co.nower.helpers.AlertDialogsResponse;
 import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.Branch;
@@ -47,6 +45,7 @@ import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.ImageDownloader;
+import castofo_nower.com.co.nower.support.PagerBuilder;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.DateManager;
@@ -54,16 +53,16 @@ import castofo_nower.com.co.nower.support.DateManager;
 import com.manuelpeinado.fadingactionbar.FadingActionBarHelper;
 
 
-public class PromoCardAnimator extends Activity implements SubscribedActivities,
-GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
+public class PromoCardsAnimator extends Activity implements
+SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
   private HttpHandler httpHandler = new HttpHandler();
   public static final String ACTION_PROMOS_DETAILS = "/promos/details";
   public static final String ACTION_NOW = "/promo/now";
   private Map<String, String> params = new HashMap<String, String>();
 
-  private GestureDetectorCompat gestureDetector;
-  private ViewFlipper promosFlipper;
+  private ViewPager promosFlipper;
+  private ArrayList<View> promoCards = new ArrayList<>();
 
   Animation slide_in_left, slide_out_right, slide_in_right, slide_out_left;
 
@@ -104,8 +103,6 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
     super.onCreate(savedInstanceState);
     initView();
 
-    gestureDetector = new GestureDetectorCompat(this, this);
-
     // Se indica al HttpHandler la actividad que estará esperando la respuesta
     // a la petición.
     httpHandler.addListeningActivity(this);
@@ -143,7 +140,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
     helper.initActionBar(this);
     getActionBar().setDisplayHomeAsUpEnabled(true);
 
-    promosFlipper = (ViewFlipper) findViewById(R.id.promos_flipper);
+    promosFlipper = (ViewPager) findViewById(R.id.promos_flipper);
   }
 
   public void setFlipperAnimation() {
@@ -171,7 +168,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
       // botón y cuáles con código.
       userPromos = User.getTakenPromos();
     }
-    else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
+    else if (action.equals(UserPromosList.SHOW_PROMO_TO_REDEEM)) {
       int promoId = getIntent().getExtras().getInt("promo_id");
       code = User.getTakenPromos().get(promoId).getCode();
       isUserPromoRedeemed = User.getTakenPromos().get(promoId).isRedeemed();
@@ -211,11 +208,11 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
   public void sendRequest(String request) {
     if (request.equals(ACTION_PROMOS_DETAILS)) {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_PROMOS_DETAILS, "",
-                              params, new HttpPost(), PromoCardAnimator.this);
+                              params, new HttpPost(), PromoCardsAnimator.this);
     }
     else if (request.equals(ACTION_NOW)) {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_NOW, "", params,
-                              new HttpPost(), PromoCardAnimator.this);
+                              new HttpPost(), PromoCardsAnimator.this);
     }
   }
 
@@ -227,6 +224,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
 
   public void addPromosToFlipper() {
     if (!promos.isEmpty()) {
+      promoCards.clear();
       for (int i = 0; i < promos.size(); ++i) {
         Promo promo = promos.get(i);
         LayoutInflater inflater = (LayoutInflater) this.getSystemService
@@ -235,9 +233,8 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
         // Con este ID se identificará la promoción actual que visualiza el
         // usuario.
         promoCard.setId(promo.getId());
-
         // Se agrega una nueva tarjeta de promoción.
-        promosFlipper.addView(promoCard);
+        promoCards.add(promoCard);
 
         // Se capturan los campos que se van a modificar.
         storeLogoProgress = (ProgressBar) promoCard
@@ -298,7 +295,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
             changeButtonToCode(nowButton);
           }
         }
-        else if (action.equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
+        else if (action.equals(UserPromosList.SHOW_PROMO_TO_REDEEM)) {
           changeButtonToCode(nowButton);
         }
 
@@ -307,6 +304,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
                                          promo.getExpirationDate(), nowButton);
         countDownTimer.start();
       }
+      putPromoCards();
     }
     else {
       showEmptyBranchMessage();
@@ -362,16 +360,30 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
     redemptionCode.setVisibility(View.VISIBLE);
   }
 
-  public void now(View v) {
-    params.put("promo_id", String.valueOf(promosFlipper.getCurrentView()
-                                          .getId()));
-    params.put("user_id", String.valueOf(User.id));
-    askToTakePromo();
-  }
-
   public void closeAvailablePromos(ImageView availableRedemptionsIcon) {
     availableRedemptionsIcon.setImageDrawable
     (getResources().getDrawable(R.drawable.ic_people_limit_reached));
+  }
+
+  public void putPromoCards() {
+    PagerAdapter adapter = new PagerBuilder(promoCards);
+    // Se hacen visibles las tarjetas de promoción.
+    promosFlipper.setAdapter(adapter);
+    promosFlipper.setClipToPadding(false);
+    promosFlipper.setPadding(50, 0, 50, 0);
+  }
+
+  public View getPagerCurrentView() {
+    int promoTag = promosFlipper.getCurrentItem();
+    View promoView = promosFlipper.findViewWithTag(promoTag);
+
+    return promoView;
+  }
+
+  public void now(View v) {
+    params.put("promo_id", String.valueOf(getPagerCurrentView().getId()));
+    params.put("user_id", String.valueOf(User.id));
+    askToTakePromo();
   }
 
   public void askToTakePromo() {
@@ -393,15 +405,15 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
   }
 
   public void disableNowButtonDueToNoMoreStock() {
-    promoAvailableRedemptionsIcon = (ImageView) promosFlipper
-                                    .getCurrentView().findViewById
+    promoAvailableRedemptionsIcon = (ImageView) getPagerCurrentView()
+                                    .findViewById
                                     (R.id.available_redemptions_icon);
-    promoAvailableRedemptions = (TextView) promosFlipper.getCurrentView()
-                                .findViewById(R.id.promo_available_redemptions);
+    promoAvailableRedemptions = (TextView) getPagerCurrentView().findViewById
+                                (R.id.promo_available_redemptions);
     closeAvailablePromos(promoAvailableRedemptionsIcon);
     promoAvailableRedemptions.setText(getResources().getString(R.string.zero));
-    Button nowButton = (Button) promosFlipper.getCurrentView()
-                       .findViewById(R.id.now_button);
+    Button nowButton = (Button) getPagerCurrentView().findViewById
+                       (R.id.now_button);
     nowButton.setEnabled(false);
   }
 
@@ -413,7 +425,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
         break;
       case OBTAINED_PROMO:
         if (buttonPressedId == R.string.go_to_my_promos) {
-          Intent openUserPromosList = new Intent(this, UserPromoList.class);
+          Intent openUserPromosList = new Intent(this, UserPromosList.class);
           openUserPromosList.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
           startActivity(openUserPromosList);
         }
@@ -483,7 +495,8 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
                                      availableRedemptions, description, terms);
              promosMap.put(promo.getId(), promo);
 
-             if (PromoCardAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
+             if (PromoCardsAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS))
+             {
                // Si la promoción no ha expirado ni la han tomado el número
                // máximo de personas, entonces se adiciona a las que serán
                // mostradas.
@@ -497,8 +510,8 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
                }
              }
              // Siempre se mostrará una promoción que el usuario ya haya tomado.
-             else if (PromoCardAnimator.action
-                      .equals(UserPromoList.SHOW_PROMO_TO_REDEEM)) {
+             else if (PromoCardsAnimator.action
+                      .equals(UserPromosList.SHOW_PROMO_TO_REDEEM)) {
                promos.add(promo);
              }
            }
@@ -544,14 +557,14 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
 
               // Se capturan botón y código de la vista actual para realizar el
               // intercambio.
-              Button nowButton = (Button) promosFlipper.getCurrentView()
-                                 .findViewById(R.id.now_button);
-              redemptionCode = (TextView) promosFlipper.getCurrentView()
-                               .findViewById(R.id.redemption_code);
+              Button nowButton = (Button) getPagerCurrentView().findViewById
+                                 (R.id.now_button);
+              redemptionCode = (TextView) getPagerCurrentView().findViewById
+                               (R.id.redemption_code);
               changeButtonToCode(nowButton);
 
-              promoAvailableRedemptions = (TextView) promosFlipper
-                                          .getCurrentView().findViewById
+              promoAvailableRedemptions = (TextView) getPagerCurrentView()
+                                          .findViewById
                                           (R.id.promo_available_redemptions);
               promoAvailableRedemptions.setText(String.valueOf
                                                 (availableRedemptions));
@@ -560,7 +573,7 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
                 // Es necesario cerrar el candado de las promociones
                 // disponibles.
                 promoAvailableRedemptionsIcon
-                = (ImageView) promosFlipper.getCurrentView().findViewById
+                = (ImageView) getPagerCurrentView().findViewById
                   (R.id.available_redemptions_icon);
                 closeAvailablePromos(promoAvailableRedemptionsIcon);
               }
@@ -581,68 +594,6 @@ GestureDetector.OnGestureListener, AlertDialogsResponses, ParsedErrors {
     catch (JSONException e) {
 
     }
-  }
-
-  @Override
-  public boolean dispatchTouchEvent(MotionEvent event) {
-    super.dispatchTouchEvent(event);
-    return gestureDetector.onTouchEvent(event);
-  }
-
-  @Override
-  public boolean onTouchEvent(MotionEvent event) {
-    this.gestureDetector.onTouchEvent(event);
-    return super.onTouchEvent(event);
-  }
-
-  @Override
-  public boolean onDown(MotionEvent e) {
-    return false;
-  }
-
-  @Override
-  public void onShowPress(MotionEvent e) {
-
-  }
-
-  @Override
-  public boolean onSingleTapUp(MotionEvent e) {
-    return false;
-  }
-
-  @Override
-  public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX,
-                          float distanceY) {
-    return false;
-  }
-
-  @Override
-  public void onLongPress(MotionEvent e) {
-
-  }
-
-  @Override
-  public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX,
-                         float velocityY) {
-    float sensitivity = 90;
-
-    // No es necesario pasar de promoción si solamente existe una.
-    if (promosFlipper.getChildCount() > 1) {
-      // Fling de izquierda a derecha.
-      if ((e1.getX() - e2.getX()) > sensitivity) {
-        promosFlipper.setInAnimation(slide_in_right);
-        promosFlipper.setOutAnimation(slide_out_left);
-        promosFlipper.showPrevious();
-      }
-      // Fling de derecha a izquierda.
-      else if ((e2.getX() - e1.getX()) > sensitivity) {
-        promosFlipper.setInAnimation(slide_in_left);
-        promosFlipper.setOutAnimation(slide_out_right);
-        promosFlipper.showNext();
-      }
-    }
-
-    return true;
   }
 
   @Override

@@ -34,7 +34,7 @@ import java.util.TreeMap;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
-import castofo_nower.com.co.nower.helpers.AlertDialogsResponses;
+import castofo_nower.com.co.nower.helpers.AlertDialogsResponse;
 import castofo_nower.com.co.nower.helpers.GeolocationInterface;
 import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
@@ -48,7 +48,7 @@ import castofo_nower.com.co.nower.models.Promo;
 
 
 public class NowerMap extends FragmentActivity implements SubscribedActivities,
-GeolocationInterface, AlertDialogsResponses, ParsedErrors,
+GeolocationInterface, AlertDialogsResponse, ParsedErrors,
 GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
   private GoogleMap map;
@@ -215,12 +215,12 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
                                  .icon(BitmapDescriptorFactory
                                        .fromResource(R.drawable.user_marker)));
       userRange = map.addCircle(new CircleOptions()
-                                .center(new LatLng(latitude, longitude))
-                                .radius(RANGE_IN_METERS)
-                                .strokeWidth(1f)
-                                .strokeColor(Color.BLUE)
-                                .fillColor(getResources().getColor
-                                           (R.color.transparent_blue)));
+              .center(new LatLng(latitude, longitude))
+              .radius(RANGE_IN_METERS)
+              .strokeWidth(1f)
+              .strokeColor(Color.BLUE)
+              .fillColor(getResources().getColor
+                      (R.color.transparent_blue)));
     }
     // El marcador ya existía pero se debe mover, ya que la localización del
     // usuario cambió.
@@ -243,9 +243,9 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_PROMOS, "", params,
                               new HttpPost(),NowerMap.this);
     }
-    else if (request.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
+    else if (request.equals(UserPromosList.ACTION_USER_REDEMPTIONS)) {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE,
-                              UserPromoList.ACTION_USER_REDEMPTIONS, "/"
+                              UserPromosList.ACTION_USER_REDEMPTIONS, "/"
                               + User.id, params, new HttpGet(), NowerMap.this);
     }
   }
@@ -317,7 +317,7 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
   public void notifyParsedErrors(String action,
                                  Map<String, String> errorsMessages) {
     switch (action) {
-      case UserPromoList.ACTION_USER_REDEMPTIONS:
+      case UserPromosList.ACTION_USER_REDEMPTIONS:
         if (errorsMessages.containsKey("user")) {
           UserFeedback.showToastMessage(getApplicationContext(),
                                         errorsMessages.get("user"),
@@ -402,14 +402,14 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
             // Se hace para actualizar las promociones que el usuario ha
             // obtenido.
-            sendRequest(UserPromoList.ACTION_USER_REDEMPTIONS);
+            sendRequest(UserPromosList.ACTION_USER_REDEMPTIONS);
             break;
         }
       }
-      else if (action.equals(UserPromoList.ACTION_USER_REDEMPTIONS)) {
+      else if (action.equals(UserPromosList.ACTION_USER_REDEMPTIONS)) {
         switch (responseStatusCode) {
           case HttpHandler.OK:
-            UserPromoList
+            UserPromosList
             .updateUserRedemptions(responseJson.getJSONArray("redemptions"));
             break;
           case HttpHandler.UNAUTHORIZED:
@@ -457,7 +457,7 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
     // Se activa el detector de gestos para animar las tarjetas de promociones.
     if (!marker.equals(userMarker)) {
       int branchId = MapData.getBranchesIdsMap().get(marker);
-      Intent showPromos = new Intent(NowerMap.this, PromoCardAnimator.class);
+      Intent showPromos = new Intent(NowerMap.this, PromoCardsAnimator.class);
       showPromos.putExtra("action", SHOW_BRANCH_PROMOS);
       showPromos.putExtra("branch_id", branchId);
       showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
