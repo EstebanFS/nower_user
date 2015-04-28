@@ -12,7 +12,6 @@
     android:dividerHeight="2dp"
     android:background="@color/white"/>
 
-
   <TextView
     android:id="@+id/empty_list"
     android:layout_width="wrap_content"
@@ -24,5 +23,18 @@
     android:gravity="center"
     android:textStyle="bold"
     android:textColor="@color/gray"/>
+
+  <Button
+    android:id="@+id/register_or_login_button"
+    android:layout_alignParentBottom="true"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="@drawable/blue_button_background"
+    android:textColor="@color/white"
+    android:text="@string/register_or_log_in"
+    android:textStyle="bold"
+    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+    android:onClick="goToRegister"
+    android:visibility="gone"/>
 
 </RelativeLayout>
