@@ -19,25 +19,32 @@ public class SplashActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_splash);
 
+    SharedPreferencesManager.setup(this);
+
     if (getIntent().getExtras() != null) {
+      Intent requestedAction = null;
       switch (getIntent().getExtras().getString("action")) {
         case NowerMap.NO_MAP:
           // La aplicación se debe cerrar porque el usuario decidió salir.
           finish();
           break;
-        case PromoCardsAnimator.USER_NEEDS_TO_REGISTER:
-          // El usuario debe registrarse o iniciar sesión para poder acceder
-          // a las promociones.
-          Intent goToRegister = new Intent(SplashActivity.this, Register.class);
-          goToRegister.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-          startActivity(goToRegister);
-          finish();
+        case UserPromosList.USER_NEEDS_TO_REGISTER:
+          // El usuario necesita registrarse o iniciar sesión para poder
+          // acceder a las promociones.
+          requestedAction = new Intent(SplashActivity.this, Register.class);
           break;
+        case Login.OPEN_MAP:
+          // El usuario acaba de registrarse o de iniciar sesión.
+          requestedAction = new Intent(SplashActivity.this, TabsHandler.class);
+          break;
+      }
+      if (requestedAction != null) {
+        requestedAction.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(requestedAction);
+        finish();
       }
     }
     else {
-      SharedPreferencesManager.setup(this);
-
       Thread splashTimer = new Thread() {
         public void run() {
           try {
@@ -86,12 +93,22 @@ public class SplashActivity extends Activity {
   }
 
   public static void handleRequest(Context context, String action) {
-    Intent exitApp = new Intent(context, SplashActivity.class);
-    exitApp.putExtra("action", action);
-    exitApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                     | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    context.startActivity(exitApp);
-    ((Activity) context).finish();
+    boolean isNecessaryToClearStack = false;
+    if (action.equals(NowerMap.NO_MAP) || action.equals(Login.OPEN_MAP)) {
+      isNecessaryToClearStack = true;
+    }
+
+    Intent request = new Intent(context, SplashActivity.class);
+    request.putExtra("action", action);
+
+    if (isNecessaryToClearStack) {
+      request.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                       | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    }
+
+    context.startActivity(request);
+
+    if (isNecessaryToClearStack) ((Activity) context).finish();
   }
 
   @Override

@@ -86,7 +86,6 @@
     <activity
       android:name=".controllers.Login"
       android:label="@string/log_in"
-      android:launchMode="singleInstance"
       android:theme="@style/AppTheme.NoActionBar"
       android:windowSoftInputMode="adjustResize|stateHidden"
       android:screenOrientation="portrait">
@@ -95,7 +94,6 @@
       android:name=".controllers.Register"
       android:label="@string/register"
       android:theme="@style/AppTheme.CustomWhiteRadioButton"
-      android:launchMode="singleInstance"
       android:windowSoftInputMode="adjustResize|stateHidden"
       android:screenOrientation="portrait">
     </activity>

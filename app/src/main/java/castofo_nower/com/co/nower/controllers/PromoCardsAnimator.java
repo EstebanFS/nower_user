@@ -92,8 +92,6 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
   private boolean isUserAbleToTakePromos;
 
-  public static final String USER_NEEDS_TO_REGISTER = "USER_NEEDS_TO_REGISTER";
-
   public static final String TAKE_PROMO = "TAKE_PROMO";
   public static final String OBTAINED_PROMO = "OBTAINED_PROMO";
 
@@ -398,7 +396,8 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         askToTakePromo();
       }
       else {
-        SplashActivity.handleRequest(this, USER_NEEDS_TO_REGISTER);
+        SplashActivity.handleRequest(PromoCardsAnimator.this,
+                                     UserPromosList.USER_NEEDS_TO_REGISTER);
       }
     }
   }

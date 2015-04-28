@@ -98,11 +98,10 @@ ParsedErrors {
   }
 
   public void onAlreadyHaveAccountClicked(View v) {
-    Intent intent = new Intent(this, Login.class);
-    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    Intent intent = new Intent(Register.this, Login.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     intent.putExtra("email", emailView.getText().toString());
     startActivity(intent);
-    finish();
   }
 
   public void onRegisterClicked(View v) {
@@ -281,13 +280,6 @@ ParsedErrors {
     User.setUserData(id, email, name, gender, birthday);
   }
 
-  public void openNowerMap() {
-    Intent openMap = new Intent(Register.this, TabsHandler.class);
-    openMap.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    startActivity(openMap);
-    finish();
-  }
-
   @Override
   public void notifyParsedErrors(String action,
                                  Map<String, String> errorsMessages) {
@@ -341,7 +333,7 @@ ParsedErrors {
 
               saveUserData(id, email, name, gender, birthday);
 
-              openNowerMap();
+              SplashActivity.handleRequest(Register.this, Login.OPEN_MAP);
             }
             break;
           case HttpHandler.UNPROCESSABLE_ENTITY:
