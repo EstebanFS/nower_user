@@ -1,15 +1,12 @@
 package castofo_nower.com.co.nower.controllers;
 
-import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Color;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -252,10 +249,13 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_PROMOS, "", params,
                               new HttpPost(),NowerMap.this);
     }
-    else if (request.equals(UserPromosList.ACTION_USER_REDEMPTIONS)) {
-      httpHandler.sendRequest(HttpHandler.NAME_SPACE,
-                              UserPromosList.ACTION_USER_REDEMPTIONS, "/"
-                              + User.id, params, new HttpGet(), NowerMap.this);
+    else if (SplashActivity.isThereLoginInstance()) {
+      if (request.equals(UserPromosList.ACTION_USER_REDEMPTIONS)) {
+        httpHandler.sendRequest(HttpHandler.NAME_SPACE,
+                                UserPromosList.ACTION_USER_REDEMPTIONS, "/"
+                                + User.id, params, new HttpGet(),
+                                NowerMap.this);
+      }
     }
   }
 
@@ -338,7 +338,9 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
   public void notifyUserResponse(String action, int buttonPressedId) {
     switch (action) {
       case NO_MAP:
-        if (buttonPressedId == R.string.exit) SplashActivity.exitApp(this);
+        if (buttonPressedId == R.string.exit) {
+          SplashActivity.handleRequest(this, NO_MAP);
+        }
         break;
     }
   }

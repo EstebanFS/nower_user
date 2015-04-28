@@ -19,8 +19,22 @@ public class SplashActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_splash);
 
-    // La aplicación se debe cerrar porque el usuario decidió salir.
-    if (getIntent().getExtras() != null) finish();
+    if (getIntent().getExtras() != null) {
+      switch (getIntent().getExtras().getString("action")) {
+        case NowerMap.NO_MAP:
+          // La aplicación se debe cerrar porque el usuario decidió salir.
+          finish();
+          break;
+        case PromoCardsAnimator.USER_NEEDS_TO_REGISTER:
+          // El usuario debe registrarse o iniciar sesión para poder acceder
+          // a las promociones.
+          Intent goToRegister = new Intent(SplashActivity.this, Register.class);
+          goToRegister.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+          startActivity(goToRegister);
+          finish();
+          break;
+      }
+    }
     else {
       SharedPreferencesManager.setup(this);
 
@@ -33,12 +47,9 @@ public class SplashActivity extends Activity {
 
           } finally {
             // Luego se ingresa propiamente a la aplicación.
-            Intent openApp = new Intent(SplashActivity.this, Register.class);
-            if (isThereLoginInstance()) {
-              updateUserData();
-              openApp = new Intent(SplashActivity.this, TabsHandler.class);
-            }
+            Intent openApp = new Intent(SplashActivity.this, TabsHandler.class);
             openApp.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            if (isThereLoginInstance()) updateUserData();
             startActivity(openApp);
             finish();
           }
@@ -49,7 +60,7 @@ public class SplashActivity extends Activity {
     }
   }
 
-  public boolean isThereLoginInstance() {
+  public static boolean isThereLoginInstance() {
     int userId = SharedPreferencesManager
                  .getIntegerValue(SharedPreferencesManager.USER_ID);
     // Un valor diferente de -1 indicaría que el usuario aún tiene sesión
@@ -74,9 +85,9 @@ public class SplashActivity extends Activity {
     User.setUserData(id, email, name, gender, birthday);
   }
 
-  public static void exitApp(Context context) {
+  public static void handleRequest(Context context, String action) {
     Intent exitApp = new Intent(context, SplashActivity.class);
-    exitApp.putExtra("exit_app", true);
+    exitApp.putExtra("action", action);
     exitApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
                      | Intent.FLAG_ACTIVITY_CLEAR_TASK);
     context.startActivity(exitApp);
