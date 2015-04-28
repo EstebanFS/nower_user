@@ -16,6 +16,7 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -78,7 +79,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   private TextView promoAvailableRedemptions;
   private TextView promoDescription;
   private TextView promoTerms;
-  private TextView emptyPromosMessage;
+  private LinearLayout emptyPromosMessage;
 
   private TextView redemptionCode;
 
@@ -234,7 +235,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   }
 
   public void showEmptyBranchMessage() {
-    emptyPromosMessage = (TextView) findViewById(R.id.empty_promos_message);
+    emptyPromosMessage = (LinearLayout) findViewById(R.id.empty_promos_message);
     promosFlipper.setVisibility(View.GONE);
     emptyPromosMessage.setVisibility(View.VISIBLE);
   }

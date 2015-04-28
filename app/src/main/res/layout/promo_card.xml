@@ -14,12 +14,12 @@
       android:layout_height="wrap_content"
       android:background="?android:attr/windowBackground"
       android:orientation="vertical">
-      
+
       <castofo_nower.com.co.nower.support.WideImageView
         android:layout_width="match_parent"
         android:layout_height="150dp"
         android:adjustViewBounds="true"
-        android:src="@drawable/promo"/>
+        android:src="@drawable/promo_placeholder"/>
 
       <LinearLayout
         android:layout_width="match_parent"

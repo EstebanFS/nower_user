@@ -12,18 +12,27 @@
       android:visibility="visible">
   </android.support.v4.view.ViewPager>
 
-  <TextView
+  <LinearLayout
     android:id="@+id/empty_promos_message"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:textAppearance="?android:attr/textAppearanceLarge"
-    android:text="@string/no_available_promos"
-    android:layout_centerVertical="true"
-    android:layout_centerHorizontal="true"
-    android:gravity="center"
-    android:textStyle="bold"
-    android:textColor="@color/gray"
-    android:layout_gravity="center"
-    android:visibility="gone"/>
+    android:visibility="gone"
+    android:orientation="vertical">
 
+    <castofo_nower.com.co.nower.support.WideImageView
+      android:layout_width="match_parent"
+      android:layout_height="150dp"
+      android:adjustViewBounds="true"
+      android:src="@drawable/promo_placeholder"/>
+
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:textAppearance="?android:attr/textAppearanceLarge"
+      android:text="@string/no_available_promos"
+      android:gravity="center"
+      android:textStyle="bold"
+      android:textColor="@color/gray"
+      android:layout_gravity="center"/>
+  </LinearLayout>
 </LinearLayout>
