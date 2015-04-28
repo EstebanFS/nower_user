@@ -58,6 +58,8 @@ SubscribedActivities, ParsedErrors {
 
   public static final int HEADER_ID = -1;
 
+  public static final String USER_NEEDS_TO_REGISTER = "USER_NEEDS_TO_REGISTER";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -92,8 +94,7 @@ SubscribedActivities, ParsedErrors {
   }
 
   public void goToRegister(View v) {
-    SplashActivity.handleRequest(this,
-                                 PromoCardsAnimator.USER_NEEDS_TO_REGISTER);
+    SplashActivity.handleRequest(this, USER_NEEDS_TO_REGISTER);
   }
 
   public void sendRequest(String request) {

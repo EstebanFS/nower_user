@@ -44,6 +44,8 @@ ParsedErrors {
   private RequestErrorsHandler requestErrorsHandler = new
                                                       RequestErrorsHandler();
 
+  public static final String OPEN_MAP = "OPEN_MAP";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -70,11 +72,10 @@ ParsedErrors {
   }
 
   public void onDontHaveAccountClicked(View v) {
-    Intent intent = new Intent(this, Register.class);
+    Intent intent = new Intent(Login.this, Register.class);
     intent.putExtra("email", emailView.getText().toString());
-    intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
+    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     startActivity(intent);
-    finish();
   }
 
   public void onLoginClicked(View v) {
@@ -128,13 +129,6 @@ ParsedErrors {
     User.setUserData(id, email, name, gender, birthday);
   }
 
-  public void openNowerMap() {
-    Intent openMap = new Intent(Login.this, TabsHandler.class);
-    openMap.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    startActivity(openMap);
-    finish();
-  }
-
   @Override
   public void notifyParsedErrors(String action,
                                  Map<String, String> errorsMessages) {
@@ -168,7 +162,7 @@ ParsedErrors {
 
               saveUserData(id, email, name, gender, birthday);
 
-              openNowerMap();
+              SplashActivity.handleRequest(Login.this, OPEN_MAP);
             }
             break;
           case HttpHandler.BAD_REQUEST:
