@@ -19,11 +19,32 @@ public class SplashActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_splash);
 
-    // La aplicación se debe cerrar porque el usuario decidió salir.
-    if (getIntent().getExtras() != null) finish();
-    else {
-      SharedPreferencesManager.setup(this);
+    SharedPreferencesManager.setup(this);
 
+    if (getIntent().getExtras() != null) {
+      Intent requestedAction = null;
+      switch (getIntent().getExtras().getString("action")) {
+        case NowerMap.NO_MAP:
+          // La aplicación se debe cerrar porque el usuario decidió salir.
+          finish();
+          break;
+        case UserPromosList.USER_NEEDS_TO_REGISTER:
+          // El usuario necesita registrarse o iniciar sesión para poder
+          // acceder a las promociones.
+          requestedAction = new Intent(SplashActivity.this, Register.class);
+          break;
+        case Login.OPEN_MAP:
+          // El usuario acaba de registrarse o de iniciar sesión.
+          requestedAction = new Intent(SplashActivity.this, TabsHandler.class);
+          break;
+      }
+      if (requestedAction != null) {
+        requestedAction.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        startActivity(requestedAction);
+        finish();
+      }
+    }
+    else {
       Thread splashTimer = new Thread() {
         public void run() {
           try {
@@ -33,12 +54,9 @@ public class SplashActivity extends Activity {
 
           } finally {
             // Luego se ingresa propiamente a la aplicación.
-            Intent openApp = new Intent(SplashActivity.this, Register.class);
-            if (isThereLoginInstance()) {
-              updateUserData();
-              openApp = new Intent(SplashActivity.this, TabsHandler.class);
-            }
+            Intent openApp = new Intent(SplashActivity.this, TabsHandler.class);
             openApp.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+            if (isThereLoginInstance()) updateUserData();
             startActivity(openApp);
             finish();
           }
@@ -49,7 +67,7 @@ public class SplashActivity extends Activity {
     }
   }
 
-  public boolean isThereLoginInstance() {
+  public static boolean isThereLoginInstance() {
     int userId = SharedPreferencesManager
                  .getIntegerValue(SharedPreferencesManager.USER_ID);
     // Un valor diferente de -1 indicaría que el usuario aún tiene sesión
@@ -74,13 +92,23 @@ public class SplashActivity extends Activity {
     User.setUserData(id, email, name, gender, birthday);
   }
 
-  public static void exitApp(Context context) {
-    Intent exitApp = new Intent(context, SplashActivity.class);
-    exitApp.putExtra("exit_app", true);
-    exitApp.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
-                     | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-    context.startActivity(exitApp);
-    ((Activity) context).finish();
+  public static void handleRequest(Context context, String action) {
+    boolean isNecessaryToClearStack = false;
+    if (action.equals(NowerMap.NO_MAP) || action.equals(Login.OPEN_MAP)) {
+      isNecessaryToClearStack = true;
+    }
+
+    Intent request = new Intent(context, SplashActivity.class);
+    request.putExtra("action", action);
+
+    if (isNecessaryToClearStack) {
+      request.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                       | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+    }
+
+    context.startActivity(request);
+
+    if (isNecessaryToClearStack) ((Activity) context).finish();
   }
 
   @Override

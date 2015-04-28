@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -36,8 +37,8 @@ import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
 
 
-public class UserPromosList extends ListActivity implements SubscribedActivities,
-ParsedErrors {
+public class UserPromosList extends ListActivity implements
+SubscribedActivities, ParsedErrors {
 
   private ListItemsCreator userPromosListToShow;
 
@@ -48,12 +49,16 @@ ParsedErrors {
   private RequestErrorsHandler requestErrorsHandler = new
                                                       RequestErrorsHandler();
 
+  private static Map<Integer, Promo> promosMap = new TreeMap<>();
+
+  private boolean isUserAbleToTakePromos;
+
   public static final String LIST_USER_PROMOS = "LIST_USER_PROMOS";
   public static final String SHOW_PROMO_TO_REDEEM = "SHOW_PROMO_TO_REDEEM";
 
-  private static Map<Integer, Promo> promosMap = new TreeMap<>();
-
   public static final int HEADER_ID = -1;
+
+  public static final String USER_NEEDS_TO_REGISTER = "USER_NEEDS_TO_REGISTER";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -66,16 +71,39 @@ ParsedErrors {
 
     requestErrorsHandler.addListeningActivity(this);
 
+    isUserAbleToTakePromos = SplashActivity.isThereLoginInstance();
+
+    setEmptyListMessage();
+
     // Se hace para actualizar el estado de las promociones que ha obtenido el
     // usuario.
     sendRequest(ACTION_USER_REDEMPTIONS);
   }
 
+  public void setEmptyListMessage() {
+    // Se muestra un mensaje en caso de que la lista de promociones del usuario
+    // esté vacía.
+    View empty = findViewById(R.id.empty_list);
+    ListView list = (ListView) findViewById(android.R.id.list);
+    list.setEmptyView(empty);
+    if (!isUserAbleToTakePromos) {
+      Button registerOrLogIn = (Button)
+                               findViewById(R.id.register_or_login_button);
+      registerOrLogIn.setVisibility(View.VISIBLE);
+    }
+  }
+
+  public void goToRegister(View v) {
+    SplashActivity.handleRequest(this, USER_NEEDS_TO_REGISTER);
+  }
+
   public void sendRequest(String request) {
-    if (request.equals(ACTION_USER_REDEMPTIONS)) {
-      httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_USER_REDEMPTIONS,
-                              "/" + User.id, params, new HttpGet(),
-                              UserPromosList.this);
+    if (isUserAbleToTakePromos) {
+      if (request.equals(ACTION_USER_REDEMPTIONS)) {
+        httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_USER_REDEMPTIONS,
+                                "/" + User.id, params, new HttpGet(),
+                                UserPromosList.this);
+      }
     }
   }
 
@@ -128,14 +156,6 @@ ParsedErrors {
     }
 
     return userPromos;
-  }
-
-  public void setEmptyListMessage() {
-    // Se muestra un mensaje en caso de que la lista de promociones del usuario
-    // esté vacía.
-    View empty = findViewById(R.id.empty_list);
-    ListView list = (ListView) findViewById(android.R.id.list);
-    list.setEmptyView(empty);
   }
 
   public static void updateUserRedemptions(JSONArray userRedemptions) {
@@ -220,8 +240,6 @@ ParsedErrors {
                                     LIST_USER_PROMOS);
 
             setListAdapter(userPromosListToShow);
-
-            setEmptyListMessage();
             break;
           case HttpHandler.UNAUTHORIZED:
             RequestErrorsHandler

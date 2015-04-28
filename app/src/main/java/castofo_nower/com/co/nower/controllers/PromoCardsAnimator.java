@@ -12,8 +12,6 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -64,8 +62,6 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   private ArrayList<View> promoCards = new ArrayList<>();
   private View requestingView;
 
-  Animation slide_in_left, slide_out_right, slide_in_right, slide_out_left;
-
   private UserFeedback userFeedback = new UserFeedback();
 
   private RequestErrorsHandler requestErrorsHandler = new
@@ -95,6 +91,8 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   private Map<Integer, Redemption> userPromos = new LinkedHashMap<>();
   private Map<Integer, Promo> promosMap = new TreeMap<>();
 
+  private boolean isUserAbleToTakePromos;
+
   public static final String TAKE_PROMO = "TAKE_PROMO";
   public static final String OBTAINED_PROMO = "OBTAINED_PROMO";
 
@@ -113,7 +111,8 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
     requestErrorsHandler.addListeningActivity(this);
 
-    setFlipperAnimation();
+    isUserAbleToTakePromos = SplashActivity.isThereLoginInstance();
+
     capturePromos();
     // Si el establecimiento no tiene promociones vigentes no tiene sentido
     // actualizar nada.
@@ -159,14 +158,6 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
       }
       public void onPageSelected(int position) { }
     });
-  }
-
-  public void setFlipperAnimation() {
-    slide_in_left = AnimationUtils.loadAnimation(this, R.anim.slide_in_left);
-    slide_out_right = AnimationUtils.loadAnimation
-                      (this, R.anim.slide_out_right);
-    slide_in_right = AnimationUtils.loadAnimation(this, R.anim.slide_in_right);
-    slide_out_left = AnimationUtils.loadAnimation(this, R.anim.slide_out_left);
   }
 
   public void capturePromos() {
@@ -274,6 +265,8 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
         final Button nowButton = (Button) promoCard
                                  .findViewById(R.id.now_button);
+        if (!isUserAbleToTakePromos) changeNowToRegister(nowButton);
+
         redemptionCode = (TextView) promoCard.findViewById
                          (R.id.redemption_code);
 
@@ -329,6 +322,27 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
     }
   }
 
+  // Es necesario que el usuario ingrese antes de poder acceder a las
+  // promociones.
+  public void changeNowToRegister(Button nowButton) {
+    nowButton.setText(getResources().getString(R.string.register_or_log_in));
+    nowButton.setBackground(getResources()
+                            .getDrawable(R.drawable.blue_button_background));
+  }
+
+  public void changeButtonToCode(final Button nowButton) {
+    // El usuario está tratando de visualizar una promoción que ya obtuvo.
+    // Por eso, desaparece el botón de Now y aparece el código para redimirla.
+    nowButton.setVisibility(View.GONE);
+    redemptionCode.setText(code);
+    // En caso de tratarse de una promoción ya redimida por el usuario, el
+    // código aparece en color gris.
+    if (isUserPromoRedeemed) {
+      redemptionCode.setTextColor(getResources().getColor(R.color.gray));
+    }
+    redemptionCode.setVisibility(View.VISIBLE);
+  }
+
   public CountDownTimer createCountDownTimer
   (final TextView countDownView, String expirationDate, final Button nowButton)
   {
@@ -357,30 +371,14 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
       @Override
       public void onFinish() {
         countDownView.setText(getResources().getString(R.string.never));
-        // Se desactiva el botón cuando el tiempo límite para tomar la
-        // promoción se haya cumplido.
-        nowButton.setEnabled(false);
+        if (isUserAbleToTakePromos) {
+          // Se desactiva el botón cuando el tiempo límite para tomar la
+          // promoción se haya cumplido.
+          nowButton.setEnabled(false);
+        }
       }};
 
     return countDownTimer;
-  }
-
-  public void changeButtonToCode(final Button nowButton) {
-    // El usuario está tratando de visualizar una promoción que ya obtuvo.
-    // Por eso, desaparece el botón de Now y aparece el código para redimirla.
-    nowButton.setVisibility(View.GONE);
-    redemptionCode.setText(code);
-    // En caso de tratarse de una promoción ya redimida por el usuario, el
-    // código aparece en color gris.
-    if (isUserPromoRedeemed) {
-      redemptionCode.setTextColor(getResources().getColor(R.color.gray));
-    }
-    redemptionCode.setVisibility(View.VISIBLE);
-  }
-
-  public void closeAvailablePromos(ImageView availableRedemptionsIcon) {
-    availableRedemptionsIcon.setImageDrawable
-    (getResources().getDrawable(R.drawable.ic_people_limit_reached));
   }
 
   public void putPromoCards() {
@@ -390,21 +388,26 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
     promosFlipper.setClipToPadding(false);
   }
 
+  public void now(View v) {
+    if (v == getPagerCurrentView().findViewById(R.id.now_button)) {
+      if (isUserAbleToTakePromos) {
+        requestingView = getPagerCurrentView();
+        params.put("promo_id", String.valueOf(requestingView.getId()));
+        params.put("user_id", String.valueOf(User.id));
+        askToTakePromo();
+      }
+      else {
+        SplashActivity.handleRequest(PromoCardsAnimator.this,
+                                     UserPromosList.USER_NEEDS_TO_REGISTER);
+      }
+    }
+  }
+
   public View getPagerCurrentView() {
     int promoTag = promosFlipper.getCurrentItem();
     View promoView = promosFlipper.findViewWithTag(promoTag);
 
     return promoView;
-  }
-
-  public void now(View v) {
-    // Solamente se puede tomar la promoción actualmente visible.
-    if (v == getPagerCurrentView().findViewById(R.id.now_button)) {
-      requestingView = getPagerCurrentView();
-      params.put("promo_id", String.valueOf(requestingView.getId()));
-      params.put("user_id", String.valueOf(User.id));
-      askToTakePromo();
-    }
   }
 
   public void askToTakePromo() {
@@ -434,6 +437,11 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
     promoAvailableRedemptions.setText(getResources().getString(R.string.zero));
     Button nowButton = (Button) requestingView.findViewById(R.id.now_button);
     nowButton.setEnabled(false);
+  }
+
+  public void closeAvailablePromos(ImageView availableRedemptionsIcon) {
+    availableRedemptionsIcon.setImageDrawable
+            (getResources().getDrawable(R.drawable.ic_people_limit_reached));
   }
 
   @Override
