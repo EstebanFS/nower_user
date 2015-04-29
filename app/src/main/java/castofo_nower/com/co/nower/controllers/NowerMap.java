@@ -58,7 +58,7 @@ GeolocationInterface, AlertDialogsResponse, ParsedErrors,
 GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
   private GoogleMap map;
-  private int ZOOM_LEVEL = 14;
+  private float ZOOM_LEVEL = 13.1f;
   private int TILT_LEVEL = 60;
   private int RANGE_IN_METERS = 3100;
   private Geolocation geolocation;
@@ -113,6 +113,7 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
            .findFragmentById(R.id.map)).getMap();
 
     if (map != null) {
+      getActionBar().setDisplayHomeAsUpEnabled(true);
       setUpMap();
       setMapListeners();
       // Ya estaba previamente capturada la localización del usuario.
@@ -511,6 +512,9 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_nower_map, menu);
+    if (!SplashActivity.isThereLoginInstance()) {
+      menu.findItem(R.id.action_log_out).setVisible(false);
+    }
     return true;
   }
 
@@ -520,10 +524,13 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
     // automatically handle clicks on the Home/Up button, so long
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
-
-    //noinspection SimplifiableIfStatement
-    if (id == R.id.action_settings) {
-      return true;
+    switch (id) {
+      case android.R.id.home:
+        finish();
+        return true;
+      case R.id.action_log_out:
+        SplashActivity.handleRequest(NowerMap.this, UserPromosList.LOG_OUT);
+        return true;
     }
 
     return super.onOptionsItemSelected(item);
