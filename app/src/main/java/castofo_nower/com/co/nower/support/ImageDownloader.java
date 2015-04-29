@@ -7,11 +7,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.os.AsyncTask;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.util.LruCache;
 import android.view.View;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Marker;
@@ -28,7 +26,7 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
   private int action;
   // En caso de tener que actualizar un ImageView.
   private ImageView imageView;
-  private ProgressBar progress;
+  private View viewToHide;
   private String imageURL;
   // En caso de tener que actualizar un marcador.
   private View bubbleMarker;
@@ -36,23 +34,23 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
   private Context context;
   private static LruCache<String, Bitmap> imagesCache;
 
-  private static final int UPDATE_VIEW_PROGRESS = 1;
-  private static final int UPDATE_VIEW_NO_PROGRESS = 2;
+  private static final int UPDATE_VIEW_HIDE_VIEW = 1;
+  private static final int UPDATE_VIEW_NO_HIDE_VIEW = 2;
   private static final int UPDATE_MARKER = 3;
 
 
-  public ImageDownloader(ImageView imageView, ProgressBar progress,
+  public ImageDownloader(ImageView imageView, View viewToHide,
                          String imageURL) {
-    this.action = UPDATE_VIEW_PROGRESS;
+    this.action = UPDATE_VIEW_HIDE_VIEW;
     this.imageView = imageView;
-    this.progress = progress;
+    this.viewToHide = viewToHide;
     this.imageURL = imageURL;
     // Configurar la memoria caché para guardar los logos.
     if (ImageDownloader.imagesCache == null) setupLruCache();
   }
 
   public ImageDownloader(ImageView imageView, String imageURL) {
-    this.action = UPDATE_VIEW_NO_PROGRESS;
+    this.action = UPDATE_VIEW_NO_HIDE_VIEW;
     this.imageView = imageView;
     this.imageURL = imageURL;
     // Configurar la memoria caché para guardar los logos.
@@ -116,12 +114,12 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
 
   private void showResultImage(Bitmap result) {
     switch (action) {
-      case UPDATE_VIEW_PROGRESS:
-        progress.setVisibility(View.GONE);
+      case UPDATE_VIEW_HIDE_VIEW:
+        viewToHide.setVisibility(View.GONE);
         imageView.setImageBitmap(result);
         imageView.setVisibility(View.VISIBLE);
         break;
-      case UPDATE_VIEW_NO_PROGRESS:
+      case UPDATE_VIEW_NO_HIDE_VIEW:
         imageView.setImageBitmap(result);
         imageView.setVisibility(View.VISIBLE);
         break;
