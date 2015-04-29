@@ -512,9 +512,13 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_nower_map, menu);
-    if (!SplashActivity.isThereLoginInstance()) {
+    if (SplashActivity.isThereLoginInstance()) {
+      menu.findItem(R.id.action_log_in).setVisible(false);
+    }
+    else {
       menu.findItem(R.id.action_log_out).setVisible(false);
     }
+
     return true;
   }
 
@@ -527,6 +531,10 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
     switch (id) {
       case android.R.id.home:
         finish();
+        return true;
+      case R.id.action_log_in:
+        SplashActivity.handleRequest(NowerMap.this,
+                                     UserPromosList.USER_NEEDS_TO_REGISTER);
         return true;
       case R.id.action_log_out:
         SplashActivity.handleRequest(NowerMap.this, UserPromosList.LOG_OUT);

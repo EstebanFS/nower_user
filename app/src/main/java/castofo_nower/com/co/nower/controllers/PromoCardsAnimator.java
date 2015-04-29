@@ -651,10 +651,14 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_promo_card_animation, menu);
-    if (!SplashActivity.isThereLoginInstance()) {
+    getMenuInflater().inflate(R.menu.menu_promo_cards_animator, menu);
+    if (SplashActivity.isThereLoginInstance()) {
+      menu.findItem(R.id.action_log_in).setVisible(false);
+    }
+    else {
       menu.findItem(R.id.action_log_out).setVisible(false);
     }
+
     return true;
   }
 
@@ -667,6 +671,10 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
     switch (id) {
       case android.R.id.home:
         finish();
+        return true;
+      case R.id.action_log_in:
+        SplashActivity.handleRequest(PromoCardsAnimator.this,
+                                     UserPromosList.USER_NEEDS_TO_REGISTER);
         return true;
       case R.id.action_log_out:
         SplashActivity.handleRequest(PromoCardsAnimator.this,
