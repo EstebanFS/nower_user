@@ -48,6 +48,7 @@ import castofo_nower.com.co.nower.support.PagerBuilder;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.DateManager;
+import castofo_nower.com.co.nower.support.WideImageView;
 
 
 public class PromoCardsAnimator extends Activity implements
@@ -67,6 +68,8 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   private RequestErrorsHandler requestErrorsHandler = new
                                                       RequestErrorsHandler();
 
+  private WideImageView promoPicture;
+  private LinearLayout promoPictureProgress;
   private ProgressBar storeLogoProgress;
   private ImageView storeLogo;
   private TextView promoTitle;
@@ -246,6 +249,10 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         promoCards.add(promoCard);
 
         // Se capturan los campos que se van a modificar.
+        promoPicture = (WideImageView) promoCard
+                       .findViewById(R.id.promo_picture);
+        promoPictureProgress = (LinearLayout) promoCard
+                .findViewById(R.id.promo_picture_progress);
         storeLogoProgress = (ProgressBar) promoCard
                             .findViewById(R.id.store_logo_progress);
         storeLogo = (ImageView) promoCard.findViewById(R.id.store_logo);
@@ -270,6 +277,17 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         redemptionCode = (TextView) promoCard.findViewById
                          (R.id.redemption_code);
 
+        // Se recupera la imagen de la promoción
+        if (promo.getPictureURL() != null) {
+          ImageDownloader imageDownloader
+                  = new ImageDownloader(promoPicture, promoPictureProgress,
+                                        promo.getPictureURL());
+          imageDownloader.execute();
+        }
+        else {
+          promoPictureProgress.setVisibility(View.GONE);
+          promoPicture.setVisibility(View.VISIBLE);
+        }
         // Se recupera el logo de la tienda.
         if (storeLogoURL != null) {
           ImageDownloader imageDownloader
@@ -515,11 +533,19 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
              String description = internPromo.getString("description");
              String terms = internPromo.getString("terms");
              boolean hasExpired = internPromo.getBoolean("has_expired");
+             String pictureURL;
+             if (internPromo.getJSONObject("picture").getJSONObject("large")
+                     .isNull("url")) {
+               pictureURL = null;
+             }
+             else pictureURL = internPromo.getJSONObject("picture")
+                     .getJSONObject("large").getString("url");
 
              // Se genera la lista de promociones para ser actualizada
              // localmente, ya incluyendo descripción y términos.
              Promo promo = new Promo(promoId, title, expirationDate,
-                                     availableRedemptions, description, terms);
+                                     availableRedemptions, description, terms,
+                                     pictureURL);
              promosMap.put(promo.getId(), promo);
 
              if (PromoCardsAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS))

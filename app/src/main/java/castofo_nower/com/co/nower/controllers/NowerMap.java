@@ -398,10 +398,18 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
                                         .getString("expiration_date");
                 int availableRedemptions = internPromo
                                            .getInt("available_redemptions");
+                String pictureURL;
+                if (internPromo.getJSONObject("picture").getJSONObject("large")
+                        .isNull("url")) {
+                  pictureURL = null;
+                }
+                else pictureURL = internPromo.getJSONObject("picture")
+                        .getJSONObject("large").getString("url");
                 // Se genera la lista de promociones para esa localización,
                 // aún sin descripción ni términos.
                 Promo promo = new Promo(promoId, title, expirationDate,
-                                        availableRedemptions, null, null);
+                                        availableRedemptions, null, null,
+                                        pictureURL);
                 promoList.add(promo.getId());
 
                 // Se agrega la promoción a un mapa de promociones.

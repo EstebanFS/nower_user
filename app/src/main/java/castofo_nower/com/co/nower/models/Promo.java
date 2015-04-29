@@ -8,16 +8,19 @@ public class Promo {
   private int availableRedemptions;
   private String description;
   private String terms;
+  private String pictureURL;
 
 
   public Promo(int id, String title, String expirationDate,
-               int availableRedemptions, String description, String terms) {
+               int availableRedemptions, String description, String terms,
+               String pictureURL) {
     this.id = id;
     this.title = title;
     this.expirationDate = expirationDate;
     this.availableRedemptions = availableRedemptions;
     this.description = description;
     this.terms = terms;
+    this.pictureURL = pictureURL;
   }
 
   public int getId() {
@@ -68,4 +71,7 @@ public class Promo {
     this.terms = terms;
   }
 
+  public String getPictureURL() {
+    return pictureURL;
+  }
 }
