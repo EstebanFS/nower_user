@@ -75,5 +75,7 @@
   <string name="no_more_stock">has no more stock</string>
   <string name="zero">0</string>
   <string name="register_or_log_in">REGISTRARSE O INICIAR SESIÓN</string>
+  <string name="menu">Menú</string>
+  <string name="log_out">Cerrar sesión</string>
 
 </resources>

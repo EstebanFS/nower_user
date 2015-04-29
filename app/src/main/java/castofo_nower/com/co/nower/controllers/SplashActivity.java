@@ -37,6 +37,11 @@ public class SplashActivity extends Activity {
           // El usuario acaba de registrarse o de iniciar sesión.
           requestedAction = new Intent(SplashActivity.this, TabsHandler.class);
           break;
+        case UserPromosList.LOG_OUT:
+          User.clearData();
+          SharedPreferencesManager.clearSharedPreferences();
+          requestedAction = new Intent(SplashActivity.this, TabsHandler.class);
+          break;
       }
       if (requestedAction != null) {
         requestedAction.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -72,7 +77,7 @@ public class SplashActivity extends Activity {
                  .getIntegerValue(SharedPreferencesManager.USER_ID);
     // Un valor diferente de -1 indicaría que el usuario aún tiene sesión
     // activa.
-    if (userId == -1) return false;
+    if (userId == SharedPreferencesManager.NO_VALUE_SAVED) return false;
     else return true;
   }
 
@@ -94,7 +99,8 @@ public class SplashActivity extends Activity {
 
   public static void handleRequest(Context context, String action) {
     boolean isNecessaryToClearStack = false;
-    if (action.equals(NowerMap.NO_MAP) || action.equals(Login.OPEN_MAP)) {
+    if (action.equals(NowerMap.NO_MAP) || action.equals(Login.OPEN_MAP)
+        || action.equals(UserPromosList.LOG_OUT)) {
       isNecessaryToClearStack = true;
     }
 

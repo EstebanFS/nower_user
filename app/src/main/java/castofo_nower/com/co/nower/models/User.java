@@ -3,6 +3,8 @@ package castofo_nower.com.co.nower.models;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import castofo_nower.com.co.nower.support.SharedPreferencesManager;
+
 
 public class User {
 
@@ -33,6 +35,12 @@ public class User {
   public static Map<Integer, Redemption> getTakenPromos() {
     if (takenPromos == null) takenPromos = new LinkedHashMap<>();
     return takenPromos;
+  }
+
+  public static void clearData() {
+    id = SharedPreferencesManager.NO_VALUE_SAVED;
+    email = name = gender = birthday = null;
+    if (takenPromos != null) takenPromos.clear();
   }
 
 }

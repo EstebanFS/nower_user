@@ -60,6 +60,8 @@ SubscribedActivities, ParsedErrors {
 
   public static final String USER_NEEDS_TO_REGISTER = "USER_NEEDS_TO_REGISTER";
 
+  public static final String LOG_OUT = "LOG_OUT";
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);

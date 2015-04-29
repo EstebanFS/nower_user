@@ -1,7 +1,6 @@
 package castofo_nower.com.co.nower.support;
 
 import android.content.Context;
-import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,7 +49,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
 
     String titleText = "";
     String subtitleText = "";
-    Drawable iconImg = null;
+
     switch (action) {
       case UserPromosList.LIST_USER_PROMOS:
         // Se obtiene el título de la promoción actual.
@@ -107,14 +106,11 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
           = new ImageDownloader(icon, b.getStoreLogoURL());
           imageDownloader.execute();
         }
-        //iconImg = context.getResources().getDrawable(R.drawable.nower_marker);
         break;
     }
 
     title.setText(titleText);
     subtitle.setText(subtitleText);
-
-    if (iconImg != null) icon.setImageDrawable(iconImg);
 
     //Se retorna el item que va a ser mostrado para cada fila de la lista.
     return item;
