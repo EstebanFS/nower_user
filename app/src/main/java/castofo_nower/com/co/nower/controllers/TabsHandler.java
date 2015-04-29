@@ -75,10 +75,14 @@ ActionBar.TabListener {
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_tab_handler, menu);
-    if (!SplashActivity.isThereLoginInstance()) {
+    getMenuInflater().inflate(R.menu.menu_tabs_handler, menu);
+    if (SplashActivity.isThereLoginInstance()) {
+      menu.findItem(R.id.action_log_in).setVisible(false);
+    }
+    else {
       menu.findItem(R.id.action_log_out).setVisible(false);
     }
+
     return true;
   }
 
@@ -89,6 +93,10 @@ ActionBar.TabListener {
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
     switch (id) {
+      case R.id.action_log_in:
+        SplashActivity.handleRequest(TabsHandler.this,
+                                     UserPromosList.USER_NEEDS_TO_REGISTER);
+        return true;
       case R.id.action_log_out:
         SplashActivity.handleRequest(TabsHandler.this, UserPromosList.LOG_OUT);
         return true;
