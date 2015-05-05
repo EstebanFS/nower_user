@@ -190,6 +190,14 @@ SubscribedActivities, ParsedErrors {
         else pictureURL = redemptionPromo.getJSONObject("picture")
                 .getJSONObject("large").getString("url");
 
+        String pictureHDURL;
+        if (redemptionPromo.getJSONObject("picture")
+                .getJSONObject("extra_large").isNull("url")) {
+          pictureHDURL = null;
+        }
+        else pictureHDURL = redemptionPromo.getJSONObject("picture")
+                .getJSONObject("extra_large").getString("url");
+
         Redemption redemption = new Redemption(code, promoId, redeemed,
                                                storeName, storeLogoURL);
 
@@ -197,7 +205,8 @@ SubscribedActivities, ParsedErrors {
         User.addPromoToTakenPromos(redemption.getPromoId(), redemption);
 
         Promo promo = new Promo(promoId, title, expirationDate,
-                                availableRedemptions, null, null, pictureURL);
+                                availableRedemptions, null, null, pictureURL,
+                                pictureHDURL);
         // Se adiciona la promoción del usuario a la lista de promociones
         // general.
         promosMap.put(promo.getId(), promo);
