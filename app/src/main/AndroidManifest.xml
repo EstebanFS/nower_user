@@ -59,6 +59,7 @@
       android:value="AIzaSyAYqjc0sDA7WH8tKwzjEgZa9z6CtRbGaxM"/>
       <!--android:value="AIzaSyComkf567bF-nIKsmhbqOtejwJdR8x4cmE" />-->
 
+
     <meta-data
       android:name="com.google.android.gms.version"
       android:value="@integer/google_play_services_version"/>
@@ -96,6 +97,10 @@
       android:theme="@style/AppTheme.CustomWhiteRadioButton"
       android:windowSoftInputMode="adjustResize|stateHidden"
       android:screenOrientation="portrait">
+    </activity>
+    <activity
+      android:name=".controllers.PromoPictureViewer"
+      android:label="@string/title_activity_promo_picture_viewer">
     </activity>
   </application>
 

@@ -77,5 +77,7 @@
   <string name="register_or_log_in">REGISTRARSE O INICIAR SESIÓN</string>
   <string name="menu">Menú</string>
   <string name="log_out">Cerrar sesión</string>
+  <string name="title_activity_promo_picture_viewer">Foto de promoción</string>
+  <string name="no_promo_picture">Sin foto de promoción</string>
 
 </resources>

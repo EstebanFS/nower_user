@@ -418,11 +418,19 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
                 }
                 else pictureURL = internPromo.getJSONObject("picture")
                         .getJSONObject("large").getString("url");
+
+                String pictureHDURL;
+                if (internPromo.getJSONObject("picture")
+                        .getJSONObject("extra_large").isNull("url")) {
+                  pictureHDURL = null;
+                }
+                else pictureHDURL = internPromo.getJSONObject("picture")
+                        .getJSONObject("extra_large").getString("url");
                 // Se genera la lista de promociones para esa localización,
                 // aún sin descripción ni términos.
                 Promo promo = new Promo(promoId, title, expirationDate,
                                         availableRedemptions, null, null,
-                                        pictureURL);
+                                        pictureURL, pictureHDURL);
                 promoList.add(promo.getId());
 
                 // Se agrega la promoción a un mapa de promociones.

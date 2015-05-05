@@ -3,6 +3,8 @@ package castofo_nower.com.co.nower.controllers;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.CountDownTimer;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -251,6 +253,28 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         // Se capturan los campos que se van a modificar.
         promoPicture = (WideImageView) promoCard
                        .findViewById(R.id.promo_picture);
+        promoPicture.setOnClickListener(new View.OnClickListener() {
+          @Override
+          public void onClick(View v) {
+            int currentPromoId = getPagerCurrentView().getId();
+            String imageHDURL = promosMap.get(currentPromoId).getPictureHDURL();
+            if (imageHDURL != null) {
+              Intent intent = new Intent(PromoCardsAnimator.this,
+                      PromoPictureViewer.class);
+              Bitmap image = ((BitmapDrawable) ((WideImageView) v).getDrawable())
+                      .getBitmap();
+
+              Bundle extras = new Bundle();
+              extras.putParcelable("promo_picture_bitmap", image);
+              extras.putString("image_url", imageHDURL);
+              intent.putExtras(extras);
+              startActivity(intent);
+            }
+            else UserFeedback.showToastMessage(PromoCardsAnimator.this,
+                    getResources().getString(R.string.no_promo_picture),
+                    Toast.LENGTH_SHORT);
+          }
+        });
         promoPictureProgress = (LinearLayout) promoCard
                 .findViewById(R.id.promo_picture_progress);
         storeLogoProgress = (ProgressBar) promoCard
@@ -541,11 +565,19 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
              else pictureURL = internPromo.getJSONObject("picture")
                      .getJSONObject("large").getString("url");
 
+             String pictureHDURL;
+             if (internPromo.getJSONObject("picture")
+                     .getJSONObject("extra_large").isNull("url")) {
+               pictureHDURL = null;
+             }
+             else pictureHDURL = internPromo.getJSONObject("picture")
+                     .getJSONObject("extra_large").getString("url");
+
              // Se genera la lista de promociones para ser actualizada
              // localmente, ya incluyendo descripción y términos.
              Promo promo = new Promo(promoId, title, expirationDate,
                                      availableRedemptions, description, terms,
-                                     pictureURL);
+                                     pictureURL, pictureHDURL);
              promosMap.put(promo.getId(), promo);
 
              if (PromoCardsAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS))

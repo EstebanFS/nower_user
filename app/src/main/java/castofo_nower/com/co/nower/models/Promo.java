@@ -9,11 +9,11 @@ public class Promo {
   private String description;
   private String terms;
   private String pictureURL;
-
+  private String pictureHDURL;
 
   public Promo(int id, String title, String expirationDate,
                int availableRedemptions, String description, String terms,
-               String pictureURL) {
+               String pictureURL, String pictureHDURL) {
     this.id = id;
     this.title = title;
     this.expirationDate = expirationDate;
@@ -21,6 +21,7 @@ public class Promo {
     this.description = description;
     this.terms = terms;
     this.pictureURL = pictureURL;
+    this.pictureHDURL = pictureHDURL;
   }
 
   public int getId() {
@@ -73,5 +74,9 @@ public class Promo {
 
   public String getPictureURL() {
     return pictureURL;
+  }
+
+  public String getPictureHDURL() {
+    return pictureHDURL;
   }
 }
