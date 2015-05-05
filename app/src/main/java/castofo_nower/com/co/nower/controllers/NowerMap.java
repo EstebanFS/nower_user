@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -266,6 +267,18 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
     View bubbleMarker =
             ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE))
             .inflate(R.layout.bubble_marker, null);
+    TextView promosCounter =
+            (TextView) bubbleMarker.findViewById(R.id.promos_counter);
+
+    // Se obtiene el número de promociones en la sucursal
+    int promosInBranch = branch.getPromosIds().size();
+    String promosInBranchText;
+    // Si son menos de 10 promociones se deja el texto, de lo contrario se
+    // indica que tiene más de 9 promociones (restringir el texto a máximo 2
+    // caracteres)
+    if (promosInBranch >= 10) promosInBranchText = "+9";
+    else promosInBranchText = String.valueOf(promosInBranch);
+    promosCounter.setText(promosInBranchText);
 
     Bitmap markerIcon =
             ImageDownloader.createBitmapFromView(this, bubbleMarker);
@@ -276,7 +289,6 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
             .position(new LatLng(branch.getLatitude(), branch.getLongitude()))
             .title(branch.getStoreName() + " - " + branch.getName())
             .icon(BitmapDescriptorFactory.fromBitmap(markerIcon)));
-
 
     // Se asocia cada establecimiento a un marcador diferente.
     branchesIdsMap.put(branchMarker, branch.getId());
