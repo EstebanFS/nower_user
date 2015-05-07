@@ -509,22 +509,29 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
       case ACTION_PROMOS_DETAILS:
         if (errorsMessages.containsKey("ids")) {
           UserFeedback.showToastMessage(getApplicationContext(),
-                                        errorsMessages.get("ids"),
-                                        Toast.LENGTH_SHORT);
+                  errorsMessages.get("ids"),
+                  Toast.LENGTH_SHORT);
         }
         break;
       case ACTION_NOW:
-        if (errorsMessages.containsKey("user")) {
+        if (errorsMessages.containsKey("user_id")) {
           UserFeedback.showToastMessage(getApplicationContext(),
-                                        errorsMessages.get("user"),
-                                        Toast.LENGTH_LONG);
+                  errorsMessages.get("user_id"),
+                  Toast.LENGTH_LONG);
           //TODO cerrar sesión porque se intentó utilizar un usuario inválido.
         }
+        else if (errorsMessages.containsKey("user")) {
+          UserFeedback.showAlertDialog(this, R.string.promo_limit_exceeded,
+                  errorsMessages.get("user"), R.string.ok,
+                  UserFeedback.NO_BUTTON_TO_SHOW, action);
+        }
+        else if (errorsMessages.containsKey("promo_stock")) {
+          disableNowButtonDueToNoMoreStock();
+          UserFeedback.showAlertDialog(this, R.string.never,
+                  errorsMessages.get("promo_stock"), R.string.ok,
+                  UserFeedback.NO_BUTTON_TO_SHOW, action);
+        }
         else if (errorsMessages.containsKey("promo")) {
-          if (errorsMessages.get("promo")
-              .contains(getResources().getString(R.string.no_more_stock))) {
-            disableNowButtonDueToNoMoreStock();
-          }
           UserFeedback
           .showAlertDialog(this, R.string.never, errorsMessages.get("promo"),
                            R.string.ok, UserFeedback.NO_BUTTON_TO_SHOW, action);

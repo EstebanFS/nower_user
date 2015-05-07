@@ -72,12 +72,11 @@
   <string name="sorry">Lo sentimos</string>
   <string name="error_loading_map">No fue posible cargar el mapa.</string>
   <string name="exit">Salir</string>
-  <string name="no_more_stock">has no more stock</string>
   <string name="zero">0</string>
   <string name="register_or_log_in">REGISTRARSE O INICIAR SESIÓN</string>
   <string name="menu">Menú</string>
   <string name="log_out">Cerrar sesión</string>
   <string name="title_activity_promo_picture_viewer">Foto de promoción</string>
   <string name="no_promo_picture">Sin foto de promoción</string>
-
+  <string name="promo_limit_exceeded">Límite de promociones excedido</string>
 </resources>
