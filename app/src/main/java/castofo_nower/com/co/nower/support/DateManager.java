@@ -30,4 +30,10 @@ public class DateManager {
     return result;
   }
 
+  public static String getDateTime(Date date) {
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    String result = sdf.format(date);
+    return result;
+  }
+
 }

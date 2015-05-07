@@ -79,4 +79,7 @@
   <string name="title_activity_promo_picture_viewer">Foto de promoción</string>
   <string name="no_promo_picture">Sin foto de promoción</string>
   <string name="promo_limit_exceeded">Límite de promociones excedido</string>
+  <string name="facebook_app_id">863715703721005</string>
+  <string name="login_with_facebook">Ingresar con Facebook</string>
+  <string name="logout_with_facebook">Cerrar sesión</string>
 </resources>

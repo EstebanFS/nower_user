@@ -11,6 +11,9 @@
   <color name="gray">#FFA9A9A9</color>
   <color name="dark_gray">#333333</color>
   <color name="red">#FF0000</color>
+  <color name="dark_red">#ffdb1300</color>
+  <color name="dark_red_2">#ffe80b00</color>
+  <color name="light_red">#ffff9ea2</color>
   <color name="blue">#366CD1</color>
   <color name="blue_2">#417BE8</color>
   <color name="blue_3">#4084FF</color>

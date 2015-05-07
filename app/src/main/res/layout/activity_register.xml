@@ -1,10 +1,10 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  tools:context="castofo_nower.com.co.nower.controllers.Register"
-  android:fillViewport="true"
-  android:background="@drawable/login_background">
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/login_background"
+            android:fillViewport="true"
+            tools:context="castofo_nower.com.co.nower.controllers.Register">
 
   <LinearLayout
     android:layout_width="match_parent"
@@ -14,81 +14,81 @@
 
     <TextView
       android:id="@+id/register_header"
-      android:text="@string/app_name"
       android:layout_width="wrap_content"
       android:layout_height="wrap_content"
       android:layout_marginTop="70dp"
+      android:text="@string/app_name"
+      android:textColor="@color/white"
       android:textSize="50sp"
-      android:textStyle="bold"
-      android:textColor="@color/white"/>
+      android:textStyle="bold"/>
 
     <EditText
       android:id="@+id/name"
       android:layout_width="match_parent"
       android:layout_height="50dp"
-      android:inputType="textPersonName"
       android:layout_marginLeft="20dp"
       android:layout_marginRight="20dp"
       android:layout_marginTop="20dp"
-      android:paddingLeft="10dp"
-      android:hint="@string/full_name"
-      android:textColor="@color/white"
-      android:textColorHint="@color/dark_white"
       android:background="@drawable/login_field_background"
       android:drawableLeft="@drawable/ic_user_light"
       android:drawablePadding="20dp"
-      android:singleLine="true"/>
+      android:hint="@string/full_name"
+      android:inputType="textPersonName"
+      android:paddingLeft="10dp"
+      android:singleLine="true"
+      android:textColor="@color/white"
+      android:textColorHint="@color/dark_white"/>
 
     <EditText
       android:id="@+id/email"
       android:layout_width="match_parent"
       android:layout_height="50dp"
-      android:inputType="textEmailAddress"
       android:layout_marginLeft="20dp"
       android:layout_marginRight="20dp"
       android:layout_marginTop="20dp"
-      android:paddingLeft="10dp"
-      android:hint="@string/email"
-      android:textColor="@color/white"
-      android:textColorHint="@color/dark_white"
       android:background="@drawable/login_field_background"
       android:drawableLeft="@drawable/ic_email_light"
       android:drawablePadding="20dp"
-      android:singleLine="true"/>
+      android:hint="@string/email"
+      android:inputType="textEmailAddress"
+      android:paddingLeft="10dp"
+      android:singleLine="true"
+      android:textColor="@color/white"
+      android:textColorHint="@color/dark_white"/>
 
     <EditText
       android:id="@+id/password"
       android:layout_width="match_parent"
       android:layout_height="50dp"
-      android:inputType="textPassword"
       android:layout_marginLeft="20dp"
       android:layout_marginRight="20dp"
       android:layout_marginTop="20dp"
-      android:paddingLeft="10dp"
-      android:hint="@string/password"
-      android:textColor="@color/white"
-      android:textColorHint="@color/dark_white"
       android:background="@drawable/login_field_background"
       android:drawableLeft="@drawable/ic_password_light"
       android:drawablePadding="20dp"
-      android:singleLine="true"/>
+      android:hint="@string/password"
+      android:inputType="textPassword"
+      android:paddingLeft="10dp"
+      android:singleLine="true"
+      android:textColor="@color/white"
+      android:textColorHint="@color/dark_white"/>
 
     <EditText
       android:id="@+id/password_confirmation"
       android:layout_width="match_parent"
       android:layout_height="50dp"
-      android:inputType="textPassword"
       android:layout_marginLeft="20dp"
       android:layout_marginRight="20dp"
       android:layout_marginTop="20dp"
-      android:paddingLeft="10dp"
-      android:hint="@string/password_confirmation"
-      android:textColor="@color/white"
-      android:textColorHint="@color/dark_white"
       android:background="@drawable/login_field_background"
       android:drawableLeft="@drawable/ic_password_light"
       android:drawablePadding="20dp"
-      android:singleLine="true"/>
+      android:hint="@string/password_confirmation"
+      android:inputType="textPassword"
+      android:paddingLeft="10dp"
+      android:singleLine="true"
+      android:textColor="@color/white"
+      android:textColorHint="@color/dark_white"/>
 
     <EditText
       android:id="@+id/birthday"
@@ -97,19 +97,19 @@
       android:layout_marginLeft="20dp"
       android:layout_marginRight="20dp"
       android:layout_marginTop="20dp"
-      android:paddingLeft="10dp"
       android:background="@drawable/login_field_background"
+      android:clickable="true"
       android:drawableLeft="@drawable/ic_gift_light"
       android:drawablePadding="20dp"
-      android:singleLine="true"
-      android:hint="@string/birthday_date"
-      android:textColor="@color/white"
-      android:textColorHint="@color/dark_white"
-      android:gravity="center_vertical"
-      android:onClick="showDatePickerDialog"
-      android:clickable="true"
       android:editable="false"
-      android:focusableInTouchMode="false"/>
+      android:focusableInTouchMode="false"
+      android:gravity="center_vertical"
+      android:hint="@string/birthday_date"
+      android:onClick="showDatePickerDialog"
+      android:paddingLeft="10dp"
+      android:singleLine="true"
+      android:textColor="@color/white"
+      android:textColorHint="@color/dark_white"/>
 
     <RadioGroup
       android:id="@+id/gender"
@@ -118,56 +118,71 @@
       android:layout_marginLeft="20dp"
       android:layout_marginRight="20dp"
       android:layout_marginTop="20dp"
-      android:orientation="horizontal"
-      android:gravity="center">
+      android:gravity="center"
+      android:orientation="horizontal">
 
       <RadioButton
         android:id="@+id/female"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="@string/female"
         android:textColor="@color/white"
         android:textSize="17sp"
-        android:textStyle="bold"
-        android:text="@string/female"/>
+        android:textStyle="bold"/>
 
       <RadioButton
         android:id="@+id/male"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginLeft="30dp"
+        android:text="@string/male"
         android:textColor="@color/white"
         android:textSize="17sp"
-        android:textStyle="bold"
-        android:text="@string/male"/>
+        android:textStyle="bold"/>
 
     </RadioGroup>
 
     <Button
       android:layout_width="match_parent"
       android:layout_height="50dp"
-      android:text="@string/register"
       android:layout_marginLeft="20dp"
       android:layout_marginRight="20dp"
       android:layout_marginTop="30dp"
-      android:textColor="@color/dark_white"
-      android:textStyle="bold"
       android:background="@drawable/green_button_background"
-      android:onClick="onRegisterClicked"/>
+      android:onClick="onRegisterClicked"
+      android:text="@string/register"
+      android:textColor="@color/dark_white"
+      android:textSize="15sp"
+      android:textStyle="bold"/>
+
+    <com.facebook.login.widget.LoginButton
+      android:id="@+id/login_button"
+      xmlns:fb="http://schemas.android.com/apk/res-auto"
+      android:layout_width="match_parent"
+      android:layout_height="50dp"
+      android:layout_gravity="center_horizontal"
+      android:layout_marginBottom="30dp"
+      android:layout_marginLeft="20dp"
+      android:layout_marginRight="20dp"
+      android:layout_marginTop="30dp"
+      android:textSize="15sp"
+      fb:login_text="@string/login_with_facebook"
+      fb:logout_text="@string/logout_with_facebook"/>
 
     <TextView
-      android:text="@string/already_have_account"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginLeft="40dp"
       android:layout_marginRight="40dp"
       android:layout_marginTop="20dp"
-      android:padding="25dp"
-      android:textColor="@color/white"
-      android:textStyle="bold"
-      android:textSize="17sp"
+      android:clickable="true"
       android:gravity="center"
       android:onClick="onAlreadyHaveAccountClicked"
-      android:clickable="true"/>
+      android:padding="25dp"
+      android:text="@string/already_have_account"
+      android:textColor="@color/white"
+      android:textSize="17sp"
+      android:textStyle="bold"/>
 
   </LinearLayout>
 

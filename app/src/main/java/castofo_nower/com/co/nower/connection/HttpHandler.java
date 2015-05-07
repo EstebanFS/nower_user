@@ -203,6 +203,16 @@ public class HttpHandler {
           internJson.put("password", encodeString(params.get("password")));
           json.put("user", internJson);
           break;
+        case Login.ACTION_FACEBOOK_LOGIN:
+          internJson.put("name", encodeString(params.get("name")));
+          internJson.put("email", encodeString(params.get("email")));
+          internJson.put("gender", params.get("gender"));
+          internJson.put("token", encodeString(params.get("token")));
+          internJson.put("facebook_id", params.get("facebook_id"));
+          internJson.put("expires", encodeString(params.get("expires")));
+          internJson.put("age_range", new JSONObject(params.get("age_range")));
+          json.put("user", internJson);
+          break;
         case NowerMap.ACTION_PROMOS:
           internJson.put("latitude",
                          Double.parseDouble(params.get("latitude")));
@@ -289,6 +299,9 @@ public class HttpHandler {
         case Login.ACTION_LOGIN:
           progressDialog.setMessage(context.getString(R.string.logging_in));
           break;
+        case Login.ACTION_FACEBOOK_LOGIN:
+          progressDialog.setMessage(context.getString(R.string.logging_in));
+          break;
         case NowerMap.ACTION_PROMOS:
           progressDialog.setMessage(context.getString(R.string.loading_promos));
           break;
@@ -303,13 +316,13 @@ public class HttpHandler {
                                       .getString(R.string.opening_promo));
           }
           break;
-        case PromoCardsAnimator.ACTION_NOW:
-          progressDialog.setMessage(context
-                                    .getString(R.string.obtaining_promo_code));
-          break;
         case UserPromosList.ACTION_USER_REDEMPTIONS:
           progressDialog.setMessage(context
                                     .getString(R.string.obtaining_your_promos));
+          break;
+        case PromoCardsAnimator.ACTION_NOW:
+          progressDialog.setMessage(context
+                                    .getString(R.string.obtaining_promo_code));
           break;
       }
 

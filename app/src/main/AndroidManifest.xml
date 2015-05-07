@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="castofo_nower.com.co.nower">
+<manifest
+  package="castofo_nower.com.co.nower"
+  xmlns:android="http://schemas.android.com/apk/res/android">
 
   <permission
     android:name="castofo_nower.com.co.nower.permission.MAPS_RECEIVE"
@@ -37,11 +38,26 @@
     android:icon="@drawable/ic_launcher"
     android:label="@string/app_name"
     android:theme="@style/AppTheme">
+
+    <meta-data
+      android:name="com.google.android.maps.v2.API_KEY"
+      android:value="AIzaSyComkf567bF-nIKsmhbqOtejwJdR8x4cmE" />
+      <!--android:value="AIzaSyAYqjc0sDA7WH8tKwzjEgZa9z6CtRbGaxM"/>-->
+
+
+    <meta-data
+      android:name="com.google.android.gms.version"
+      android:value="@integer/google_play_services_version"/>
+
+    <meta-data
+      android:name="com.facebook.sdk.ApplicationId"
+      android:value="@string/facebook_app_id"/>
+
     <activity
       android:name=".controllers.SplashActivity"
       android:label="@string/app_name"
-      android:theme="@style/AppTheme.NoActionBar"
-      android:screenOrientation="portrait">
+      android:screenOrientation="portrait"
+      android:theme="@style/AppTheme.NoActionBar">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
 
@@ -50,20 +66,9 @@
     </activity>
     <activity
       android:name=".controllers.NowerMap"
-      android:label="@string/title_activity_map"
-      android:configChanges="orientation|screenSize">
+      android:configChanges="orientation|screenSize"
+      android:label="@string/title_activity_map">
     </activity>
-
-    <meta-data
-      android:name="com.google.android.maps.v2.API_KEY"
-      android:value="AIzaSyAYqjc0sDA7WH8tKwzjEgZa9z6CtRbGaxM"/>
-      <!--android:value="AIzaSyComkf567bF-nIKsmhbqOtejwJdR8x4cmE" />-->
-
-
-    <meta-data
-      android:name="com.google.android.gms.version"
-      android:value="@integer/google_play_services_version"/>
-
     <activity
       android:name=".controllers.PromoCardsAnimator"
       android:label="@string/promo"
@@ -87,21 +92,27 @@
     <activity
       android:name=".controllers.Login"
       android:label="@string/log_in"
+      android:screenOrientation="portrait"
       android:theme="@style/AppTheme.NoActionBar"
-      android:windowSoftInputMode="adjustResize|stateHidden"
-      android:screenOrientation="portrait">
+      android:windowSoftInputMode="adjustResize|stateHidden">
     </activity>
     <activity
       android:name=".controllers.Register"
       android:label="@string/register"
+      android:screenOrientation="portrait"
       android:theme="@style/AppTheme.CustomWhiteRadioButton"
-      android:windowSoftInputMode="adjustResize|stateHidden"
-      android:screenOrientation="portrait">
+      android:windowSoftInputMode="adjustResize|stateHidden">
     </activity>
     <activity
       android:name=".controllers.PromoPictureViewer"
       android:label="@string/title_activity_promo_picture_viewer">
     </activity>
+    <activity
+      android:name="com.facebook.FacebookActivity"
+      android:configChanges=
+        "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+      android:label="@string/app_name"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
   </application>
 
 </manifest>
