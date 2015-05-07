@@ -13,6 +13,7 @@ import android.widget.ProgressBar;
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.support.ImageDownloader;
 
+
 public class PromoPictureViewer extends Activity {
 
   private ImageView promoPicture;
@@ -65,4 +66,5 @@ public class PromoPictureViewer extends Activity {
     }
     return super.onOptionsItemSelected(item);
   }
+
 }

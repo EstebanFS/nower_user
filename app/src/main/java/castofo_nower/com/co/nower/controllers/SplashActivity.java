@@ -7,8 +7,11 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.facebook.appevents.AppEventsLogger;
+
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.models.User;
+import castofo_nower.com.co.nower.support.FacebookHandler;
 import castofo_nower.com.co.nower.support.SharedPreferencesManager;
 
 
@@ -40,6 +43,7 @@ public class SplashActivity extends Activity {
         case UserPromosList.LOG_OUT:
           User.clearData();
           SharedPreferencesManager.clearSharedPreferences();
+          FacebookHandler.getInstance().logout();
           requestedAction = new Intent(SplashActivity.this, TabsHandler.class);
           break;
       }
@@ -139,4 +143,17 @@ public class SplashActivity extends Activity {
     return super.onOptionsItemSelected(item);
   }
 
+  @Override
+  protected void onResume() {
+    super.onResume();
+    // Facebook: Logs 'install' and 'app activate' App Events.
+    AppEventsLogger.activateApp(this);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    // Facebook: Logs 'app deactivate' App Event.
+    AppEventsLogger.deactivateApp(this);
+  }
 }

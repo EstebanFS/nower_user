@@ -17,6 +17,7 @@ public class SharedPreferencesManager {
   public static final String USER_NAME = "USER_NAME";
   public static final String USER_GENDER = "USER_GENDER";
   public static final String USER_BIRTHDAY = "USER_BIRTHDAY";
+  public static final String USER_FACEBOOK_TOKEN = "USER_FACEBOOK_TOKEN";
 
   public static final int NO_VALUE_SAVED = -1;
 

@@ -146,4 +146,5 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
     view.draw(canvas);
     return bitmap;
   }
+
 }
