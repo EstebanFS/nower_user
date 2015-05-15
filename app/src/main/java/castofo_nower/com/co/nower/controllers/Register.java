@@ -2,7 +2,6 @@ package castofo_nower.com.co.nower.controllers;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
@@ -39,7 +38,6 @@ import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.FacebookLoginResponse;
 import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
-import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.FacebookHandler;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
