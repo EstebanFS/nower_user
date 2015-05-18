@@ -1,22 +1,23 @@
 package castofo_nower.com.co.nower.controllers;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
-import android.support.v4.widget.SwipeRefreshLayout;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.AbsListView;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
 import org.apache.http.client.methods.HttpGet;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,6 +29,7 @@ import java.util.Stack;
 import java.util.TreeMap;
 
 import castofo_nower.com.co.nower.R;
+
 import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
@@ -35,26 +37,30 @@ import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
-import castofo_nower.com.co.nower.support.ListItemsCreator;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
+import castofo_nower.com.co.nower.support.SearchHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
+import castofo_nower.com.co.nower.support.ListItemsCreator;
 
-public class UserPromosListFragment extends ListFragment implements
-        SubscribedActivities, ParsedErrors {
+public class UserPromosList extends ActionBarActivity implements
+SubscribedActivities, ParsedErrors {
 
+  private ListView userPromosList;
   private ListItemsCreator userPromosListToShow;
-  private SwipeRefreshLayout swipeRefreshLayout;
 
   private HttpHandler httpHandler = new HttpHandler();
   public static final String ACTION_USER_REDEMPTIONS = "/user/redemptions";
   private Map<String, String> params = new HashMap<String, String>();
 
   private RequestErrorsHandler requestErrorsHandler = new
-          RequestErrorsHandler();
+  RequestErrorsHandler();
 
   private static Map<Integer, Promo> promosMap = new TreeMap<>();
 
   private boolean isUserAbleToTakePromos;
+
+  private SearchView searchView;
+  private MenuItem searchMenuItem;
 
   public static final String LIST_USER_PROMOS = "LIST_USER_PROMOS";
   public static final String SHOW_PROMO_TO_REDEEM = "SHOW_PROMO_TO_REDEEM";
@@ -65,14 +71,11 @@ public class UserPromosListFragment extends ListFragment implements
 
   public static final String LOG_OUT = "LOG_OUT";
 
-
   @Override
-  public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                           Bundle savedInstanceState) {
-    View layout = inflater.inflate(R.layout.fragment_user_promo_list,
-                                   container, false);
-    //setContentView(R.layout.activity_user_promo_list);
-
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_user_promos_list);
+    userPromosList = (ListView) findViewById(R.id.user_promos_list);
     // Se indica al HttpHandler la actividad que estará esperando la respuesta
     // a la petición.
     httpHandler.addListeningActivity(this);
@@ -81,69 +84,56 @@ public class UserPromosListFragment extends ListFragment implements
 
     isUserAbleToTakePromos = SplashActivity.isThereLoginInstance();
 
-    setEmptyListMessage(layout);
+    setEmptyListMessage();
 
-    // Se inicializa el swipe to refresh
-    setupSwipeRefreshLayout(layout);
+    setOnListItemClickListener();
 
     // Se hace para actualizar el estado de las promociones que ha obtenido el
     // usuario.
-    //sendRequest(ACTION_USER_REDEMPTIONS);
-    return layout;
+    sendRequest(ACTION_USER_REDEMPTIONS);
   }
 
-  public void setEmptyListMessage(View view) {
+  public void setEmptyListMessage() {
     // Se muestra un mensaje en caso de que la lista de promociones del usuario
     // esté vacía.
-    View empty = view.findViewById(R.id.empty_list);
-    final ListView list = (ListView) view.findViewById(android.R.id.list);
-    list.setEmptyView(empty);
-    list.setOnScrollListener(new AbsListView.OnScrollListener() {
-      @Override
-      public void onScrollStateChanged(AbsListView view, int scrollState) {
-
-      }
-
-      @Override
-      public void onScroll(AbsListView view, int firstVisibleItem,
-                           int visibleItemCount, int totalItemCount) {
-        if (swipeRefreshLayout != null) {
-          if (firstVisibleItem == 0) {
-            int offset = 0;
-            if (totalItemCount > 0) {
-              View firstItem = list.getChildAt(0);
-              offset = -firstItem.getTop() + firstVisibleItem
-                      * firstItem.getHeight();
-            }
-            if (offset == 0) swipeRefreshLayout.setEnabled(true);
-            else swipeRefreshLayout.setEnabled(false);
-          }
-          else swipeRefreshLayout.setEnabled(false);
-        }
-      }
-    });
+    View empty = findViewById(R.id.empty_list);
+    userPromosList.setEmptyView(empty);
     if (!isUserAbleToTakePromos) {
       Button registerOrLogIn = (Button)
-              view.findViewById(R.id.register_or_login_button);
+      findViewById(R.id.register_or_login_button);
       registerOrLogIn.setVisibility(View.VISIBLE);
     }
   }
 
-  private void setupSwipeRefreshLayout(View view) {
-    swipeRefreshLayout = (SwipeRefreshLayout) view
-            .findViewById(R.id.swipe_refresh_layout);
-    swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout
-                                                .OnRefreshListener() {
+  public void goToRegister(View v) {
+    SplashActivity.handleRequest(this, USER_NEEDS_TO_REGISTER);
+  }
+
+  public void setOnListItemClickListener() {
+    userPromosList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+    {
       @Override
-      public void onRefresh() {
-        sendRequest(ACTION_USER_REDEMPTIONS);
+      public void onItemClick(AdapterView<?> parent, View view, int position,
+      long id) {
+        int promoId = view.getId();
+        openSelectedRedemption(promoId, position);
       }
     });
   }
 
-  private void hideSwipeToRefreshLayout() {
-    if (swipeRefreshLayout != null && swipeRefreshLayout.isRefreshing()) {
-      swipeRefreshLayout.setRefreshing(false);
+  public void openSelectedRedemption(int promoId, int position) {
+    if (promoId != SearchHandler.NO_RESULTS_FOUND && promoId != HEADER_ID) {
+      // Se cierra la barra de búsqueda y se limpia el texto.
+      if (searchView != null && searchView.isShown()) {
+        searchMenuItem.collapseActionView();
+        searchView.setQuery("", false);
+      }
+      Intent showPromoToRedeem = new Intent(UserPromosList.this,
+      PromoCardsAnimator.class);
+      showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
+      showPromoToRedeem.putExtra("promo_id", promoId);
+      showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+      startActivity(showPromoToRedeem);
     }
   }
 
@@ -151,10 +141,10 @@ public class UserPromosListFragment extends ListFragment implements
     if (isUserAbleToTakePromos) {
       if (request.equals(ACTION_USER_REDEMPTIONS)) {
         httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_USER_REDEMPTIONS,
-                "/" + User.id, params, new HttpGet(), getActivity());
+        "/" + User.id, params, new HttpGet(),
+        UserPromosList.this);
       }
     }
-    else hideSwipeToRefreshLayout();
   }
 
   public static ArrayList<Object> generateData() {
@@ -174,7 +164,7 @@ public class UserPromosListFragment extends ListFragment implements
     // Se utiliza este ciclo para almacenar en dos pilas distintas las
     //promociones redimidas y no redimidas del usuario.
     for (Map.Entry<Integer, Redemption> promoIdRedemption
-            : User.getTakenPromos().entrySet()) {
+    : User.getTakenPromos().entrySet()) {
       if (!promoIdRedemption.getValue().isRedeemed()) {
         // Se adiciona la promoción dentro de la pila de no redimidas.
         notRedeemedPromos.push(promoIdRedemption.getValue());
@@ -211,7 +201,6 @@ public class UserPromosListFragment extends ListFragment implements
   public static void updateUserRedemptions(JSONArray userRedemptions) {
     try {
       promosMap.clear();
-      User.clearTakenPromos();
       for (int i = 0; i < userRedemptions.length(); ++i) {
         JSONObject internRedemption = userRedemptions.getJSONObject(i);
         int id = internRedemption.getInt("id");
@@ -230,32 +219,32 @@ public class UserPromosListFragment extends ListFragment implements
         String title = redemptionPromo.getString("title");
         String expirationDate = redemptionPromo.getString("expiration_date");
         int availableRedemptions = redemptionPromo
-                .getInt("available_redemptions");
+        .getInt("available_redemptions");
         String pictureURL;
         if (redemptionPromo.getJSONObject("picture").getJSONObject("large")
-                .isNull("url")) {
+        .isNull("url")) {
           pictureURL = null;
         }
         else pictureURL = redemptionPromo.getJSONObject("picture")
-                .getJSONObject("large").getString("url");
+        .getJSONObject("large").getString("url");
 
         String pictureHDURL;
         if (redemptionPromo.getJSONObject("picture")
-                .getJSONObject("extra_large").isNull("url")) {
+        .getJSONObject("extra_large").isNull("url")) {
           pictureHDURL = null;
         }
         else pictureHDURL = redemptionPromo.getJSONObject("picture")
-                .getJSONObject("extra_large").getString("url");
+        .getJSONObject("extra_large").getString("url");
 
         Redemption redemption = new Redemption(code, promoId, redeemed,
-                                               storeName, storeLogoURL);
+        storeName, storeLogoURL);
 
         // Se adiciona la promoción a la lista de promociones del usuario.
         User.addPromoToTakenPromos(redemption.getPromoId(), redemption);
 
         Promo promo = new Promo(promoId, title, expirationDate,
-                                availableRedemptions, null, null, pictureURL,
-                                pictureHDURL);
+        availableRedemptions, null, null, pictureURL,
+        pictureHDURL);
         // Se adiciona la promoción del usuario a la lista de promociones
         // general.
         promosMap.put(promo.getId(), promo);
@@ -267,19 +256,43 @@ public class UserPromosListFragment extends ListFragment implements
     }
   }
 
+  public void prepareSearch() {
+    SearchHandler.setParamsForSearch(UserPromosList.this, searchView,
+    userPromosListToShow, LIST_USER_PROMOS);
+    SearchHandler.setQueryListener();
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+      String query = intent.getStringExtra(SearchManager.QUERY);
+      searchView.setQuery(query, false);
+      prepareSearch();
+    }
+  }
+
+  @Override
+  protected void onRestart() {
+    super.onRestart();
+    // Se hace actualización del estado de las promociones del usuario al
+    // regresar a la lista, luego de haber ingresado a ver el detalle de alguna
+    // de las promociones tomadas.
+    sendRequest(ACTION_USER_REDEMPTIONS);
+  }
+
   @Override
   public void notifyParsedErrors(String action,
-                                 Map<String, String> errorsMessages) {
+  Map<String, String> errorsMessages) {
     switch (action) {
       case ACTION_USER_REDEMPTIONS:
-        if (errorsMessages.containsKey("user")) {
-          UserFeedback.showToastMessage(getActivity(),
-                                        errorsMessages.get("user"),
-                                        Toast.LENGTH_LONG);
-        }
-        //Se cierra sesión porque se intentó utilizar un usuario inválido.
-        SplashActivity.handleRequest(getActivity(), LOG_OUT);
-        break;
+      if (errorsMessages.containsKey("user")) {
+        UserFeedback.showToastMessage(getApplicationContext(),
+        errorsMessages.get("user"),
+        Toast.LENGTH_LONG);
+      }
+      //Se cierra sesión porque se intentó utilizar un usuario inválido.
+      SplashActivity.handleRequest(UserPromosList.this, LOG_OUT);
+      break;
     }
   }
 
@@ -291,21 +304,23 @@ public class UserPromosListFragment extends ListFragment implements
       if (action.equals(ACTION_USER_REDEMPTIONS)) {
         switch (responseStatusCode) {
           case HttpHandler.OK:
-            updateUserRedemptions(responseJson.getJSONArray("redemptions"));
-            // Ya con las promociones del usuario actualizadas, es posible
-            // mostrar la lista de redimidas y no redimidas.
-            userPromosListToShow = new ListItemsCreator
-                    (getActivity(), R.layout.promo_item, generateData(),
-                            LIST_USER_PROMOS);
+          updateUserRedemptions(responseJson.getJSONArray("redemptions"));
+          // Ya con las promociones del usuario actualizadas, es posible
+          // mostrar la lista de redimidas y no redimidas.
+          userPromosListToShow = new ListItemsCreator
+          (this, R.layout.promo_item, generateData(),
+          LIST_USER_PROMOS);
 
-            setListAdapter(userPromosListToShow);
-            break;
+          userPromosList.setAdapter(userPromosListToShow);
+          // Este método debe llamarse tras haber formado el Adapter con el
+          // fin de evitar que permanezca con valor de nulo.
+          prepareSearch();
+          break;
           case HttpHandler.UNAUTHORIZED:
-            RequestErrorsHandler
-                    .parseErrors(action, responseJson.getJSONObject("errors"));
-            break;
+          RequestErrorsHandler
+          .parseErrors(action, responseJson.getJSONObject("errors"));
+          break;
         }
-        hideSwipeToRefreshLayout();
       }
     }
     catch (JSONException e) {
@@ -313,24 +328,19 @@ public class UserPromosListFragment extends ListFragment implements
     }
   }
 
-  public void onListItemClick(ListView l, View v, int position, long id) {
-    super.onListItemClick(l, v, position, id);
-    int promoId = v.getId();
-    if (promoId != HEADER_ID) {
-      Intent showPromoToRedeem = new Intent(getActivity(),
-              PromoCardsAnimator.class);
-      showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
-      showPromoToRedeem.putExtra("promo_id", promoId);
-      showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-      startActivity(showPromoToRedeem);
-    }
-  }
-
   @Override
-  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+  public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    inflater.inflate(R.menu.menu_user_promos_list, menu);
-    super.onCreateOptionsMenu(menu,inflater);
+    getMenuInflater().inflate(R.menu.menu_user_promos_list, menu);
+
+    SearchManager searchManager = (SearchManager)
+    getSystemService(Context.SEARCH_SERVICE);
+    searchMenuItem = menu.findItem(R.id.action_search);
+    searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+    searchView.setQueryHint(getResources().getString(R.string.search_promo));
+    searchView.setSearchableInfo(searchManager
+    .getSearchableInfo(getComponentName()));
+    return true;
   }
 
   @Override
@@ -346,13 +356,5 @@ public class UserPromosListFragment extends ListFragment implements
     }
 
     return super.onOptionsItemSelected(item);
-  }
-
-  @Override
-  public void onResume() {
-    if (userPromosListToShow != null) {
-      userPromosListToShow.updateListData(generateData());
-    }
-    super.onResume();
   }
 }

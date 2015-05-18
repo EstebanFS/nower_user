@@ -6,8 +6,10 @@ import android.widget.EditText;
 
 import castofo_nower.com.co.nower.controllers.BranchesList;
 //import castofo_nower.com.co.nower.controllers.UserPromosList;
+import castofo_nower.com.co.nower.controllers.UserPromosList;
 import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
 import castofo_nower.com.co.nower.models.Branch;
+import castofo_nower.com.co.nower.models.Redemption;
 
 public class SearchHandler {
 
@@ -40,6 +42,18 @@ public class SearchHandler {
       public boolean onQueryTextSubmit(String query) {
         switch (action) {
           case UserPromosListFragment.LIST_USER_PROMOS:
+            int promoId;
+            // Solamente existe un resultado cuando no se encontraron
+            // coincidencias.
+            if (listToFilter.getCount() == 1) {
+              promoId = ((Redemption) listToFilter.getItem(0)).getPromoId();
+            }
+            // Se toma el item en la posición 1 ya que en la posición 0 habría
+            // un encabezado.
+            else promoId = ((Redemption) listToFilter.getItem(1)).getPromoId();
+            if (promoId != NO_RESULTS_FOUND) {
+              ((UserPromosList) context).openSelectedRedemption(promoId, 1);
+            }
             break;
           case BranchesList.LIST_BRANCHES:
             int branchId = ((Branch) listToFilter.getItem(0)).getId();

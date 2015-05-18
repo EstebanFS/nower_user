@@ -131,7 +131,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   }
 
   public void initView() {
-    setContentView(R.layout.activity_promo_card_animator);
+    setContentView(R.layout.activity_promo_cards_animator);
     getActionBar().setDisplayHomeAsUpEnabled(true);
     promoCards.clear();
     promosFlipper = (ViewPager) findViewById(R.id.promos_flipper);
@@ -517,7 +517,9 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
           UserFeedback.showToastMessage(getApplicationContext(),
                   errorsMessages.get("user_id"),
                   Toast.LENGTH_LONG);
-          //TODO cerrar sesión porque se intentó utilizar un usuario inválido.
+          //Se cierra sesión porque se intentó utilizar un usuario inválido.
+          SplashActivity.handleRequest(PromoCardsAnimator.this,
+                                       UserPromosListFragment.LOG_OUT);
         }
         else if (errorsMessages.containsKey("user")) {
           UserFeedback.showAlertDialog(this, R.string.promo_limit_exceeded,

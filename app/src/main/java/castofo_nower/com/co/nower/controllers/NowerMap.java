@@ -367,7 +367,9 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
                                         errorsMessages.get("user"),
                                         Toast.LENGTH_LONG);
         }
-        //TODO cerrar sesión porque se intentó utilizar un usuario inválido.
+        //Se cierra sesión porque se intentó utilizar un usuario inválido.
+        SplashActivity.handleRequest(NowerMap.this,
+                                     UserPromosListFragment.LOG_OUT);
         break;
     }
   }
