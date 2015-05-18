@@ -45,7 +45,7 @@
   <string name="female">Mujer</string>
 
   <string-array name="tabs_names">
-      <item>@string/title_activity_map</item>
+      <!--<item>@string/title_activity_map</item>-->
       <item>@string/title_activity_branches_list</item>
       <item>@string/title_activity_user_promo_list</item>
   </string-array>
@@ -82,4 +82,6 @@
   <string name="facebook_app_id">863715703721005</string>
   <string name="login_with_facebook">Ingresar con Facebook</string>
   <string name="logout_with_facebook">Cerrar sesión</string>
+  <string name="go_to_map">Ir al mapa</string>
+  <string name="go_to_navigate">Explorar</string>
 </resources>

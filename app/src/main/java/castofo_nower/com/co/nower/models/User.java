@@ -37,10 +37,16 @@ public class User {
     return takenPromos;
   }
 
+  public static void clearTakenPromos() {
+    if (takenPromos != null) {
+      takenPromos.clear();
+    }
+  }
+
   public static void clearData() {
     id = SharedPreferencesManager.NO_VALUE_SAVED;
     email = name = gender = birthday = null;
-    if (takenPromos != null) takenPromos.clear();
+    clearTakenPromos();
   }
 
 }

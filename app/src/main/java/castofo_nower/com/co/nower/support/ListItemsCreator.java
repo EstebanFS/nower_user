@@ -9,21 +9,23 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import castofo_nower.com.co.nower.R;
-import castofo_nower.com.co.nower.controllers.BranchesList;
-import castofo_nower.com.co.nower.controllers.UserPromosList;
+import castofo_nower.com.co.nower.controllers.BranchesListFragment;
+import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
+import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 
 
 public class ListItemsCreator extends ArrayAdapter<Object> {
 
-  private final Context context;
-  private final int resource;
-  private final ArrayList<Object> listData;
-  private final String action;
+  private Context context;
+  private int resource;
+  private ArrayList<Object> listData;
+  private String action;
 
   public ListItemsCreator(Context context, int resource,
                           ArrayList<Object> promosList, String action) {
@@ -51,7 +53,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
     String subtitleText = "";
 
     switch (action) {
-      case UserPromosList.LIST_USER_PROMOS:
+      case UserPromosListFragment.LIST_USER_PROMOS:
         // Se obtiene el título de la promoción actual.
         Redemption redemption = (Redemption) listData.get(position);
 
@@ -71,12 +73,22 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
           }
           // Es un encabezado y por tanto no debe hacerse nada cuando el
           // usuario lo presiona.
-          item.setId(UserPromosList.HEADER_ID);
+          item.setId(UserPromosListFragment.HEADER_ID);
         }
         // Se trata de un item.
         else {
           int promoId = redemption.getPromoId();
-          titleText = MapData.getPromosMap().get(promoId).getTitle();
+          Map<Integer, Promo> promosMap = null;
+          Promo p = null;
+          try {
+            promosMap = MapData.getPromosMap();
+            p = promosMap.get(promoId);
+            titleText = p.getTitle();
+            //titleText = MapData.getPromosMap().get(promoId).getTitle();
+          }
+          catch (Exception e) {
+
+          }
           subtitleText = redemption.getStoreName();
           // Se le pone el id de la promoción a redimir con el fin de poder
           // gestionarla al ser presionada por el usuario.
@@ -89,7 +101,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
           }
         }
         break;
-      case BranchesList.LIST_BRANCHES:
+      case BranchesListFragment.LIST_BRANCHES:
         // Se obtiene el nombre del establecimiento actual.
         Branch b = (Branch) listData.get(position);
         // El título a mostrar incluye, además del nombre del establecimiento,
@@ -116,4 +128,9 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
     return item;
   }
 
+  public void updateListData(ArrayList<Object> newData) {
+    this.listData.clear();
+    this.listData.addAll(newData);
+    notifyDataSetChanged();
+  }
 }

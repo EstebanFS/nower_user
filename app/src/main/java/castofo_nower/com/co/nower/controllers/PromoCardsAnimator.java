@@ -182,7 +182,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
       // botón y cuáles con código.
       userPromos = User.getTakenPromos();
     }
-    else if (action.equals(UserPromosList.SHOW_PROMO_TO_REDEEM)) {
+    else if (action.equals(UserPromosListFragment.SHOW_PROMO_TO_REDEEM)) {
       int promoId = getIntent().getExtras().getInt("promo_id");
       code = User.getTakenPromos().get(promoId).getCode();
       isUserPromoRedeemed = User.getTakenPromos().get(promoId).isRedeemed();
@@ -348,7 +348,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
             changeButtonToCode(nowButton);
           }
         }
-        else if (action.equals(UserPromosList.SHOW_PROMO_TO_REDEEM)) {
+        else if (action.equals(UserPromosListFragment.SHOW_PROMO_TO_REDEEM)) {
           changeButtonToCode(nowButton);
         }
 
@@ -440,7 +440,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
       }
       else {
         SplashActivity.handleRequest(PromoCardsAnimator.this,
-                                     UserPromosList.USER_NEEDS_TO_REGISTER);
+                UserPromosListFragment.USER_NEEDS_TO_REGISTER);
       }
     }
   }
@@ -494,9 +494,9 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         break;
       case OBTAINED_PROMO:
         if (buttonPressedId == R.string.go_to_my_promos) {
-          Intent openUserPromosList = new Intent(this, UserPromosList.class);
-          openUserPromosList.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-          startActivity(openUserPromosList);
+          TabsHandler.handleRequest(PromoCardsAnimator.this,
+                                    UserPromosListFragment.LIST_USER_PROMOS,
+                                    Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         }
         break;
     }
@@ -603,7 +603,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
              }
              // Siempre se mostrará una promoción que el usuario ya haya tomado.
              else if (PromoCardsAnimator.action
-                      .equals(UserPromosList.SHOW_PROMO_TO_REDEEM)) {
+                      .equals(UserPromosListFragment.SHOW_PROMO_TO_REDEEM)) {
                promos.add(promo);
              }
            }
@@ -713,11 +713,11 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         return true;
       case R.id.action_log_in:
         SplashActivity.handleRequest(PromoCardsAnimator.this,
-                                     UserPromosList.USER_NEEDS_TO_REGISTER);
+                UserPromosListFragment.USER_NEEDS_TO_REGISTER);
         return true;
       case R.id.action_log_out:
         SplashActivity.handleRequest(PromoCardsAnimator.this,
-                                     UserPromosList.LOG_OUT);
+                UserPromosListFragment.LOG_OUT);
         return true;
     }
 

@@ -7,13 +7,13 @@
 
   <FrameLayout
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="match_parent">
 
-    <castofo_nower.com.co.nower.support.WideImageView
+    <it.sephiroth.android.library.imagezoom.ImageViewTouch
       android:id="@+id/promo_picture"
       android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:adjustViewBounds="true"/>
+      android:layout_height="match_parent"
+      android:layout_gravity="center"/>
 
     <ProgressBar
       android:id="@+id/progress_bar"
