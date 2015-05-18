@@ -131,7 +131,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   }
 
   public void initView() {
-    setContentView(R.layout.activity_promo_card_animator);
+    setContentView(R.layout.activity_promo_cards_animator);
     getActionBar().setDisplayHomeAsUpEnabled(true);
     promoCards.clear();
     promosFlipper = (ViewPager) findViewById(R.id.promos_flipper);
