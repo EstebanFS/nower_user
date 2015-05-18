@@ -35,7 +35,6 @@ import castofo_nower.com.co.nower.controllers.UserPromosList;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.support.UserFeedback;
 
-
 public class HttpHandler {
 
   // Parámetros necesarios para cumplir con las peticiones al Servidor.
@@ -343,5 +342,4 @@ public class HttpHandler {
       listeningActivity.notify(action, responseJson);
     }
   }
-
 }

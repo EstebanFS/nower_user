@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.support.TabsAdapter;
 
-
 public class TabsHandler extends FragmentActivity implements
 ActionBar.TabListener {
 
@@ -104,5 +103,4 @@ ActionBar.TabListener {
 
     return super.onOptionsItemSelected(item);
   }
-
 }

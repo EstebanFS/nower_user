@@ -1,11 +1,16 @@
 package castofo_nower.com.co.nower.controllers;
 
-import android.app.ListActivity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import java.util.ArrayList;
@@ -16,11 +21,15 @@ import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
+import castofo_nower.com.co.nower.support.SearchHandler;
 
+public class BranchesList extends ActionBarActivity {
 
-public class BranchesList extends ListActivity {
-
+  private ListView branchesList;
   private ListItemsCreator branchesListToShow;
+
+  private SearchView searchView;
+  private MenuItem searchMenuItem;
 
   public static final String LIST_BRANCHES = "LIST_BRANCHES";
 
@@ -28,12 +37,16 @@ public class BranchesList extends ListActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_branches_list);
+    branchesList = (ListView) findViewById(R.id.branches_list);
+
     branchesListToShow = new ListItemsCreator(this, R.layout.promo_item,
                                               generateData(), LIST_BRANCHES);
 
-    setListAdapter(branchesListToShow);
+    branchesList.setAdapter(branchesListToShow);
 
     setEmptyListMessage();
+
+    setOnListItemClickListener();
   }
 
   public static ArrayList<Object> generateData() {
@@ -61,24 +74,63 @@ public class BranchesList extends ListActivity {
   public void setEmptyListMessage() {
     // Se muestra un mensaje en caso de que la lista de tiendas esté vacía.
     View empty = findViewById(R.id.empty_list);
-    ListView list = (ListView) findViewById(android.R.id.list);
-    list.setEmptyView(empty);
+    branchesList.setEmptyView(empty);
   }
 
-  protected void onListItemClick(ListView l, View v, int position, long id) {
-    super.onListItemClick(l, v, position, id);
-    int branchId = v.getId();
-    Intent showPromos = new Intent(BranchesList.this, PromoCardsAnimator.class);
-    showPromos.putExtra("action", NowerMap.SHOW_BRANCH_PROMOS);
-    showPromos.putExtra("branch_id", branchId);
-    showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    startActivity(showPromos);
+  public void setOnListItemClickListener() {
+    branchesList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position,
+                              long id) {
+        int branchId = view.getId();
+        openSelectedBranch(branchId, position);
+      }
+    });
+  }
+
+  public void openSelectedBranch(int branchId, int position) {
+    // Se cierra la barra de búsqueda y se limpia el texto.
+    if (branchId != SearchHandler.NO_RESULTS_FOUND) {
+      if (searchView != null && searchView.isShown()) {
+        searchMenuItem.collapseActionView();
+        searchView.setQuery("", false);
+      }
+      Intent showPromos = new Intent(BranchesList.this,
+                                     PromoCardsAnimator.class);
+      showPromos.putExtra("action", NowerMap.SHOW_BRANCH_PROMOS);
+      showPromos.putExtra("branch_id", branchId);
+      showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+      startActivity(showPromos);
+    }
+  }
+
+  public void prepareSearch() {
+    SearchHandler.setParamsForSearch(BranchesList.this, searchView,
+                                     branchesListToShow, LIST_BRANCHES);
+    SearchHandler.setQueryListener();
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+      String query = intent.getStringExtra(SearchManager.QUERY);
+      searchView.setQuery(query, false);
+      prepareSearch();
+    }
   }
 
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_branches_list, menu);
+    SearchManager searchManager = (SearchManager)
+                                  getSystemService(Context.SEARCH_SERVICE);
+    searchMenuItem = menu.findItem(R.id.action_search);
+    searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+    searchView.setSearchableInfo(searchManager
+                                 .getSearchableInfo(getComponentName()));
+    prepareSearch();
+
     return true;
   }
 
@@ -96,5 +148,4 @@ public class BranchesList extends ListActivity {
 
     return super.onOptionsItemSelected(item);
   }
-
 }

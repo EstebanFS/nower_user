@@ -3,7 +3,6 @@ package castofo_nower.com.co.nower.support;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-
 public class SharedPreferencesManager {
 
   private static Context context;
@@ -17,7 +16,7 @@ public class SharedPreferencesManager {
   public static final String USER_NAME = "USER_NAME";
   public static final String USER_GENDER = "USER_GENDER";
   public static final String USER_BIRTHDAY = "USER_BIRTHDAY";
-  public static final String USER_FACEBOOK_TOKEN = "USER_FACEBOOK_TOKEN";
+  public static final String USER_FACEBOOK_ID = "USER_FACEBOOK_ID";
 
   public static final int NO_VALUE_SAVED = -1;
 
@@ -47,5 +46,4 @@ public class SharedPreferencesManager {
   public static void clearSharedPreferences() {
     editor.clear().commit();
   }
-
 }

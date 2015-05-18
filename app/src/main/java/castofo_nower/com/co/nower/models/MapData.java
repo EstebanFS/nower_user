@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-
 public class MapData {
 
   private static Map<Marker, Integer> branchesIdsMap;
@@ -82,5 +81,4 @@ public class MapData {
       }
     }
   }
-
 }

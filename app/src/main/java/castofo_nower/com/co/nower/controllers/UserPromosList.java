@@ -36,7 +36,6 @@ import castofo_nower.com.co.nower.support.RequestErrorsHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
 
-
 public class UserPromosList extends ListActivity implements
 SubscribedActivities, ParsedErrors {
 
@@ -304,5 +303,4 @@ SubscribedActivities, ParsedErrors {
 
     return super.onOptionsItemSelected(item);
   }
-
 }

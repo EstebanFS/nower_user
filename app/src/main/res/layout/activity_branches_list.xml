@@ -6,11 +6,11 @@
   tools:context="castofo_nower.com.co.nower.controllers.BranchesList">
 
   <ListView
-    android:id="@android:id/list"
+    android:id="@+id/branches_list"
     android:layout_height="wrap_content"
     android:layout_width="match_parent"
-    android:dividerHeight="2dp"
-    android:background="@color/white"/>
+    android:background="@color/white"
+    android:divider="@drawable/list_divider_background"/>
 
   <TextView
     android:id="@+id/empty_list"

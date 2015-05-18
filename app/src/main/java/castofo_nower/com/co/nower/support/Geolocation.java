@@ -16,7 +16,6 @@ import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.helpers.AlertDialogsResponse;
 import castofo_nower.com.co.nower.helpers.GeolocationInterface;
 
-
 public class Geolocation extends Service implements LocationListener,
 AlertDialogsResponse {
 
@@ -208,5 +207,4 @@ AlertDialogsResponse {
   public IBinder onBind(Intent intent) {
     return null;
   }
-
 }

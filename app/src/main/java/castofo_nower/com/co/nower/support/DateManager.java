@@ -6,7 +6,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-
 public class DateManager {
 
   public static long getTimeStamp(String dateTime) throws ParseException {
@@ -35,5 +34,4 @@ public class DateManager {
     String result = sdf.format(date);
     return result;
   }
-
 }

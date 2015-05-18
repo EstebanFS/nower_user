@@ -10,7 +10,6 @@ import java.util.Map;
 
 import castofo_nower.com.co.nower.helpers.ParsedErrors;
 
-
 public class RequestErrorsHandler {
 
   private static ParsedErrors listeningActivity;
@@ -43,5 +42,4 @@ public class RequestErrorsHandler {
 
     }
   }
-
 }

@@ -19,7 +19,6 @@ import java.io.InputStream;
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
 
-
 public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
 
   // Acción a realizar una vez se recupere la imagen.
@@ -146,5 +145,4 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
     view.draw(canvas);
     return bitmap;
   }
-
 }

@@ -2,7 +2,6 @@ package castofo_nower.com.co.nower.models;
 
 import java.util.ArrayList;
 
-
 public class Branch {
 
   private int id;
@@ -90,5 +89,4 @@ public class Branch {
   public void setPromosIds(ArrayList<Integer> promosIds) {
     this.promosIds = promosIds;
   }
-
 }

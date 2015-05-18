@@ -4,7 +4,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-
 public class TabsAdapter extends FragmentPagerAdapter {
 
   public TabsAdapter(FragmentManager fm) {
@@ -33,5 +32,4 @@ public class TabsAdapter extends FragmentPagerAdapter {
   public int getCount() {
     return 3;
   }
-
 }
