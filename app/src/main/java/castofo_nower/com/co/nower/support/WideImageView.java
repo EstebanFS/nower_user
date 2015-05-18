@@ -5,7 +5,6 @@ import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
-
 public class WideImageView extends ImageView {
 
   public WideImageView(Context context, AttributeSet attrs) {
@@ -27,5 +26,4 @@ public class WideImageView extends ImageView {
       super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
   }
-
 }

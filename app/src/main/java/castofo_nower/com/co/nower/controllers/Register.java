@@ -44,7 +44,6 @@ import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.DateManager;
 import castofo_nower.com.co.nower.support.SharedPreferencesManager;
 
-
 public class Register extends FragmentActivity implements SubscribedActivities,
 ParsedErrors, FacebookLoginResponse {
 
@@ -120,8 +119,8 @@ ParsedErrors, FacebookLoginResponse {
 
     loginButton = (LoginButton) findViewById(R.id.login_button);
     loginButton.setReadPermissions("public_profile, email");
-    loginButton.registerCallback(callbackManager,
-            facebookHandler.getLoginCallback());
+    loginButton.registerCallback
+    (callbackManager, facebookHandler.getLoginCallback());
   }
 
   public void onAlreadyHaveAccountClicked(View v) {
@@ -290,14 +289,14 @@ ParsedErrors, FacebookLoginResponse {
     }
     else if (request.equals(Login.ACTION_FACEBOOK_LOGIN)) {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE,
-              Login.ACTION_FACEBOOK_LOGIN, "", params, new HttpPost(),
-              Register.this);
+                              Login.ACTION_FACEBOOK_LOGIN, "", params,
+                              new HttpPost(), Register.this);
     }
   }
 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode,
-                                  Intent data) {
+  protected void onActivityResult(int requestCode, int resultCode, Intent data)
+  {
     super.onActivityResult(requestCode, resultCode, data);
     callbackManager.onActivityResult(requestCode, resultCode, data);
   }
@@ -321,7 +320,7 @@ ParsedErrors, FacebookLoginResponse {
               break;
             case "password_confirmation":
               passwordConfirmationView.setError(errorsMessages
-                      .get("password_confirmation"));
+                                                .get("password_confirmation"));
               break;
             case "birthday":
               birthdayView.setError(errorsMessages.get("birthday"));
@@ -335,17 +334,16 @@ ParsedErrors, FacebookLoginResponse {
         }
         break;
       case Login.ACTION_FACEBOOK_LOGIN:
-        // Cerrar la sesión de Facebook
+        // Cerrar la sesión de Facebook.
         facebookHandler.logout();
         // Mostrar el primer mensaje de error que llegue.
         for (Map.Entry<String, String> errorMessage : errorsMessages.entrySet())
         {
           UserFeedback
-                  .showAlertDialog(Register.this, R.string.sorry,
-                          errorMessage.getValue(), R.string.got_it,
-                          UserFeedback.NO_BUTTON_TO_SHOW,
-                          Login.ACTION_FACEBOOK_LOGIN);
-          // Solo mostrar el primer mensaje, no más.
+          .showAlertDialog(Register.this, R.string.sorry,
+                           errorMessage.getValue(), R.string.got_it,
+                           UserFeedback.NO_BUTTON_TO_SHOW,
+                           Login.ACTION_FACEBOOK_LOGIN);
           break;
         }
         break;
@@ -356,9 +354,7 @@ ParsedErrors, FacebookLoginResponse {
   public void notifyFacebookResponse(JSONObject object, GraphResponse response)
   {
     AccessToken accessToken = facebookHandler.getAccessToken();
-    // Guardar en preferencias el token de Facebook del usuario
-    SharedPreferencesManager.saveStringValue
-    (SharedPreferencesManager.USER_FACEBOOK_TOKEN, accessToken.getToken());
+
     try {
       String name = object.getString("name");
       String email = object.getString("email");
@@ -368,8 +364,8 @@ ParsedErrors, FacebookLoginResponse {
       Date expires = accessToken.getExpires();
       JSONObject ageRange = object.getJSONObject("age_range");
       params = Login.setParamsForFacebookLogin(params, name, email, gender,
-              authToken, facebookId, expires,
-              ageRange);
+                                               authToken, facebookId, expires,
+                                               ageRange);
       sendRequest(Login.ACTION_FACEBOOK_LOGIN);
     }
     catch (JSONException e) {
@@ -443,5 +439,4 @@ ParsedErrors, FacebookLoginResponse {
 
     return super.onOptionsItemSelected(item);
   }
-
 }

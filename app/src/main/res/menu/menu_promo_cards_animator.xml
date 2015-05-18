@@ -2,7 +2,6 @@
   xmlns:app="http://schemas.android.com/apk/res-auto"
   xmlns:tools="http://schemas.android.com/tools"
   tools:context="castofo_nower.com.co.nower.controllers.PromoCardsAnimator">
-
   <item android:id="@+id/action_log_in"
     android:title="@string/log_in"
     android:orderInCategory="100"
@@ -12,5 +11,4 @@
     android:title="@string/log_out"
     android:orderInCategory="100"
     app:showAsAction="never" />
-
 </menu>

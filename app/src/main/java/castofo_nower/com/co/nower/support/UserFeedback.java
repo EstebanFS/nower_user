@@ -7,7 +7,6 @@ import android.widget.Toast;
 import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.AlertDialogsResponse;
 
-
 public class UserFeedback {
 
   private static AlertDialogsResponse listeningActivity;
@@ -66,5 +65,4 @@ public class UserFeedback {
   (Context context, String message, int duration) {
     Toast.makeText(context, message, duration).show();
   }
-
 }

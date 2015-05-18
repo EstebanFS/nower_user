@@ -14,7 +14,6 @@ import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.FacebookHandler;
 import castofo_nower.com.co.nower.support.SharedPreferencesManager;
 
-
 public class SplashActivity extends Activity {
 
   @Override
@@ -42,8 +41,8 @@ public class SplashActivity extends Activity {
           break;
         case UserPromosList.LOG_OUT:
           User.clearData();
-          SharedPreferencesManager.clearSharedPreferences();
           FacebookHandler.getInstance().logout();
+          SharedPreferencesManager.clearSharedPreferences();
           requestedAction = new Intent(SplashActivity.this, TabsHandler.class);
           break;
       }
@@ -97,8 +96,10 @@ public class SplashActivity extends Activity {
                     .getStringValue(SharedPreferencesManager.USER_GENDER);
     String birthday = SharedPreferencesManager
                       .getStringValue(SharedPreferencesManager.USER_BIRTHDAY);
+    String facebookId = SharedPreferencesManager.getStringValue
+                        (SharedPreferencesManager.USER_FACEBOOK_ID);
 
-    User.setUserData(id, email, name, gender, birthday);
+    User.setUserData(id, email, name, gender, birthday, facebookId);
   }
 
   public static void handleRequest(Context context, String action) {
