@@ -53,7 +53,6 @@ import castofo_nower.com.co.nower.support.Geolocation;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
 
-
 public class NowerMap extends FragmentActivity implements SubscribedActivities,
 GeolocationInterface, AlertDialogsResponse, ParsedErrors,
 GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {

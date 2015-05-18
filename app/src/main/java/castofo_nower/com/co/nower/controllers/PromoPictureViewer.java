@@ -13,7 +13,6 @@ import castofo_nower.com.co.nower.support.ImageDownloader;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
-
 public class PromoPictureViewer extends Activity {
 
   private ImageViewTouch promoPicture;

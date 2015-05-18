@@ -7,7 +7,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import castofo_nower.com.co.nower.controllers.BranchesListFragment;
 import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
 
-
 public class TabsAdapter extends FragmentPagerAdapter {
 
   public TabsAdapter(FragmentManager fm) {

@@ -52,7 +52,6 @@ import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.DateManager;
 import castofo_nower.com.co.nower.support.WideImageView;
 
-
 public class PromoCardsAnimator extends Activity implements
 SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
@@ -211,7 +210,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         promoId.put("id", promos.get(i).getId());
         pIdsList.put(promoId);
       }
-      catch (JSONException e) {
+      catch (Exception e) {
 
       }
     }
@@ -723,5 +722,4 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
     return super.onOptionsItemSelected(item);
   }
-
 }

@@ -1,7 +1,6 @@
 package castofo_nower.com.co.nower.support;
 
 import android.os.Bundle;
-import android.util.Log;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -15,7 +14,6 @@ import com.facebook.login.LoginResult;
 import org.json.JSONObject;
 
 import castofo_nower.com.co.nower.helpers.FacebookLoginResponse;
-
 
 public class FacebookHandler {
 
@@ -49,8 +47,8 @@ public class FacebookHandler {
 
   // Se llama este callback luego de haber obtenido la información pública y
   // el email del usuario.
-  private GraphRequest.GraphJSONObjectCallback graphCallback = new
-          GraphRequest.GraphJSONObjectCallback() {
+  private GraphRequest.GraphJSONObjectCallback graphCallback
+  = new GraphRequest.GraphJSONObjectCallback() {
     @Override
     public void onCompleted(JSONObject object, GraphResponse response) {
       listeningActivity.notifyFacebookResponse(object, response);
@@ -83,12 +81,9 @@ public class FacebookHandler {
 
   public void logout() {
     LoginManager.getInstance().logOut();
-    SharedPreferencesManager.saveStringValue(SharedPreferencesManager
-                                             .USER_FACEBOOK_TOKEN, null);
   }
 
   public AccessToken getAccessToken() {
     return accessToken;
   }
-
 }

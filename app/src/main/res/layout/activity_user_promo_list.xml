@@ -1,0 +1,40 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/white"
+  tools:context="castofo_nower.com.co.nower.controllers.UserPromosList">
+
+  <ListView
+    android:id="@android:id/list"
+    android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:divider="@drawable/list_divider_background"/>
+
+  <TextView
+    android:id="@+id/empty_list"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:textAppearance="?android:attr/textAppearanceLarge"
+    android:text="@string/empty_user_promo_list"
+    android:layout_centerVertical="true"
+    android:layout_centerHorizontal="true"
+    android:gravity="center"
+    android:textStyle="bold"
+    android:textColor="@color/gray"/>
+
+  <Button
+    android:id="@+id/register_or_login_button"
+    android:layout_alignParentBottom="true"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:background="@drawable/blue_button_background"
+    android:textColor="@color/white"
+    android:text="@string/register_or_log_in"
+    android:textStyle="bold"
+    android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+    android:onClick="goToRegister"
+    android:visibility="gone"/>
+
+</RelativeLayout>

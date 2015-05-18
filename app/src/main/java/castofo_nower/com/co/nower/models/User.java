@@ -5,7 +5,6 @@ import java.util.Map;
 
 import castofo_nower.com.co.nower.support.SharedPreferencesManager;
 
-
 public class User {
 
   public static int id;
@@ -13,17 +12,19 @@ public class User {
   public static String name;
   public static String gender;
   public static String birthday;
+  public static String facebookId;
 
   private static Map<Integer, Redemption> takenPromos;
 
   public static void setUserData(int idToSet, String emailToSet,
                                  String nameToSet, String genderToSet,
-                                 String birthdayToSet) {
+                                 String birthdayToSet, String facebookIdToSet) {
     id = idToSet;
     email = emailToSet;
     name = nameToSet;
     gender = genderToSet;
     birthday = birthdayToSet;
+    facebookId = facebookIdToSet;
   }
 
   public static void addPromoToTakenPromos(Integer promoId,
@@ -45,8 +46,7 @@ public class User {
 
   public static void clearData() {
     id = SharedPreferencesManager.NO_VALUE_SAVED;
-    email = name = gender = birthday = null;
+    email = name = gender = birthday = facebookId = null;
     clearTakenPromos();
   }
-
 }

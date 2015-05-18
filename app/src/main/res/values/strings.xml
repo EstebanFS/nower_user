@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
   <string name="app_name">Nower</string>
   <string name="hello_world">Hello world!</string>
   <string name="action_settings">Settings</string>
+
+  <string-array name="tabs_names">
+    <item>@string/title_activity_branches_list</item>
+    <item>@string/title_activity_user_promo_list</item>
+  </string-array>
+
+  <string name="google_maps_api_key">AIzaSyAYqjc0sDA7WH8tKwzjEgZa9z6CtRbGaxM</string>
+  <string name="facebook_app_id">863715703721005</string>
   <string name="title_activity_map">Mapa</string>
   <string name="gps">GPS</string>
   <string name="enable_gps_suggestion">Es necesario activar el GPS para acceder a las promociones.</string>
@@ -43,13 +50,6 @@
   <string name="already_have_account"><u>Ya tengo una cuenta, ingresar</u></string>
   <string name="male">Hombre</string>
   <string name="female">Mujer</string>
-
-  <string-array name="tabs_names">
-      <!--<item>@string/title_activity_map</item>-->
-      <item>@string/title_activity_branches_list</item>
-      <item>@string/title_activity_user_promo_list</item>
-  </string-array>
-
   <string name="title_activity_login">LoginActivity</string>
   <string name="title_activity_register">RegisterActivity</string>
   <string name="write_your_email">Escribe tu correo</string>
@@ -79,9 +79,13 @@
   <string name="title_activity_promo_picture_viewer">Foto de promoción</string>
   <string name="no_promo_picture">Sin foto de promoción</string>
   <string name="promo_limit_exceeded">Límite de promociones excedido</string>
-  <string name="facebook_app_id">863715703721005</string>
   <string name="login_with_facebook">Ingresar con Facebook</string>
   <string name="logout_with_facebook">Cerrar sesión</string>
+  <string name="search_store">Buscar tienda</string>
+  <string name="search_widget">Barra de búsqueda</string>
+  <string name="default_language">es</string>
+  <string name="no_results_found">No se encontraron resultados</string>
   <string name="go_to_map">Ir al mapa</string>
   <string name="go_to_navigate">Explorar</string>
+
 </resources>

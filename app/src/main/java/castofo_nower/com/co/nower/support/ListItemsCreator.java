@@ -1,10 +1,13 @@
 package castofo_nower.com.co.nower.support;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,13 +22,16 @@ import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 
-
-public class ListItemsCreator extends ArrayAdapter<Object> {
+public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
+{
 
   private Context context;
   private int resource;
   private ArrayList<Object> listData;
   private String action;
+
+  // Copia de los datos de la lista original.
+  private ArrayList<Object> originalList;
 
   public ListItemsCreator(Context context, int resource,
                           ArrayList<Object> promosList, String action) {
@@ -33,6 +39,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
     this.context = context;
     this.resource = resource;
     this.listData = promosList;
+    this.originalList = cloneListData(listData);
     this.action = action;
   }
 
@@ -112,6 +119,8 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
         // presionado por el usuario.
         item.setId(b.getId());
 
+        setNoResultsItem(item, title, subtitle, icon);
+
         // Se recupera el logo de la tienda.
         if (b.getStoreLogoURL() != null) {
           ImageDownloader imageDownloader
@@ -128,9 +137,95 @@ public class ListItemsCreator extends ArrayAdapter<Object> {
     return item;
   }
 
+  public ArrayList<Object> cloneListData(ArrayList<Object> listData) {
+    ArrayList<Object> clonedData = new ArrayList<>();
+    clonedData.addAll(listData);
+    return clonedData;
+  }
+
+  public void setNoResultsItem(View item, TextView title, TextView subtitle,
+                               ImageView icon ) {
+    // Este caso se presenta cuando no se han encontrado resultados al
+    // filtrar la lista de tiendas.
+    if (item.getId() == SearchHandler.NO_RESULTS_FOUND) {
+      title.setTypeface(null, Typeface.BOLD);
+      subtitle.setVisibility(View.GONE);
+      icon.setVisibility(View.INVISIBLE);
+      item.setEnabled(false);
+      item.setOnClickListener(null);
+    }
+  }
+
   public void updateListData(ArrayList<Object> newData) {
     this.listData.clear();
     this.listData.addAll(newData);
     notifyDataSetChanged();
+  }
+
+  @Override
+  public Filter getFilter() {
+    return new ListItemsFilter();
+  }
+
+  private class ListItemsFilter extends Filter {
+
+    @Override
+    protected FilterResults performFiltering(CharSequence constraint) {
+      FilterResults filterResults = new FilterResults();
+      if (constraint != null && constraint.length() > 0) {
+        ArrayList<Object> matchingItems = new ArrayList<Object>();
+        switch (action) {
+          case UserPromosListFragment.LIST_USER_PROMOS:
+            break;
+          case BranchesListFragment.LIST_BRANCHES:
+            for (Object b : originalList) {
+              Branch branch = (Branch) b;
+              String storeName = standardizeWord(branch.getStoreName());
+              String name = standardizeWord(branch.getName());
+              String stdConstraint = standardizeWord(constraint.toString());
+              if (storeName.contains(stdConstraint)
+                  || name.contains(stdConstraint)) {
+                matchingItems.add(b);
+              }
+            }
+            break;
+        }
+
+        filterResults.count = matchingItems.size();
+        filterResults.values = matchingItems;
+      }
+      else {
+        filterResults.count = originalList.size();
+        filterResults.values = originalList;
+      }
+
+      return filterResults;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected void publishResults(CharSequence constraint,
+                                  FilterResults results) {
+      if (results.count == 0) {
+        ArrayList<Object> noResultsItem = new ArrayList<>();
+        Branch noBranchFound
+        = new Branch(SearchHandler.NO_RESULTS_FOUND, null, -1.0, -1.0, -1,
+                     context.getResources()
+                     .getString(R.string.no_results_found), null, null);
+        noResultsItem.add(noBranchFound);
+        results.count = noResultsItem.size();
+        results.values = noResultsItem;
+      }
+      updateListData((ArrayList<Object>) results.values);
+    }
+
+    public String standardizeWord(String word) {
+      String wordWithoutAccents = word.replaceAll("á", "a").replaceAll("é", "e")
+                                  .replaceAll("í", "i").replaceAll("ó", "o")
+                                  .replaceAll("ú", "u");
+      wordWithoutAccents = wordWithoutAccents.replaceAll("[^a-zA-Z0-9 ]", "");
+
+      return wordWithoutAccents.toLowerCase();
+    }
   }
 }

@@ -38,7 +38,6 @@ import castofo_nower.com.co.nower.support.RequestErrorsHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.SharedPreferencesManager;
 
-
 public class Login extends Activity implements SubscribedActivities,
 ParsedErrors, FacebookLoginResponse {
 
@@ -100,7 +99,7 @@ ParsedErrors, FacebookLoginResponse {
     loginButton = (LoginButton) findViewById(R.id.login_button);
     loginButton.setReadPermissions("public_profile, email");
     loginButton.registerCallback(callbackManager,
-            facebookHandler.getLoginCallback());
+                                 facebookHandler.getLoginCallback());
   }
 
   public void onDontHaveAccountClicked(View v) {
@@ -156,25 +155,28 @@ ParsedErrors, FacebookLoginResponse {
                               new HttpPost(), Login.this);
     }
     else if (request.equals(ACTION_FACEBOOK_LOGIN)) {
-      httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_FACEBOOK_LOGIN,
-                              "", params, new HttpPost(), Login.this);
+      httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_FACEBOOK_LOGIN, "",
+                              params, new HttpPost(), Login.this);
     }
   }
 
-  public static void saveUserData(int id, String email, String name,
-                                  String gender, String birthday) {
+  public static void saveUserData
+  (int id, String email, String name, String gender, String birthday,
+   String facebookId) {
     // Se almacenan los datos del usuario que acaba de autenticarse.
     SharedPreferencesManager.saveIntegerValue(SharedPreferencesManager
                                               .USER_ID, id);
     SharedPreferencesManager.saveStringValue(SharedPreferencesManager
-            .USER_EMAIL, email);
+                                             .USER_EMAIL, email);
     SharedPreferencesManager.saveStringValue(SharedPreferencesManager
                                              .USER_NAME, name);
     SharedPreferencesManager.saveStringValue(SharedPreferencesManager
                                              .USER_GENDER, gender);
     SharedPreferencesManager.saveStringValue(SharedPreferencesManager
                                              .USER_BIRTHDAY, birthday);
-    User.setUserData(id, email, name, gender, birthday);
+    SharedPreferencesManager.saveStringValue(SharedPreferencesManager
+                                             .USER_FACEBOOK_ID, facebookId);
+    User.setUserData(id, email, name, gender, birthday, facebookId);
   }
 
   public static void startSession
@@ -186,15 +188,17 @@ ParsedErrors, FacebookLoginResponse {
     String name = user.getString("name");
     String gender = user.getString("gender");
     String birthday = user.getString("birthday");
+    String facebookId = null;
+    if (!user.isNull("facebook_id")) facebookId = user.getString("facebook_id");
 
-    saveUserData(id, email, name, gender, birthday);
+    saveUserData(id, email, name, gender, birthday, facebookId);
 
     SplashActivity.handleRequest(context, OPEN_MAP);
   }
 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode,
-                                  Intent data) {
+  protected void onActivityResult(int requestCode, int resultCode, Intent data)
+  {
     super.onActivityResult(requestCode, resultCode, data);
     callbackManager.onActivityResult(requestCode, resultCode, data);
   }
@@ -211,16 +215,15 @@ ParsedErrors, FacebookLoginResponse {
         }
         break;
       case ACTION_FACEBOOK_LOGIN:
-        // Cerrar la sesión de Facebook
+        // Cerrar la sesión de Facebook.
         facebookHandler.logout();
         // Mostrar el primer mensaje de error que llegue.
         for (Map.Entry<String, String> errorMessage : errorsMessages.entrySet())
         {
           UserFeedback
-                  .showAlertDialog(Login.this, R.string.sorry,
-                          errorMessage.getValue(), R.string.got_it,
-                          UserFeedback.NO_BUTTON_TO_SHOW,
-                          ACTION_FACEBOOK_LOGIN);
+          .showAlertDialog(Login.this, R.string.sorry, errorMessage.getValue(),
+                           R.string.got_it, UserFeedback.NO_BUTTON_TO_SHOW,
+                           ACTION_FACEBOOK_LOGIN);
           // Solo mostrar el primer mensaje, no más.
           break;
         }
@@ -232,9 +235,7 @@ ParsedErrors, FacebookLoginResponse {
   public void notifyFacebookResponse(JSONObject object, GraphResponse response)
   {
     AccessToken accessToken = facebookHandler.getAccessToken();
-    // Guardar en preferencias el token de Facebook del usuario
-    SharedPreferencesManager.saveStringValue
-    (SharedPreferencesManager.USER_FACEBOOK_TOKEN, accessToken.getToken());
+
     try {
       String name = object.getString("name");
       String email = object.getString("email");
@@ -318,5 +319,4 @@ ParsedErrors, FacebookLoginResponse {
 
     return super.onOptionsItemSelected(item);
   }
-
 }

@@ -6,7 +6,6 @@ import android.view.ViewGroup;
 
 import java.util.ArrayList;
 
-
 public class PagerBuilder extends PagerAdapter {
 
   private ArrayList<View> promoCards = new ArrayList<>();
@@ -38,5 +37,4 @@ public class PagerBuilder extends PagerAdapter {
   public boolean isViewFromObject(View view, Object object) {
     return (view == object);
   }
-
 }
