@@ -69,13 +69,21 @@
     <activity
       android:name=".controllers.UserPromosList"
       android:label="@string/title_activity_user_promo_list"
+      android:launchMode="singleTop"
+      android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
       android:screenOrientation="portrait">
+      <intent-filter>
+        <action android:name="android.intent.action.SEARCH"/>
+      </intent-filter>
+      <meta-data
+        android:name="android.app.searchable"
+        android:resource="@xml/searchable"/>
     </activity>
     <activity
       android:name=".controllers.BranchesList"
       android:label="@string/title_activity_branches_list"
       android:launchMode="singleTop"
-      android:theme="@style/Theme.AppCompat"
+      android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
       android:screenOrientation="portrait">
       <intent-filter>
         <action android:name="android.intent.action.SEARCH"/>

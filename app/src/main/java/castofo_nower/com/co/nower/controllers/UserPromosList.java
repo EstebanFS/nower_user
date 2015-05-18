@@ -1,12 +1,17 @@
 package castofo_nower.com.co.nower.controllers;
 
-import android.app.ListActivity;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.view.MenuItemCompat;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -33,12 +38,14 @@ import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
+import castofo_nower.com.co.nower.support.SearchHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
 
-public class UserPromosList extends ListActivity implements
+public class UserPromosList extends ActionBarActivity implements
 SubscribedActivities, ParsedErrors {
 
+  private ListView userPromosList;
   private ListItemsCreator userPromosListToShow;
 
   private HttpHandler httpHandler = new HttpHandler();
@@ -52,6 +59,9 @@ SubscribedActivities, ParsedErrors {
 
   private boolean isUserAbleToTakePromos;
 
+  private SearchView searchView;
+  private MenuItem searchMenuItem;
+
   public static final String LIST_USER_PROMOS = "LIST_USER_PROMOS";
   public static final String SHOW_PROMO_TO_REDEEM = "SHOW_PROMO_TO_REDEEM";
 
@@ -64,8 +74,8 @@ SubscribedActivities, ParsedErrors {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_user_promo_list);
-
+    setContentView(R.layout.activity_user_promos_list);
+    userPromosList = (ListView) findViewById(R.id.user_promos_list);
     // Se indica al HttpHandler la actividad que estará esperando la respuesta
     // a la petición.
     httpHandler.addListeningActivity(this);
@@ -76,6 +86,8 @@ SubscribedActivities, ParsedErrors {
 
     setEmptyListMessage();
 
+    setOnListItemClickListener();
+
     // Se hace para actualizar el estado de las promociones que ha obtenido el
     // usuario.
     sendRequest(ACTION_USER_REDEMPTIONS);
@@ -85,8 +97,7 @@ SubscribedActivities, ParsedErrors {
     // Se muestra un mensaje en caso de que la lista de promociones del usuario
     // esté vacía.
     View empty = findViewById(R.id.empty_list);
-    ListView list = (ListView) findViewById(android.R.id.list);
-    list.setEmptyView(empty);
+    userPromosList.setEmptyView(empty);
     if (!isUserAbleToTakePromos) {
       Button registerOrLogIn = (Button)
                                findViewById(R.id.register_or_login_button);
@@ -96,6 +107,34 @@ SubscribedActivities, ParsedErrors {
 
   public void goToRegister(View v) {
     SplashActivity.handleRequest(this, USER_NEEDS_TO_REGISTER);
+  }
+
+  public void setOnListItemClickListener() {
+    userPromosList.setOnItemClickListener(new AdapterView.OnItemClickListener()
+    {
+      @Override
+      public void onItemClick(AdapterView<?> parent, View view, int position,
+                              long id) {
+        int promoId = view.getId();
+        openSelectedRedemption(promoId, position);
+      }
+    });
+  }
+
+  public void openSelectedRedemption(int promoId, int position) {
+    if (promoId != SearchHandler.NO_RESULTS_FOUND && promoId != HEADER_ID) {
+      // Se cierra la barra de búsqueda y se limpia el texto.
+      if (searchView != null && searchView.isShown()) {
+        searchMenuItem.collapseActionView();
+        searchView.setQuery("", false);
+      }
+      Intent showPromoToRedeem = new Intent(UserPromosList.this,
+                                            PromoCardsAnimator.class);
+      showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
+      showPromoToRedeem.putExtra("promo_id", promoId);
+      showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+      startActivity(showPromoToRedeem);
+    }
   }
 
   public void sendRequest(String request) {
@@ -217,11 +256,27 @@ SubscribedActivities, ParsedErrors {
     }
   }
 
+  public void prepareSearch() {
+    SearchHandler.setParamsForSearch(UserPromosList.this, searchView,
+                                     userPromosListToShow, LIST_USER_PROMOS);
+    SearchHandler.setQueryListener();
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+      String query = intent.getStringExtra(SearchManager.QUERY);
+      searchView.setQuery(query, false);
+      prepareSearch();
+    }
+  }
+
   @Override
   protected void onRestart() {
     super.onRestart();
     // Se hace actualización del estado de las promociones del usuario al
-    // regresar a la lista.
+    // regresar a la lista, luego de haber ingresado a ver el detalle de alguna
+    // de las promociones tomadas.
     sendRequest(ACTION_USER_REDEMPTIONS);
   }
 
@@ -255,7 +310,10 @@ SubscribedActivities, ParsedErrors {
                                    (this, R.layout.promo_item, generateData(),
                                     LIST_USER_PROMOS);
 
-            setListAdapter(userPromosListToShow);
+            userPromosList.setAdapter(userPromosListToShow);
+            // Este método debe llamarse tras haber formado el Adapter con el
+            // fin de evitar que permanezca con valor de nulo.
+            prepareSearch();
             break;
           case HttpHandler.UNAUTHORIZED:
             RequestErrorsHandler
@@ -269,23 +327,18 @@ SubscribedActivities, ParsedErrors {
     }
   }
 
-  protected void onListItemClick(ListView l, View v, int position, long id) {
-    super.onListItemClick(l, v, position, id);
-    int promoId = v.getId();
-    if (promoId != HEADER_ID) {
-      Intent showPromoToRedeem = new Intent(UserPromosList.this,
-                                            PromoCardsAnimator.class);
-      showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
-      showPromoToRedeem.putExtra("promo_id", promoId);
-      showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-      startActivity(showPromoToRedeem);
-    }
-  }
-
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_user_promo_list, menu);
+    getMenuInflater().inflate(R.menu.menu_user_promos_list, menu);
+
+    SearchManager searchManager = (SearchManager)
+                                  getSystemService(Context.SEARCH_SERVICE);
+    searchMenuItem = menu.findItem(R.id.action_search);
+    searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+    searchView.setQueryHint(getResources().getString(R.string.search_promo));
+    searchView.setSearchableInfo(searchManager
+                                 .getSearchableInfo(getComponentName()));
     return true;
   }
 

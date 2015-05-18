@@ -79,15 +79,28 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
           // Es un encabezado y por tanto no debe hacerse nada cuando el
           // usuario lo presiona.
           item.setId(UserPromosList.HEADER_ID);
+          disableClicking(item);
         }
         // Se trata de un item.
         else {
           int promoId = redemption.getPromoId();
-          titleText = MapData.getPromosMap().get(promoId).getTitle();
-          subtitleText = redemption.getStoreName();
+          if (promoId != SearchHandler.NO_RESULTS_FOUND) {
+            titleText = MapData.getPromosMap().get(promoId).getTitle();
+            subtitleText = redemption.getStoreName();
+          }
+          // Se está formando un item para indicar que no se encontraron
+          // resultados al filtrar la lista de promociones del usuario.
+          else {
+            // En este caso, el mensaje a mostrar fue guardado en el campo
+            // storeName de la promoción del usuario creada.
+            titleText = redemption.getStoreName();
+          }
           // Se le pone el id de la promoción a redimir con el fin de poder
           // gestionarla al ser presionada por el usuario.
           item.setId(promoId);
+
+          setNoResultsItem(item, title, subtitle, icon);
+
           // Se recupera el logo de la tienda.
           if (redemption.getStoreLogoURL() != null) {
             ImageDownloader imageDownloader
@@ -131,16 +144,20 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
     return clonedData;
   }
 
+  public void disableClicking(View item) {
+    item.setEnabled(false);
+    item.setOnClickListener(null);
+  }
+
   public void setNoResultsItem(View item, TextView title, TextView subtitle,
                                ImageView icon ) {
-    // Este caso se presenta cuando no se han encontrado resultados al
-    // filtrar la lista de tiendas.
+    // Este caso se presenta cuando no se han encontrado resultados al filtrar
+    // las listas.
     if (item.getId() == SearchHandler.NO_RESULTS_FOUND) {
       title.setTypeface(null, Typeface.BOLD);
       subtitle.setVisibility(View.GONE);
       icon.setVisibility(View.INVISIBLE);
-      item.setEnabled(false);
-      item.setOnClickListener(null);
+      disableClicking(item);
     }
   }
 
@@ -164,21 +181,12 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
         ArrayList<Object> matchingItems = new ArrayList<Object>();
         switch (action) {
           case UserPromosList.LIST_USER_PROMOS:
+            matchingItems.addAll(filterUserPromos(constraint.toString()));
             break;
           case BranchesList.LIST_BRANCHES:
-            for (Object b : originalList) {
-              Branch branch = (Branch) b;
-              String storeName = standardizeWord(branch.getStoreName());
-              String name = standardizeWord(branch.getName());
-              String stdConstraint = standardizeWord(constraint.toString());
-              if (storeName.contains(stdConstraint)
-                  || name.contains(stdConstraint)) {
-                matchingItems.add(b);
-              }
-            }
+            matchingItems.addAll(filterBranches(constraint.toString()));
             break;
         }
-
         filterResults.count = matchingItems.size();
         filterResults.values = matchingItems;
       }
@@ -195,16 +203,75 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
     protected void publishResults(CharSequence constraint,
                                   FilterResults results) {
       if (results.count == 0) {
-        ArrayList<Object> noResultsItem = new ArrayList<>();
-        Branch noBranchFound
-        = new Branch(SearchHandler.NO_RESULTS_FOUND, null, -1.0, -1.0, -1,
-                     context.getResources()
-                     .getString(R.string.no_results_found), null, null);
-        noResultsItem.add(noBranchFound);
-        results.count = noResultsItem.size();
-        results.values = noResultsItem;
+        ArrayList<Object> noResults = new ArrayList<>();
+        Object noResultsItem = new Object();
+        switch (action) {
+          case UserPromosList.LIST_USER_PROMOS:
+            noResultsItem = setNoRedemptionFoundItem();
+            break;
+          case BranchesList.LIST_BRANCHES:
+            noResultsItem = setNoBranchFoundItem();
+            break;
+        }
+        noResults.add(noResultsItem);
+        results.count = noResults.size();
+        results.values = noResults;
       }
       updateListData((ArrayList<Object>) results.values);
+    }
+
+    public ArrayList<Object> filterBranches(String constraint) {
+      ArrayList<Object> matchingItems = new ArrayList<>();
+      String storeName, name, stdConstraint;
+      for (Object b : originalList) {
+        Branch branch = (Branch) b;
+        storeName = standardizeWord(branch.getStoreName());
+        name = standardizeWord(branch.getName());
+        stdConstraint = standardizeWord(constraint);
+        if (storeName.contains(stdConstraint) || name.contains(stdConstraint)) {
+          matchingItems.add(b);
+        }
+      }
+
+      return matchingItems;
+    }
+
+    public ArrayList<Object> filterUserPromos(String constraint) {
+      ArrayList<Object> userPromosNotRedeemed = new ArrayList<Object>();
+      ArrayList<Object> userPromosRedeemed = new ArrayList<Object>();
+      ArrayList<Object> matchingItems = new ArrayList<>();
+
+      // Encabezados "POR REDIMIR" y "REDIMIDAS".
+      userPromosNotRedeemed.add(new Redemption("0", 0, false, null, null));
+      userPromosRedeemed.add(new Redemption("1", 0, true, null, null));
+
+      String promoTitle, storeName, stdConstraint;
+      for (Object r : originalList) {
+        Redemption redemption = (Redemption) r;
+        if (!redemption.getCode().equals("0")
+            && !redemption.getCode().equals("1")) {
+          int promoId = redemption.getPromoId();
+          promoTitle = standardizeWord(MapData.getPromosMap()
+                                       .get(promoId).getTitle());
+          storeName = standardizeWord(redemption.getStoreName());
+          stdConstraint = standardizeWord(constraint);
+          if (promoTitle.contains(stdConstraint)
+              || storeName.contains(stdConstraint)) {
+            if (!redemption.isRedeemed()) userPromosNotRedeemed.add(redemption);
+            else userPromosRedeemed.add(redemption);
+          }
+        }
+      }
+      // Solamente se agregan los encabezados cuando existe por lo menos alguna
+      // coincidencia con las promociones del usuario en esa sección.
+      if (userPromosNotRedeemed.size() > 1) {
+        matchingItems.addAll(userPromosNotRedeemed);
+      }
+      if (userPromosRedeemed.size() > 1) {
+        matchingItems.addAll(userPromosRedeemed);
+      }
+
+      return matchingItems;
     }
 
     public String standardizeWord(String word) {
@@ -214,6 +281,25 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
       wordWithoutAccents = wordWithoutAccents.replaceAll("[^a-zA-Z0-9 ]", "");
 
       return wordWithoutAccents.toLowerCase();
+    }
+
+    public Branch setNoBranchFoundItem() {
+      Branch noBranchFound
+      = new Branch(SearchHandler.NO_RESULTS_FOUND, null, -1.0, -1.0, -1,
+                   context.getResources().getString(R.string.no_results_found),
+                   null, null);
+
+      return noBranchFound;
+    }
+
+    public Redemption setNoRedemptionFoundItem() {
+      Redemption noRedemptionFound
+      = new Redemption(String.valueOf(SearchHandler.NO_RESULTS_FOUND),
+                       SearchHandler.NO_RESULTS_FOUND, false,
+                       context.getResources()
+                       .getString(R.string.no_results_found), null);
+
+      return noRedemptionFound;
     }
   }
 }
