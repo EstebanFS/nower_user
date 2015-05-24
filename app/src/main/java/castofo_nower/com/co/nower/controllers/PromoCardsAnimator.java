@@ -493,6 +493,11 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         break;
       case OBTAINED_PROMO:
         if (buttonPressedId == R.string.go_to_my_promos) {
+          // Se debe encontrar la manera de organizar el stack de actividades,
+          // de modo que al ir de nuevo a TabsHandler y comenzar a cerrar
+          // actividades, no se pierda como base el TabsHandler.
+          // Ejemplo: Splash -> Tabs -> Map -> PromoCard -> Tabs =cerrar=>
+          //          PromoCard =cerrar=> Map =cerrar=> Se cierra la app.
           TabsHandler.handleRequest(PromoCardsAnimator.this,
                                     UserPromosListFragment.LIST_USER_PROMOS,
                                     Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

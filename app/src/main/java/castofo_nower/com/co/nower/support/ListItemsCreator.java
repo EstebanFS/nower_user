@@ -168,9 +168,13 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
     }
   }
 
-  public void updateListData(ArrayList<Object> newData) {
+  public void updateListData(ArrayList<Object> newData, boolean setAsOriginal) {
     this.listData.clear();
     this.listData.addAll(newData);
+    if (setAsOriginal) {
+      this.originalList.clear();
+      this.originalList.addAll(newData);
+    }
     notifyDataSetChanged();
   }
 
@@ -224,7 +228,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
         results.count = noResults.size();
         results.values = noResults;
       }
-      updateListData((ArrayList<Object>) results.values);
+      updateListData((ArrayList<Object>) results.values, false);
     }
 
     public ArrayList<Object> filterBranches(String constraint) {

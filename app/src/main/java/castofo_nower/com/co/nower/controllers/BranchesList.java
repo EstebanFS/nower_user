@@ -105,7 +105,7 @@ public class BranchesList extends ActionBarActivity {
   }
 
   public void prepareSearch() {
-    SearchHandler.setParamsForSearch(BranchesList.this, searchView,
+    SearchHandler.setParamsForSearch(BranchesList.this, null, searchView,
                                      branchesListToShow, LIST_BRANCHES);
     SearchHandler.setQueryListener();
   }
@@ -115,7 +115,6 @@ public class BranchesList extends ActionBarActivity {
     if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
       String query = intent.getStringExtra(SearchManager.QUERY);
       searchView.setQuery(query, false);
-      prepareSearch();
     }
   }
 

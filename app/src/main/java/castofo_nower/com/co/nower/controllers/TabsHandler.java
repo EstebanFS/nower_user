@@ -1,13 +1,17 @@
 package castofo_nower.com.co.nower.controllers;
 
-import android.app.ActionBar;
-import android.app.FragmentTransaction;
+import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -15,14 +19,23 @@ import android.view.View;
 import java.util.List;
 
 import castofo_nower.com.co.nower.R;
+import castofo_nower.com.co.nower.support.ListItemsCreator;
+import castofo_nower.com.co.nower.support.SearchHandler;
 import castofo_nower.com.co.nower.support.TabsAdapter;
 
-public class TabsHandler extends FragmentActivity implements
-ActionBar.TabListener {
+public class TabsHandler extends ActionBarActivity implements
+        ActionBar.TabListener {
 
   private ViewPager viewPager;
   private ActionBar actionBar;
   private String[] tabs;
+
+  private SearchView searchView;
+  private MenuItem searchMenuItem;
+
+  private MenuItem showMapItem;
+  private MenuItem logInItem;
+  private MenuItem logOutItem;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -36,11 +49,11 @@ ActionBar.TabListener {
     {
       @Override
       public void onPageSelected(int position) {
-        getActionBar().setSelectedNavigationItem(position);
+        changeTab(position);
       }
     });
 
-    actionBar = getActionBar();
+    actionBar = getSupportActionBar();
     actionBar.setHomeButtonEnabled(false);
     actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
@@ -51,6 +64,19 @@ ActionBar.TabListener {
       actionBar.addTab(tab);
     }
     handleWithExtras();
+  }
+
+  public void changeTab(int position) {
+    if (actionBar != null && position < actionBar.getTabCount()) {
+      actionBar.setSelectedNavigationItem(position);
+    }
+    if (viewPager != null && position < viewPager.getChildCount()) {
+      viewPager.setCurrentItem(position);
+    }
+    // Cuando se cambie de pestaña, se debe configurar la búsqueda para la
+    // respectiva lista.
+    closeSearchView();
+    prepareSearchForTabAt(position);
   }
 
   private void handleWithExtras() {
@@ -66,20 +92,29 @@ ActionBar.TabListener {
       if (action != null) {
         switch (action) {
           case BranchesListFragment.LIST_BRANCHES:
-            if (viewPager != null && viewPager.getChildCount() >= 1) {
-              getActionBar().setSelectedNavigationItem(0);
-              viewPager.setCurrentItem(0);
-            }
+            changeTab(0);
             break;
           case UserPromosListFragment.LIST_USER_PROMOS:
-            if (viewPager != null && viewPager.getChildCount() >= 2) {
-              getActionBar().setSelectedNavigationItem(1);
-              viewPager.setCurrentItem(1);
-            }
+            changeTab(1);
             break;
         }
       }
     }
+  }
+
+  public void closeSearchView() {
+    if (searchView != null && searchView.isShown()) {
+      searchMenuItem.collapseActionView();
+      searchView.setQuery("", false);
+    }
+  }
+
+  private Fragment getFragmentAt(int position) {
+    List<Fragment> fragmentsList =  getSupportFragmentManager().getFragments();
+    if (fragmentsList != null && position < fragmentsList.size()) {
+      return fragmentsList.get(position);
+    }
+    else return null;
   }
 
   private void openMap() {
@@ -104,9 +139,50 @@ ActionBar.TabListener {
                                        .USER_NEEDS_TO_REGISTER);
   }
 
+  private void prepareSearchForTabAt(int position) {
+    Fragment currentFragment = getFragmentAt(position);
+    ListItemsCreator listToBeFiltered;
+    if (currentFragment != null) {
+      switch (position) {
+        case 0:
+          BranchesListFragment branchesListFragment =
+                  (BranchesListFragment) currentFragment;
+          listToBeFiltered = branchesListFragment
+                  .getBranchesListToShow();
+          if (listToBeFiltered != null) {
+            prepareSearch(branchesListFragment, listToBeFiltered,
+                          BranchesListFragment.LIST_BRANCHES);
+          }
+          break;
+        case 1:
+          UserPromosListFragment userPromosListFragment =
+                  (UserPromosListFragment) currentFragment;
+          listToBeFiltered = userPromosListFragment
+                  .getUserPromosListToShow();
+          if (listToBeFiltered != null) {
+            prepareSearch(userPromosListFragment, listToBeFiltered,
+                          UserPromosListFragment.LIST_USER_PROMOS);
+          }
+          break;
+      }
+    }
+  }
+
+  public void prepareSearch(Fragment fragmentUsingSearch,
+                            ListItemsCreator listToBeFiltered,
+                            String action) {
+    SearchHandler.setParamsForSearch(TabsHandler.this, fragmentUsingSearch,
+                                     searchView, listToBeFiltered, action);
+    SearchHandler.setQueryListener();
+  }
+
   @Override
   protected void onNewIntent(Intent intent) {
     super.onNewIntent(intent);
+    if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+      String query = intent.getStringExtra(SearchManager.QUERY);
+      searchView.setQuery(query, false);
+    }
     setIntent(intent);
     handleWithExtras();
   }
@@ -116,20 +192,23 @@ ActionBar.TabListener {
     super.onRestart();
     // Se hace actualización del estado de las promociones del usuario al
     // regresar a la lista.
-    List<Fragment> fragmentsList =  getSupportFragmentManager().getFragments();
-    if (fragmentsList != null && fragmentsList.size() >= 2) {
-      UserPromosListFragment userPromosListFragment
-      = (UserPromosListFragment) fragmentsList.get(1);
-      if (userPromosListFragment != null) {
-        userPromosListFragment.sendRequest(UserPromosListFragment
-                .ACTION_USER_REDEMPTIONS);
-      }
+    UserPromosListFragment userPromosListFragment =
+            (UserPromosListFragment) getFragmentAt(1);
+    if (userPromosListFragment != null) {
+      userPromosListFragment.sendRequest(UserPromosListFragment
+              .ACTION_USER_REDEMPTIONS);
+    }
+
+    // Cuando la actividad vuelve a estar visible, preparar la búsqueda para
+    // la pestaña que esté seleccionada
+    if (actionBar != null) {
+      prepareSearchForTabAt(actionBar.getSelectedNavigationIndex());
     }
   }
 
   @Override
   public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-    viewPager.setCurrentItem(tab.getPosition());
+    changeTab(tab.getPosition());
   }
 
   @Override
@@ -142,17 +221,51 @@ ActionBar.TabListener {
 
   }
 
+  private void setupLoginAndLogoutMenuItems() {
+    if (SplashActivity.isThereLoginInstance()) {
+      logInItem.setVisible(false);
+      logOutItem.setVisible(true);
+    }
+    else {
+      logOutItem.setVisible(false);
+      logInItem.setVisible(true);
+    }
+  }
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_tabs_handler, menu);
-    if (SplashActivity.isThereLoginInstance()) {
-      menu.findItem(R.id.action_log_in).setVisible(false);
-    }
-    else {
-      menu.findItem(R.id.action_log_out).setVisible(false);
-    }
 
+    showMapItem = menu.findItem(R.id.action_show_map);
+    logInItem = menu.findItem(R.id.action_log_in);
+    logOutItem = menu.findItem(R.id.action_log_out);
+
+    setupLoginAndLogoutMenuItems();
+
+    SearchManager searchManager = (SearchManager)
+            getSystemService(Context.SEARCH_SERVICE);
+    searchMenuItem = menu.findItem(R.id.action_search);
+    MenuItemCompat.setOnActionExpandListener(searchMenuItem,
+            new MenuItemCompat.OnActionExpandListener() {
+      @Override
+      public boolean onMenuItemActionExpand(MenuItem item) {
+        if (showMapItem != null) showMapItem.setVisible(false);
+        if (logInItem != null) logInItem.setVisible(false);
+        if (logOutItem != null) logOutItem.setVisible(false);
+        return true;
+      }
+
+      @Override
+      public boolean onMenuItemActionCollapse(MenuItem item) {
+        if (showMapItem != null) showMapItem.setVisible(true);
+        setupLoginAndLogoutMenuItems();
+        return true;
+      }
+    });
+    searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+    searchView.setSearchableInfo(searchManager
+            .getSearchableInfo(getComponentName()));
     return true;
   }
 

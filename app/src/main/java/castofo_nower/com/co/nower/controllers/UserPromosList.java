@@ -257,7 +257,7 @@ SubscribedActivities, ParsedErrors {
   }
 
   public void prepareSearch() {
-    SearchHandler.setParamsForSearch(UserPromosList.this, searchView,
+    SearchHandler.setParamsForSearch(UserPromosList.this, null, searchView,
     userPromosListToShow, LIST_USER_PROMOS);
     SearchHandler.setQueryListener();
   }
@@ -267,7 +267,6 @@ SubscribedActivities, ParsedErrors {
     if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
       String query = intent.getStringExtra(SearchManager.QUERY);
       searchView.setQuery(query, false);
-      prepareSearch();
     }
   }
 

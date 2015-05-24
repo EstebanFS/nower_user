@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="castofo_nower.com.co.nower">
+<manifest
+  package="castofo_nower.com.co.nower"
+  xmlns:android="http://schemas.android.com/apk/res/android">
 
   <permission
     android:name="castofo_nower.com.co.nower.permission.MAPS_RECEIVE"
@@ -71,8 +72,8 @@
       android:name=".controllers.UserPromosList"
       android:label="@string/title_activity_user_promo_list"
       android:launchMode="singleTop"
-      android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-      android:screenOrientation="portrait">
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
       <intent-filter>
         <action android:name="android.intent.action.SEARCH"/>
       </intent-filter>
@@ -84,8 +85,8 @@
       android:name=".controllers.BranchesList"
       android:label="@string/title_activity_branches_list"
       android:launchMode="singleTop"
-      android:theme="@style/Theme.AppCompat.Light.DarkActionBar"
-      android:screenOrientation="portrait">
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
       <intent-filter>
         <action android:name="android.intent.action.SEARCH"/>
       </intent-filter>
@@ -96,8 +97,15 @@
     <activity
       android:name=".controllers.TabsHandler"
       android:label="@string/app_name"
+      android:launchMode="singleTop"
       android:screenOrientation="portrait"
-      android:launchMode="singleTask">
+      android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+      <intent-filter>
+        <action android:name="android.intent.action.SEARCH"/>
+      </intent-filter>
+      <meta-data
+        android:name="android.app.searchable"
+        android:resource="@xml/searchable"/>
     </activity>
     <activity
       android:name=".controllers.Login"

@@ -4,9 +4,17 @@
       tools:context="castofo_nower.com.co.nower.controllers.TabsHandler">
 
   <item
+    android:id="@+id/action_search"
+    android:icon="@drawable/ic_magnify"
+    android:orderInCategory="1"
+    android:title="@string/search_widget"
+    app:actionViewClass="android.support.v7.widget.SearchView"
+    app:showAsAction="ifRoom|collapseActionView"/>
+
+  <item
     android:id="@+id/action_show_map"
     android:icon="@drawable/ic_map"
-    android:orderInCategory="0"
+    android:orderInCategory="2"
     android:title="@string/go_to_map"
     app:showAsAction="always"/>
 

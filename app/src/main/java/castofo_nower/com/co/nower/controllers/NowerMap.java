@@ -551,10 +551,12 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
     int id = item.getItemId();
     switch (id) {
       case android.R.id.home:
-        TabsHandler.handleRequest(NowerMap.this, null);
+        //TabsHandler.handleRequest(NowerMap.this, null);
+        finish();
         return true;
       case R.id.action_show_map:
-        TabsHandler.handleRequest(NowerMap.this, null);
+        //TabsHandler.handleRequest(NowerMap.this, null);
+        finish();
         return true;
       case R.id.action_log_in:
         SplashActivity.handleRequest(NowerMap.this,

@@ -37,6 +37,7 @@ import castofo_nower.com.co.nower.models.Redemption;
 import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
+import castofo_nower.com.co.nower.support.SearchHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
 
 public class UserPromosListFragment extends ListFragment implements
@@ -71,7 +72,6 @@ public class UserPromosListFragment extends ListFragment implements
                            Bundle savedInstanceState) {
     View layout = inflater.inflate(R.layout.fragment_user_promo_list,
                                    container, false);
-    //setContentView(R.layout.activity_user_promo_list);
 
     // Se indica al HttpHandler la actividad que estará esperando la respuesta
     // a la petición.
@@ -81,14 +81,17 @@ public class UserPromosListFragment extends ListFragment implements
 
     isUserAbleToTakePromos = SplashActivity.isThereLoginInstance();
 
+    userPromosListToShow = new ListItemsCreator
+            (getActivity(), R.layout.promo_item, generateData(),
+                    LIST_USER_PROMOS);
+
+    setListAdapter(userPromosListToShow);
+
     setEmptyListMessage(layout);
 
     // Se inicializa el swipe to refresh
     setupSwipeRefreshLayout(layout);
 
-    // Se hace para actualizar el estado de las promociones que ha obtenido el
-    // usuario.
-    //sendRequest(ACTION_USER_REDEMPTIONS);
     return layout;
   }
 
@@ -112,9 +115,15 @@ public class UserPromosListFragment extends ListFragment implements
             int offset = 0;
             if (totalItemCount > 0) {
               View firstItem = list.getChildAt(0);
+              // Este cálculo sirve para determinar si se está en la parte
+              // más alta del scroll, es decir, cuando el offset de desplaza-
+              // miento es 0.
               offset = -firstItem.getTop() + firstVisibleItem
                       * firstItem.getHeight();
             }
+            // Solo si estoy en la parte más alta, puedo habilitar el swipeRe-
+            // freshLayout, de lo contrario no lo habilito para que no salga
+            // cuando no he terminado de hacer scroll hasta arriba.
             if (offset == 0) swipeRefreshLayout.setEnabled(true);
             else swipeRefreshLayout.setEnabled(false);
           }
@@ -267,6 +276,10 @@ public class UserPromosListFragment extends ListFragment implements
     }
   }
 
+  public ListItemsCreator getUserPromosListToShow() {
+    return userPromosListToShow;
+  }
+
   @Override
   public void notifyParsedErrors(String action,
                                  Map<String, String> errorsMessages) {
@@ -292,13 +305,9 @@ public class UserPromosListFragment extends ListFragment implements
         switch (responseStatusCode) {
           case HttpHandler.OK:
             updateUserRedemptions(responseJson.getJSONArray("redemptions"));
-            // Ya con las promociones del usuario actualizadas, es posible
-            // mostrar la lista de redimidas y no redimidas.
-            userPromosListToShow = new ListItemsCreator
-                    (getActivity(), R.layout.promo_item, generateData(),
-                            LIST_USER_PROMOS);
-
-            setListAdapter(userPromosListToShow);
+            // Ya con las promociones del usuario actualizadas, se refresca
+            // la lista.
+            userPromosListToShow.updateListData(generateData(), true);
             break;
           case HttpHandler.UNAUTHORIZED:
             RequestErrorsHandler
@@ -316,9 +325,15 @@ public class UserPromosListFragment extends ListFragment implements
   public void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
     int promoId = v.getId();
-    if (promoId != HEADER_ID) {
+    openSelectedRedemption(promoId, position);
+  }
+
+  public void openSelectedRedemption(int promoId, int position) {
+    if (promoId != SearchHandler.NO_RESULTS_FOUND && promoId != HEADER_ID) {
+      // Se cierra la barra de búsqueda y se limpia el texto.
+      ((TabsHandler) getActivity()).closeSearchView();
       Intent showPromoToRedeem = new Intent(getActivity(),
-              PromoCardsAnimator.class);
+                                            PromoCardsAnimator.class);
       showPromoToRedeem.putExtra("action", SHOW_PROMO_TO_REDEEM);
       showPromoToRedeem.putExtra("promo_id", promoId);
       showPromoToRedeem.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
@@ -351,7 +366,7 @@ public class UserPromosListFragment extends ListFragment implements
   @Override
   public void onResume() {
     if (userPromosListToShow != null) {
-      userPromosListToShow.updateListData(generateData());
+      userPromosListToShow.updateListData(generateData(), true);
     }
     super.onResume();
   }

@@ -14,9 +14,6 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
 
-import com.google.android.gms.maps.model.Marker;
-
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,9 +30,8 @@ import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
-import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.ListItemsCreator;
-import castofo_nower.com.co.nower.support.RequestErrorsHandler;
+import castofo_nower.com.co.nower.support.SearchHandler;
 
 public class BranchesListFragment extends ListFragment implements
         SubscribedActivities {
@@ -52,7 +48,6 @@ public class BranchesListFragment extends ListFragment implements
                            Bundle savedInstanceState) {
     View layout = inflater.inflate(R.layout.fragment_branches_list,
             container, false);
-    //setContentView(R.layout.activity_branches_list);
 
     // Se indica al HttpHandler la actividad que estará esperando la respuesta
     // a la petición.
@@ -112,9 +107,15 @@ public class BranchesListFragment extends ListFragment implements
             int offset = 0;
             if (totalItemCount > 0) {
               View firstItem = list.getChildAt(0);
+              // Este cálculo sirve para determinar si se está en la parte
+              // más alta del scroll, es decir, cuando el offset de desplaza-
+              // miento es 0.
               offset = -firstItem.getTop() + firstVisibleItem
                       * firstItem.getHeight();
             }
+            // Solo si estoy en la parte más alta, puedo habilitar el swipeRe-
+            // freshLayout, de lo contrario no lo habilito para que no salga
+            // cuando no he terminado de hacer scroll hasta arriba.
             if (offset == 0) swipeRefreshLayout.setEnabled(true);
             else swipeRefreshLayout.setEnabled(false);
           }
@@ -155,6 +156,11 @@ public class BranchesListFragment extends ListFragment implements
         hideSwipeToRefreshLayout();
       }
     }
+  }
+
+
+  public ListItemsCreator getBranchesListToShow() {
+    return branchesListToShow;
   }
 
   @Override
@@ -234,7 +240,7 @@ public class BranchesListFragment extends ListFragment implements
             MapData.clearPromosMap();
             MapData.setPromosMap(promosMap);
 
-            branchesListToShow.updateListData(generateData());
+            branchesListToShow.updateListData(generateData(), true);
             break;
         }
         hideSwipeToRefreshLayout();
@@ -248,11 +254,19 @@ public class BranchesListFragment extends ListFragment implements
   public void onListItemClick(ListView l, View v, int position, long id) {
     super.onListItemClick(l, v, position, id);
     int branchId = v.getId();
-    Intent showPromos = new Intent(getActivity(), PromoCardsAnimator.class);
-    showPromos.putExtra("action", NowerMap.SHOW_BRANCH_PROMOS);
-    showPromos.putExtra("branch_id", branchId);
-    showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    startActivity(showPromos);
+    openSelectedBranch(branchId, position);
+  }
+
+  public void openSelectedBranch(int branchId, int position) {
+    // Se cierra la barra de búsqueda y se limpia el texto.
+    if (branchId != SearchHandler.NO_RESULTS_FOUND) {
+      ((TabsHandler) getActivity()).closeSearchView();
+      Intent showPromos = new Intent(getActivity(), PromoCardsAnimator.class);
+      showPromos.putExtra("action", NowerMap.SHOW_BRANCH_PROMOS);
+      showPromos.putExtra("branch_id", branchId);
+      showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+      startActivity(showPromos);
+    }
   }
 
   @Override
@@ -280,7 +294,7 @@ public class BranchesListFragment extends ListFragment implements
   @Override
   public void onResume() {
     if (branchesListToShow != null) {
-      branchesListToShow.updateListData(generateData());
+      branchesListToShow.updateListData(generateData(), true);
     }
     super.onResume();
   }
