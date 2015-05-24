@@ -1,0 +1,43 @@
+<android.support.v4.widget.SwipeRefreshLayout
+  android:id="@+id/swipe_refresh_layout"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="@color/white"
+  tools:context="castofo_nower.com.co.nower.controllers.UserPromosListFragment">
+
+  <FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+      android:id="@android:id/list"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:dividerHeight="2dp"/>
+
+    <ScrollView
+      android:id="@+id/empty_list"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:fillViewport="true">
+
+      <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_centerHorizontal="true"
+          android:layout_centerVertical="true"
+          android:gravity="center"
+          android:text="@string/empty_branches_list"
+          android:textAppearance="?android:attr/textAppearanceLarge"
+          android:textColor="@color/gray"
+          android:textStyle="bold"/>
+      </RelativeLayout>
+    </ScrollView>
+  </FrameLayout>
+</android.support.v4.widget.SwipeRefreshLayout>

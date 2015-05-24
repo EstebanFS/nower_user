@@ -181,7 +181,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
       // botón y cuáles con código.
       userPromos = User.getTakenPromos();
     }
-    else if (action.equals(UserPromosList.SHOW_PROMO_TO_REDEEM)) {
+    else if (action.equals(UserPromosListFragment.SHOW_PROMO_TO_REDEEM)) {
       int promoId = getIntent().getExtras().getInt("promo_id");
       code = User.getTakenPromos().get(promoId).getCode();
       isUserPromoRedeemed = User.getTakenPromos().get(promoId).isRedeemed();
@@ -210,7 +210,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         promoId.put("id", promos.get(i).getId());
         pIdsList.put(promoId);
       }
-      catch (JSONException e) {
+      catch (Exception e) {
 
       }
     }
@@ -347,7 +347,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
             changeButtonToCode(nowButton);
           }
         }
-        else if (action.equals(UserPromosList.SHOW_PROMO_TO_REDEEM)) {
+        else if (action.equals(UserPromosListFragment.SHOW_PROMO_TO_REDEEM)) {
           changeButtonToCode(nowButton);
         }
 
@@ -439,7 +439,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
       }
       else {
         SplashActivity.handleRequest(PromoCardsAnimator.this,
-                                     UserPromosList.USER_NEEDS_TO_REGISTER);
+                UserPromosListFragment.USER_NEEDS_TO_REGISTER);
       }
     }
   }
@@ -493,9 +493,14 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         break;
       case OBTAINED_PROMO:
         if (buttonPressedId == R.string.go_to_my_promos) {
-          Intent openUserPromosList = new Intent(this, UserPromosList.class);
-          openUserPromosList.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-          startActivity(openUserPromosList);
+          // Se debe encontrar la manera de organizar el stack de actividades,
+          // de modo que al ir de nuevo a TabsHandler y comenzar a cerrar
+          // actividades, no se pierda como base el TabsHandler.
+          // Ejemplo: Splash -> Tabs -> Map -> PromoCard -> Tabs =cerrar=>
+          //          PromoCard =cerrar=> Map =cerrar=> Se cierra la app.
+          TabsHandler.handleRequest(PromoCardsAnimator.this,
+                                    UserPromosListFragment.LIST_USER_PROMOS,
+                                    Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
         }
         break;
     }
@@ -517,7 +522,9 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
           UserFeedback.showToastMessage(getApplicationContext(),
                   errorsMessages.get("user_id"),
                   Toast.LENGTH_LONG);
-          //TODO cerrar sesión porque se intentó utilizar un usuario inválido.
+          //Se cierra sesión porque se intentó utilizar un usuario inválido.
+          SplashActivity.handleRequest(PromoCardsAnimator.this,
+                                       UserPromosListFragment.LOG_OUT);
         }
         else if (errorsMessages.containsKey("user")) {
           UserFeedback.showAlertDialog(this, R.string.promo_limit_exceeded,
@@ -602,7 +609,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
              }
              // Siempre se mostrará una promoción que el usuario ya haya tomado.
              else if (PromoCardsAnimator.action
-                      .equals(UserPromosList.SHOW_PROMO_TO_REDEEM)) {
+                      .equals(UserPromosListFragment.SHOW_PROMO_TO_REDEEM)) {
                promos.add(promo);
              }
            }
@@ -712,11 +719,11 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         return true;
       case R.id.action_log_in:
         SplashActivity.handleRequest(PromoCardsAnimator.this,
-                                     UserPromosList.USER_NEEDS_TO_REGISTER);
+                UserPromosListFragment.USER_NEEDS_TO_REGISTER);
         return true;
       case R.id.action_log_out:
         SplashActivity.handleRequest(PromoCardsAnimator.this,
-                                     UserPromosList.LOG_OUT);
+                UserPromosListFragment.LOG_OUT);
         return true;
     }
 

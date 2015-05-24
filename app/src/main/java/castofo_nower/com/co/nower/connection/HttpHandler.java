@@ -31,7 +31,8 @@ import castofo_nower.com.co.nower.controllers.Login;
 import castofo_nower.com.co.nower.controllers.NowerMap;
 import castofo_nower.com.co.nower.controllers.PromoCardsAnimator;
 import castofo_nower.com.co.nower.controllers.Register;
-import castofo_nower.com.co.nower.controllers.UserPromosList;
+import castofo_nower.com.co.nower.controllers.TabsHandler;
+import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.support.UserFeedback;
 
@@ -309,13 +310,13 @@ public class HttpHandler {
             progressDialog.setMessage(context
                                       .getString(R.string.obtaining_promos));
           }
-          else if (PromoCardsAnimator.action.equals(UserPromosList
+          else if (PromoCardsAnimator.action.equals(UserPromosListFragment
                                                     .SHOW_PROMO_TO_REDEEM)) {
             progressDialog.setMessage(context
                                       .getString(R.string.opening_promo));
           }
           break;
-        case UserPromosList.ACTION_USER_REDEMPTIONS:
+        case UserPromosListFragment.ACTION_USER_REDEMPTIONS:
           progressDialog.setMessage(context
                                     .getString(R.string.obtaining_your_promos));
           break;
@@ -329,7 +330,9 @@ public class HttpHandler {
       // Los mensajes de los servicios cuando el usuario está en la vista del
       // mapa son frecuentes debido a la actualización de promociones y no
       // deben mostrarse.
-      if (!(context instanceof NowerMap)) progressDialog.show();
+      if (!(context instanceof NowerMap) && !(context instanceof TabsHandler)) {
+        progressDialog.show();
+      }
     }
 
     protected JSONObject doInBackground(Void... params) {

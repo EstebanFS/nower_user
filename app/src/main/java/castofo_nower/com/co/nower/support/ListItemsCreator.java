@@ -12,12 +12,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import castofo_nower.com.co.nower.R;
-import castofo_nower.com.co.nower.controllers.BranchesList;
-import castofo_nower.com.co.nower.controllers.UserPromosList;
+import castofo_nower.com.co.nower.controllers.BranchesListFragment;
+import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
+import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 
 public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
@@ -58,7 +60,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
     String subtitleText = "";
 
     switch (action) {
-      case UserPromosList.LIST_USER_PROMOS:
+      case UserPromosListFragment.LIST_USER_PROMOS:
         // Se obtiene el título de la promoción actual.
         Redemption redemption = (Redemption) listData.get(position);
 
@@ -78,14 +80,19 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
           }
           // Es un encabezado y por tanto no debe hacerse nada cuando el
           // usuario lo presiona.
-          item.setId(UserPromosList.HEADER_ID);
+          item.setId(UserPromosListFragment.HEADER_ID);
           disableClicking(item);
         }
         // Se trata de un item.
         else {
           int promoId = redemption.getPromoId();
           if (promoId != SearchHandler.NO_RESULTS_FOUND) {
-            titleText = MapData.getPromosMap().get(promoId).getTitle();
+            try {
+              titleText = MapData.getPromosMap().get(promoId).getTitle();
+            }
+            catch (Exception e) {
+
+            }
             subtitleText = redemption.getStoreName();
           }
           // Se está formando un item para indicar que no se encontraron
@@ -109,7 +116,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
           }
         }
         break;
-      case BranchesList.LIST_BRANCHES:
+      case BranchesListFragment.LIST_BRANCHES:
         // Se obtiene el nombre del establecimiento actual.
         Branch b = (Branch) listData.get(position);
         // El título a mostrar incluye, además del nombre del establecimiento,
@@ -161,9 +168,13 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
     }
   }
 
-  public void updateListData(ArrayList<Object> newData) {
+  public void updateListData(ArrayList<Object> newData, boolean setAsOriginal) {
     this.listData.clear();
     this.listData.addAll(newData);
+    if (setAsOriginal) {
+      this.originalList.clear();
+      this.originalList.addAll(newData);
+    }
     notifyDataSetChanged();
   }
 
@@ -180,10 +191,10 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
       if (constraint != null && constraint.length() > 0) {
         ArrayList<Object> matchingItems = new ArrayList<Object>();
         switch (action) {
-          case UserPromosList.LIST_USER_PROMOS:
+          case UserPromosListFragment.LIST_USER_PROMOS:
             matchingItems.addAll(filterUserPromos(constraint.toString()));
             break;
-          case BranchesList.LIST_BRANCHES:
+          case BranchesListFragment.LIST_BRANCHES:
             matchingItems.addAll(filterBranches(constraint.toString()));
             break;
         }
@@ -206,10 +217,10 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
         ArrayList<Object> noResults = new ArrayList<>();
         Object noResultsItem = new Object();
         switch (action) {
-          case UserPromosList.LIST_USER_PROMOS:
+          case UserPromosListFragment.LIST_USER_PROMOS:
             noResultsItem = setNoRedemptionFoundItem();
             break;
-          case BranchesList.LIST_BRANCHES:
+          case BranchesListFragment.LIST_BRANCHES:
             noResultsItem = setNoBranchFoundItem();
             break;
         }
@@ -217,7 +228,7 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
         results.count = noResults.size();
         results.values = noResults;
       }
-      updateListData((ArrayList<Object>) results.values);
+      updateListData((ArrayList<Object>) results.values, false);
     }
 
     public ArrayList<Object> filterBranches(String constraint) {

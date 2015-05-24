@@ -1,23 +1,41 @@
 package castofo_nower.com.co.nower.controllers;
 
-import android.app.ActionBar;
-import android.app.FragmentTransaction;
+import android.app.SearchManager;
+import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.SearchView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+
+import java.util.List;
 
 import castofo_nower.com.co.nower.R;
+import castofo_nower.com.co.nower.support.ListItemsCreator;
+import castofo_nower.com.co.nower.support.SearchHandler;
 import castofo_nower.com.co.nower.support.TabsAdapter;
 
-public class TabsHandler extends FragmentActivity implements
-ActionBar.TabListener {
+public class TabsHandler extends ActionBarActivity implements
+        ActionBar.TabListener {
 
   private ViewPager viewPager;
   private ActionBar actionBar;
   private String[] tabs;
+
+  private SearchView searchView;
+  private MenuItem searchMenuItem;
+
+  private MenuItem showMapItem;
+  private MenuItem logInItem;
+  private MenuItem logOutItem;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -27,38 +45,170 @@ ActionBar.TabListener {
 
     viewPager = (ViewPager) findViewById(R.id.view_pager);
     viewPager.setAdapter(new TabsAdapter(getSupportFragmentManager()));
+    viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
+    {
+      @Override
+      public void onPageSelected(int position) {
+        changeTab(position);
+      }
+    });
 
-    actionBar = getActionBar();
+    actionBar = getSupportActionBar();
     actionBar.setHomeButtonEnabled(false);
     actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
-    for (String tab_name : tabs) {
+    for (String tabName : tabs) {
       ActionBar.Tab tab = actionBar.newTab();
-      tab.setText(tab_name);
+      tab.setText(tabName);
       tab.setTabListener(this);
       actionBar.addTab(tab);
+    }
+    handleWithExtras();
+  }
+
+  public void changeTab(int position) {
+    if (actionBar != null && position < actionBar.getTabCount()) {
+      actionBar.setSelectedNavigationItem(position);
+    }
+    if (viewPager != null && position < viewPager.getChildCount()) {
+      viewPager.setCurrentItem(position);
+    }
+    // Cuando se cambie de pestaña, se debe configurar la búsqueda para la
+    // respectiva lista.
+    closeSearchView();
+    prepareSearchForTabAt(position);
+  }
+
+  private void handleWithExtras() {
+    Bundle extras = getIntent().getExtras();
+    if (extras != null) {
+      String sourceActivity = extras.getString("source");
+      if (sourceActivity != null) {
+        if (sourceActivity.equals(SplashActivity.class.getSimpleName())) {
+          openMap();
+        }
+      }
+      String action = extras.getString("action");
+      if (action != null) {
+        switch (action) {
+          case BranchesListFragment.LIST_BRANCHES:
+            changeTab(0);
+            break;
+          case UserPromosListFragment.LIST_USER_PROMOS:
+            changeTab(1);
+            break;
+        }
+      }
+    }
+  }
+
+  public void closeSearchView() {
+    if (searchView != null && searchView.isShown()) {
+      searchMenuItem.collapseActionView();
+      searchView.setQuery("", false);
+    }
+  }
+
+  private Fragment getFragmentAt(int position) {
+    List<Fragment> fragmentsList =  getSupportFragmentManager().getFragments();
+    if (fragmentsList != null && position < fragmentsList.size()) {
+      return fragmentsList.get(position);
+    }
+    else return null;
+  }
+
+  private void openMap() {
+    Intent openMap = new Intent(TabsHandler.this, NowerMap.class);
+    startActivity(openMap);
+  }
+
+  public static void handleRequest(Context context, String action, int... flags)
+  {
+    Intent openTabs = new Intent(context, TabsHandler.class);
+    if (flags != null) {
+      for (int i : flags) {
+        openTabs.addFlags(i);
+      }
+    }
+    openTabs.putExtra("action", action);
+    context.startActivity(openTabs);
+  }
+
+  public void goToRegister(View v) {
+    SplashActivity.handleRequest(this, UserPromosListFragment
+                                       .USER_NEEDS_TO_REGISTER);
+  }
+
+  private void prepareSearchForTabAt(int position) {
+    Fragment currentFragment = getFragmentAt(position);
+    ListItemsCreator listToBeFiltered;
+    if (currentFragment != null) {
+      switch (position) {
+        case 0:
+          BranchesListFragment branchesListFragment =
+                  (BranchesListFragment) currentFragment;
+          listToBeFiltered = branchesListFragment
+                  .getBranchesListToShow();
+          if (listToBeFiltered != null) {
+            prepareSearch(branchesListFragment, listToBeFiltered,
+                          BranchesListFragment.LIST_BRANCHES);
+          }
+          break;
+        case 1:
+          UserPromosListFragment userPromosListFragment =
+                  (UserPromosListFragment) currentFragment;
+          listToBeFiltered = userPromosListFragment
+                  .getUserPromosListToShow();
+          if (listToBeFiltered != null) {
+            prepareSearch(userPromosListFragment, listToBeFiltered,
+                          UserPromosListFragment.LIST_USER_PROMOS);
+          }
+          break;
+      }
+    }
+  }
+
+  public void prepareSearch(Fragment fragmentUsingSearch,
+                            ListItemsCreator listToBeFiltered,
+                            String action) {
+    SearchHandler.setParamsForSearch(TabsHandler.this, fragmentUsingSearch,
+                                     searchView, listToBeFiltered, action);
+    SearchHandler.setQueryListener();
+  }
+
+  @Override
+  protected void onNewIntent(Intent intent) {
+    super.onNewIntent(intent);
+    if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
+      String query = intent.getStringExtra(SearchManager.QUERY);
+      searchView.setQuery(query, false);
+    }
+    setIntent(intent);
+    handleWithExtras();
+  }
+
+  @Override
+  protected void onRestart() {
+    super.onRestart();
+    // Se hace actualización del estado de las promociones del usuario al
+    // regresar a la lista.
+    UserPromosListFragment userPromosListFragment =
+            (UserPromosListFragment) getFragmentAt(1);
+    if (userPromosListFragment != null) {
+      userPromosListFragment.sendRequest(UserPromosListFragment
+              .ACTION_USER_REDEMPTIONS);
+    }
+
+    // Cuando la actividad vuelve a estar visible, preparar la búsqueda para
+    // la pestaña que esté seleccionada
+    if (actionBar != null) {
+      prepareSearchForTabAt(actionBar.getSelectedNavigationIndex());
     }
   }
 
   @Override
   public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-    viewPager.setCurrentItem(tab.getPosition());
-    Intent showTabContent = null;
-    switch (tab.getPosition()) {
-      case 0:
-        showTabContent = new Intent(TabsHandler.this, NowerMap.class);
-        break;
-      case 1:
-        showTabContent = new Intent(TabsHandler.this, BranchesList.class);
-        break;
-      case 2:
-        showTabContent = new Intent(TabsHandler.this, UserPromosList.class);
-        break;
-    }
-    if (showTabContent != null) {
-      showTabContent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-      startActivity(showTabContent);
-    }
+    changeTab(tab.getPosition());
   }
 
   @Override
@@ -71,17 +221,51 @@ ActionBar.TabListener {
 
   }
 
+  private void setupLoginAndLogoutMenuItems() {
+    if (SplashActivity.isThereLoginInstance()) {
+      logInItem.setVisible(false);
+      logOutItem.setVisible(true);
+    }
+    else {
+      logOutItem.setVisible(false);
+      logInItem.setVisible(true);
+    }
+  }
+
   @Override
   public boolean onCreateOptionsMenu(Menu menu) {
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_tabs_handler, menu);
-    if (SplashActivity.isThereLoginInstance()) {
-      menu.findItem(R.id.action_log_in).setVisible(false);
-    }
-    else {
-      menu.findItem(R.id.action_log_out).setVisible(false);
-    }
 
+    showMapItem = menu.findItem(R.id.action_show_map);
+    logInItem = menu.findItem(R.id.action_log_in);
+    logOutItem = menu.findItem(R.id.action_log_out);
+
+    setupLoginAndLogoutMenuItems();
+
+    SearchManager searchManager = (SearchManager)
+            getSystemService(Context.SEARCH_SERVICE);
+    searchMenuItem = menu.findItem(R.id.action_search);
+    MenuItemCompat.setOnActionExpandListener(searchMenuItem,
+            new MenuItemCompat.OnActionExpandListener() {
+      @Override
+      public boolean onMenuItemActionExpand(MenuItem item) {
+        if (showMapItem != null) showMapItem.setVisible(false);
+        if (logInItem != null) logInItem.setVisible(false);
+        if (logOutItem != null) logOutItem.setVisible(false);
+        return true;
+      }
+
+      @Override
+      public boolean onMenuItemActionCollapse(MenuItem item) {
+        if (showMapItem != null) showMapItem.setVisible(true);
+        setupLoginAndLogoutMenuItems();
+        return true;
+      }
+    });
+    searchView = (SearchView) MenuItemCompat.getActionView(searchMenuItem);
+    searchView.setSearchableInfo(searchManager
+            .getSearchableInfo(getComponentName()));
     return true;
   }
 
@@ -92,12 +276,16 @@ ActionBar.TabListener {
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
     switch (id) {
+      case R.id.action_show_map:
+        openMap();
+        return true;
       case R.id.action_log_in:
         SplashActivity.handleRequest(TabsHandler.this,
-                                     UserPromosList.USER_NEEDS_TO_REGISTER);
+                UserPromosListFragment.USER_NEEDS_TO_REGISTER);
         return true;
       case R.id.action_log_out:
-        SplashActivity.handleRequest(TabsHandler.this, UserPromosList.LOG_OUT);
+        SplashActivity.handleRequest(TabsHandler.this,
+                UserPromosListFragment.LOG_OUT);
         return true;
     }
 

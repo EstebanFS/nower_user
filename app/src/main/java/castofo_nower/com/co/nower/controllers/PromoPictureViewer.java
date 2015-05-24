@@ -3,19 +3,19 @@ package castofo_nower.com.co.nower.controllers;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.support.ImageDownloader;
+import it.sephiroth.android.library.imagezoom.ImageViewTouch;
+import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
 public class PromoPictureViewer extends Activity {
 
-  private ImageView promoPicture;
+  private ImageViewTouch promoPicture;
   private ProgressBar progressBar;
   private String imageURL;
 
@@ -26,7 +26,8 @@ public class PromoPictureViewer extends Activity {
     getActionBar().setDisplayHomeAsUpEnabled(true);
     getActionBar().setHomeButtonEnabled(true);
 
-    promoPicture = (ImageView) findViewById(R.id.promo_picture);
+    promoPicture = (ImageViewTouch) findViewById(R.id.promo_picture);
+    promoPicture.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
     progressBar = (ProgressBar) findViewById(R.id.progress_bar);
 
     Bundle extras = getIntent().getExtras();

@@ -20,7 +20,6 @@ public class SplashActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_splash);
-
     SharedPreferencesManager.setup(this);
 
     if (getIntent().getExtras() != null) {
@@ -30,7 +29,7 @@ public class SplashActivity extends Activity {
           // La aplicación se debe cerrar porque el usuario decidió salir.
           finish();
           break;
-        case UserPromosList.USER_NEEDS_TO_REGISTER:
+        case UserPromosListFragment.USER_NEEDS_TO_REGISTER:
           // El usuario necesita registrarse o iniciar sesión para poder
           // acceder a las promociones.
           requestedAction = new Intent(SplashActivity.this, Register.class);
@@ -38,12 +37,16 @@ public class SplashActivity extends Activity {
         case Login.OPEN_MAP:
           // El usuario acaba de registrarse o de iniciar sesión.
           requestedAction = new Intent(SplashActivity.this, TabsHandler.class);
+          requestedAction.putExtra("source",
+                                   SplashActivity.class.getSimpleName());
           break;
-        case UserPromosList.LOG_OUT:
+        case UserPromosListFragment.LOG_OUT:
           User.clearData();
           FacebookHandler.getInstance().logout();
           SharedPreferencesManager.clearSharedPreferences();
           requestedAction = new Intent(SplashActivity.this, TabsHandler.class);
+          requestedAction.putExtra("source",
+                                   SplashActivity.class.getSimpleName());
           break;
       }
       if (requestedAction != null) {
@@ -63,6 +66,7 @@ public class SplashActivity extends Activity {
           } finally {
             // Luego se ingresa propiamente a la aplicación.
             Intent openApp = new Intent(SplashActivity.this, TabsHandler.class);
+            openApp.putExtra("source", SplashActivity.class.getSimpleName());
             openApp.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
             if (isThereLoginInstance()) updateUserData();
             startActivity(openApp);
@@ -105,7 +109,7 @@ public class SplashActivity extends Activity {
   public static void handleRequest(Context context, String action) {
     boolean isNecessaryToClearStack = false;
     if (action.equals(NowerMap.NO_MAP) || action.equals(Login.OPEN_MAP)
-        || action.equals(UserPromosList.LOG_OUT)) {
+        || action.equals(UserPromosListFragment.LOG_OUT)) {
       isNecessaryToClearStack = true;
     }
 

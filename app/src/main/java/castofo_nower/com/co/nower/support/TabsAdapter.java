@@ -4,6 +4,9 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import castofo_nower.com.co.nower.controllers.BranchesListFragment;
+import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
+
 public class TabsAdapter extends FragmentPagerAdapter {
 
   public TabsAdapter(FragmentManager fm) {
@@ -12,24 +15,17 @@ public class TabsAdapter extends FragmentPagerAdapter {
 
   @Override
   public Fragment getItem(int index) {
-
     switch (index) {
       case 0:
-        // Top Rated fragment activity
-        //return new TopRatedFragment();
+        return new BranchesListFragment();
       case 1:
-        // Games fragment activity
-        //return new GamesFragment();
-      case 2:
-        // Movies fragment activity
-        //return new MoviesFragment();
+        return new UserPromosListFragment();
     }
-
-    return new Fragment();
+    return new BranchesListFragment();
   }
 
   @Override
   public int getCount() {
-    return 3;
+    return 2;
   }
 }
