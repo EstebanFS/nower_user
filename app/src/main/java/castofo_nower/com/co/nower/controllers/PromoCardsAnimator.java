@@ -1,6 +1,5 @@
 package castofo_nower.com.co.nower.controllers;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -9,6 +8,7 @@ import android.os.CountDownTimer;
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -52,7 +52,7 @@ import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.DateManager;
 import castofo_nower.com.co.nower.support.WideImageView;
 
-public class PromoCardsAnimator extends Activity implements
+public class PromoCardsAnimator extends ActionBarActivity implements
 SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
   private HttpHandler httpHandler = new HttpHandler();
@@ -132,7 +132,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
   public void initView() {
     setContentView(R.layout.activity_promo_cards_animator);
-    getActionBar().setDisplayHomeAsUpEnabled(true);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     promoCards.clear();
     promosFlipper = (ViewPager) findViewById(R.id.promos_flipper);
     promosFlipper.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
@@ -493,14 +493,10 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
         break;
       case OBTAINED_PROMO:
         if (buttonPressedId == R.string.go_to_my_promos) {
-          // Se debe encontrar la manera de organizar el stack de actividades,
-          // de modo que al ir de nuevo a TabsHandler y comenzar a cerrar
-          // actividades, no se pierda como base el TabsHandler.
-          // Ejemplo: Splash -> Tabs -> Map -> PromoCard -> Tabs =cerrar=>
-          //          PromoCard =cerrar=> Map =cerrar=> Se cierra la app.
           TabsHandler.handleRequest(PromoCardsAnimator.this,
                                     UserPromosListFragment.LIST_USER_PROMOS,
-                                    Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+                                    Intent.FLAG_ACTIVITY_REORDER_TO_FRONT,
+                                    Intent.FLAG_ACTIVITY_CLEAR_TOP);
         }
         break;
     }

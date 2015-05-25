@@ -1,7 +1,29 @@
-<android.support.v4.view.ViewPager xmlns:android="http://schemas.android.com/apk/res/android"
-   xmlns:tools="http://schemas.android.com/tools"
-   android:id="@+id/view_pager"
-   android:layout_width="match_parent"
-   android:layout_height="match_parent"
-   tools:context=".TabsHandler">
-</android.support.v4.view.ViewPager>
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:nower="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  tools:context=".TabsHandler">
+
+  <com.astuetz.PagerSlidingTabStrip
+    android:id="@+id/tabs"
+    android:layout_width="match_parent"
+    android:layout_height="48dp"
+    android:background="@color/dark_red_2"
+    android:textSize="14sp"
+    android:textColor="@color/white"
+    android:textStyle="bold"
+    nower:pstsDividerColor="@color/dark_red_2"
+    nower:pstsIndicatorHeight="3dp"
+    nower:pstsIndicatorColor="@color/white"
+    nower:pstsShouldExpand="true"
+    nower:pstsTextAllCaps="true">
+  </com.astuetz.PagerSlidingTabStrip>
+
+  <android.support.v4.view.ViewPager
+    android:id="@+id/view_pager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
+</LinearLayout>

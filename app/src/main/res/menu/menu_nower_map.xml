@@ -1,24 +1,24 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
-      xmlns:app="http://schemas.android.com/apk/res-auto"
-      xmlns:tools="http://schemas.android.com/tools"
-      tools:context="castofo_nower.com.co.nower.controllers.NowerMap">
+  xmlns:nower="http://schemas.android.com/apk/res-auto"
+  xmlns:tools="http://schemas.android.com/tools"
+  tools:context="castofo_nower.com.co.nower.controllers.NowerMap">
 
   <item
-    android:id="@+id/action_show_map"
+    android:id="@+id/action_explore"
+    android:icon="@drawable/ic_tabs"
     android:orderInCategory="0"
-    android:title="@string/go_to_navigate"
-    app:showAsAction="always"/>
+    android:title="@string/go_to_tabs_handler"
+    nower:showAsAction="always"/>
 
   <item
     android:id="@+id/action_log_in"
     android:orderInCategory="100"
     android:title="@string/log_in"
-    app:showAsAction="never"/>
+    nower:showAsAction="never"/>
 
   <item
     android:id="@+id/action_log_out"
     android:orderInCategory="100"
     android:title="@string/log_out"
-    app:showAsAction="never"/>
-
+    nower:showAsAction="never"/>
 </menu>

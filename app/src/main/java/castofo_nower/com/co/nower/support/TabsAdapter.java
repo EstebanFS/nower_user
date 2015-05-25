@@ -1,16 +1,23 @@
 package castofo_nower.com.co.nower.support;
 
+import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.controllers.BranchesListFragment;
 import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
 
 public class TabsAdapter extends FragmentPagerAdapter {
 
-  public TabsAdapter(FragmentManager fm) {
+  private final int PAGE_COUNT = 2;
+  private String[] tabs;
+
+
+  public TabsAdapter(FragmentManager fm, Context context) {
     super(fm);
+    tabs = context.getResources().getStringArray(R.array.tabs_titles);
   }
 
   @Override
@@ -26,6 +33,11 @@ public class TabsAdapter extends FragmentPagerAdapter {
 
   @Override
   public int getCount() {
-    return 2;
+    return PAGE_COUNT;
+  }
+
+  @Override
+  public CharSequence getPageTitle(int position) {
+    return tabs[position];
   }
 }

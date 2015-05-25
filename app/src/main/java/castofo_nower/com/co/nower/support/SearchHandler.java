@@ -15,7 +15,6 @@ public class SearchHandler {
   public static Context context;
   public static Fragment fragment;
   public static SearchView searchView;
-  public static EditText searchViewEditText;
   public static ListItemsCreator listToFilter;
   public static String action;
 
@@ -29,11 +28,6 @@ public class SearchHandler {
     context = contextToSet;
     fragment = fragmentToSet;
     searchView = searchViewToSet;
-    int searchViewEditTextId = searchView.getContext().getResources()
-                               .getIdentifier("android:id/search_src_text",
-                                              null, null);
-    searchViewEditText = (EditText) searchView.findViewById
-                         (searchViewEditTextId);
     listToFilter = listAdapter;
     action = actionToSet;
   }
