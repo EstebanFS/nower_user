@@ -5,8 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -53,7 +53,7 @@ import castofo_nower.com.co.nower.support.Geolocation;
 import castofo_nower.com.co.nower.models.MapData;
 import castofo_nower.com.co.nower.models.Promo;
 
-public class NowerMap extends FragmentActivity implements SubscribedActivities,
+public class NowerMap extends ActionBarActivity implements SubscribedActivities,
 GeolocationInterface, AlertDialogsResponse, ParsedErrors,
 GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
 
@@ -113,7 +113,6 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
            .findFragmentById(R.id.map)).getMap();
 
     if (map != null) {
-      getActionBar().setDisplayHomeAsUpEnabled(true);
       setUpMap();
       setMapListeners();
       // Ya estaba previamente capturada la localización del usuario.
@@ -550,13 +549,8 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
     switch (id) {
-      case android.R.id.home:
-        //TabsHandler.handleRequest(NowerMap.this, null);
-        finish();
-        return true;
-      case R.id.action_show_map:
-        //TabsHandler.handleRequest(NowerMap.this, null);
-        finish();
+      case R.id.action_explore:
+        TabsHandler.handleRequest(NowerMap.this, null);
         return true;
       case R.id.action_log_in:
         SplashActivity.handleRequest(NowerMap.this,

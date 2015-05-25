@@ -4,17 +4,16 @@ import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+
+import com.astuetz.PagerSlidingTabStrip;
 
 import java.util.List;
 
@@ -23,17 +22,14 @@ import castofo_nower.com.co.nower.support.ListItemsCreator;
 import castofo_nower.com.co.nower.support.SearchHandler;
 import castofo_nower.com.co.nower.support.TabsAdapter;
 
-public class TabsHandler extends ActionBarActivity implements
-        ActionBar.TabListener {
+public class TabsHandler extends ActionBarActivity {
 
   private ViewPager viewPager;
-  private ActionBar actionBar;
-  private String[] tabs;
+  private PagerSlidingTabStrip tabs;
 
   private SearchView searchView;
   private MenuItem searchMenuItem;
 
-  private MenuItem showMapItem;
   private MenuItem logInItem;
   private MenuItem logOutItem;
 
@@ -41,38 +37,30 @@ public class TabsHandler extends ActionBarActivity implements
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_tabs_handler);
-    tabs = getResources().getStringArray(R.array.tabs_names);
-
-    viewPager = (ViewPager) findViewById(R.id.view_pager);
-    viewPager.setAdapter(new TabsAdapter(getSupportFragmentManager()));
-    viewPager.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener()
-    {
-      @Override
-      public void onPageSelected(int position) {
-        changeTab(position);
-      }
-    });
-
-    actionBar = getSupportActionBar();
-    actionBar.setHomeButtonEnabled(false);
-    actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
-
-    for (String tabName : tabs) {
-      ActionBar.Tab tab = actionBar.newTab();
-      tab.setText(tabName);
-      tab.setTabListener(this);
-      actionBar.addTab(tab);
-    }
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    initTabs();
     handleWithExtras();
   }
 
+  public void initTabs() {
+    viewPager = (ViewPager) findViewById(R.id.view_pager);
+    viewPager.setAdapter(new TabsAdapter(getSupportFragmentManager(), this));
+
+    tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
+    // Se conectan las tabs al ViewPager.
+    tabs.setViewPager(viewPager);
+
+    tabs.setOnPageChangeListener(new ViewPager.SimpleOnPageChangeListener() {
+      @Override
+      public void onPageSelected(int position) { changeTab(position); }
+    });
+  }
+
   public void changeTab(int position) {
-    if (actionBar != null && position < actionBar.getTabCount()) {
-      actionBar.setSelectedNavigationItem(position);
-    }
     if (viewPager != null && position < viewPager.getChildCount()) {
       viewPager.setCurrentItem(position);
     }
+
     // Cuando se cambie de pestaña, se debe configurar la búsqueda para la
     // respectiva lista.
     closeSearchView();
@@ -120,6 +108,7 @@ public class TabsHandler extends ActionBarActivity implements
   private void openMap() {
     Intent openMap = new Intent(TabsHandler.this, NowerMap.class);
     startActivity(openMap);
+    finish();
   }
 
   public static void handleRequest(Context context, String action, int... flags)
@@ -188,6 +177,12 @@ public class TabsHandler extends ActionBarActivity implements
   }
 
   @Override
+  protected void onResume() {
+    super.onResume();
+    if (viewPager != null) prepareSearchForTabAt(viewPager.getCurrentItem());
+  }
+
+  @Override
   protected void onRestart() {
     super.onRestart();
     // Se hace actualización del estado de las promociones del usuario al
@@ -198,27 +193,6 @@ public class TabsHandler extends ActionBarActivity implements
       userPromosListFragment.sendRequest(UserPromosListFragment
               .ACTION_USER_REDEMPTIONS);
     }
-
-    // Cuando la actividad vuelve a estar visible, preparar la búsqueda para
-    // la pestaña que esté seleccionada
-    if (actionBar != null) {
-      prepareSearchForTabAt(actionBar.getSelectedNavigationIndex());
-    }
-  }
-
-  @Override
-  public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
-    changeTab(tab.getPosition());
-  }
-
-  @Override
-  public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
-  }
-
-  @Override
-  public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
-
   }
 
   private void setupLoginAndLogoutMenuItems() {
@@ -237,7 +211,6 @@ public class TabsHandler extends ActionBarActivity implements
     // Inflate the menu; this adds items to the action bar if it is present.
     getMenuInflater().inflate(R.menu.menu_tabs_handler, menu);
 
-    showMapItem = menu.findItem(R.id.action_show_map);
     logInItem = menu.findItem(R.id.action_log_in);
     logOutItem = menu.findItem(R.id.action_log_out);
 
@@ -250,7 +223,6 @@ public class TabsHandler extends ActionBarActivity implements
             new MenuItemCompat.OnActionExpandListener() {
       @Override
       public boolean onMenuItemActionExpand(MenuItem item) {
-        if (showMapItem != null) showMapItem.setVisible(false);
         if (logInItem != null) logInItem.setVisible(false);
         if (logOutItem != null) logOutItem.setVisible(false);
         return true;
@@ -258,7 +230,6 @@ public class TabsHandler extends ActionBarActivity implements
 
       @Override
       public boolean onMenuItemActionCollapse(MenuItem item) {
-        if (showMapItem != null) showMapItem.setVisible(true);
         setupLoginAndLogoutMenuItems();
         return true;
       }
@@ -276,8 +247,8 @@ public class TabsHandler extends ActionBarActivity implements
     // as you specify a parent activity in AndroidManifest.xml.
     int id = item.getItemId();
     switch (id) {
-      case R.id.action_show_map:
-        openMap();
+      case android.R.id.home:
+        finish();
         return true;
       case R.id.action_log_in:
         SplashActivity.handleRequest(TabsHandler.this,

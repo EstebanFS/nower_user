@@ -60,20 +60,22 @@
     <activity
       android:name=".controllers.NowerMap"
       android:configChanges="orientation|screenSize"
-      android:label="@string/title_activity_map"
-      android:launchMode="singleTask">
+      android:label="@string/app_name"
+      android:launchMode="singleTop"
+      android:theme="@style/CustomActionBarTheme">
     </activity>
     <activity
       android:name=".controllers.PromoCardsAnimator"
       android:label="@string/promo"
-      android:screenOrientation="portrait">
+      android:screenOrientation="portrait"
+      android:theme="@style/CustomActionBarTheme">
     </activity>
     <activity
       android:name=".controllers.UserPromosList"
       android:label="@string/title_activity_user_promo_list"
       android:launchMode="singleTop"
       android:screenOrientation="portrait"
-      android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+      android:theme="@style/CustomActionBarTheme">
       <intent-filter>
         <action android:name="android.intent.action.SEARCH"/>
       </intent-filter>
@@ -86,7 +88,7 @@
       android:label="@string/title_activity_branches_list"
       android:launchMode="singleTop"
       android:screenOrientation="portrait"
-      android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+      android:theme="@style/CustomActionBarTheme">
       <intent-filter>
         <action android:name="android.intent.action.SEARCH"/>
       </intent-filter>
@@ -96,10 +98,10 @@
     </activity>
     <activity
       android:name=".controllers.TabsHandler"
-      android:label="@string/app_name"
+      android:label="@string/go_to_map"
       android:launchMode="singleTop"
       android:screenOrientation="portrait"
-      android:theme="@style/Theme.AppCompat.Light.DarkActionBar">
+      android:theme="@style/CustomActionBarTheme">
       <intent-filter>
         <action android:name="android.intent.action.SEARCH"/>
       </intent-filter>

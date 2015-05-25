@@ -2,6 +2,7 @@ package castofo_nower.com.co.nower.support;
 
 import android.content.Context;
 import android.graphics.Typeface;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Map;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.controllers.BranchesListFragment;
 import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
-import castofo_nower.com.co.nower.models.Promo;
 import castofo_nower.com.co.nower.models.Redemption;
 
 public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
@@ -162,8 +161,9 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
     // las listas.
     if (item.getId() == SearchHandler.NO_RESULTS_FOUND) {
       title.setTypeface(null, Typeface.BOLD);
+      title.setGravity(Gravity.CENTER);
       subtitle.setVisibility(View.GONE);
-      icon.setVisibility(View.INVISIBLE);
+      icon.setVisibility(View.GONE);
       disableClicking(item);
     }
   }
