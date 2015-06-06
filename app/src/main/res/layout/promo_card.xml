@@ -70,7 +70,7 @@
               android:minWidth="60dp"
               android:minHeight="60dp"
               android:adjustViewBounds="true"
-              android:src="@drawable/nower_marker"
+              android:src="@drawable/castofo_marker"
               android:visibility="gone"/>
 
           </LinearLayout>

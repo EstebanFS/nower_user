@@ -11,14 +11,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ViewFlipper;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.Circle;
@@ -55,7 +61,8 @@ import castofo_nower.com.co.nower.models.Promo;
 
 public class NowerMap extends ActionBarActivity implements SubscribedActivities,
 GeolocationInterface, AlertDialogsResponse, ParsedErrors,
-GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
+GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener,
+GoogleMap.OnInfoWindowClickListener {
 
   private GoogleMap map;
   private float ZOOM_LEVEL = 13.1f;
@@ -64,7 +71,13 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
   private Geolocation geolocation;
   public Marker userMarker = null;
   public Marker currentMarker = null;
+  public boolean isInfoWindowShown = false;
   public Circle userRange;
+
+  // Atributos necesarios para la navegación a través de los marcadores.
+  private LinearLayout navigation;
+  private ViewFlipper slider;
+  private float initX;
 
   private HttpHandler httpHandler = new HttpHandler();
   public static final String ACTION_PROMOS = "/promos/locations";
@@ -115,6 +128,7 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
     if (map != null) {
       setUpMap();
       setMapListeners();
+      setUpNavigationSlider();
       // Ya estaba previamente capturada la localización del usuario.
       if (MapData.userLat != NO_USER_LAT && MapData.userLong != NO_USER_LONG) {
         moveCameraToPosition(MapData.userLat, MapData.userLong);
@@ -141,8 +155,63 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
   }
 
   public void setMapListeners() {
+    map.setOnMapClickListener(this);
     map.setOnMarkerClickListener(this);
     map.setOnInfoWindowClickListener(this);
+  }
+
+  public void setUpNavigationSlider() {
+    navigation = (LinearLayout) findViewById(R.id.navigation);
+    slider = (ViewFlipper) navigation.findViewById(R.id.slider);
+
+    slider.setOnTouchListener(new View.OnTouchListener() {
+      @Override
+      public boolean onTouch(View v, MotionEvent event) {
+        float sensitivity = 30f;
+        Animation outLeft = AnimationUtils.loadAnimation(NowerMap.this,
+                                                         R.anim.slide_out_left);
+        Animation inRight = AnimationUtils.loadAnimation(NowerMap.this,
+                                                         R.anim.slide_in_right);
+        Animation outRight = AnimationUtils.loadAnimation
+                             (NowerMap.this, R.anim.slide_out_right);
+        Animation inLeft = AnimationUtils.loadAnimation(NowerMap.this,
+                                                        R.anim.slide_in_left);
+        switch (event.getAction()) {
+          case MotionEvent.ACTION_DOWN:
+            initX = event.getX();
+            break;
+          case MotionEvent.ACTION_UP:
+            float finalX = event.getX();
+            if ((initX - finalX) > sensitivity) {
+              slider.setInAnimation(outLeft);
+              slider.setInAnimation(inRight);
+              setCurrentMarkerForSlider();
+              slider.showNext();
+              showMarkerAndSlider(slider.getCurrentView().getId());
+            }
+            else if ((finalX - initX) > sensitivity) {
+              slider.setInAnimation(outRight);
+              slider.setInAnimation(inLeft);
+              setCurrentMarkerForSlider();
+              slider.showPrevious();
+              showMarkerAndSlider(slider.getCurrentView().getId());
+            }
+            else {
+              // En este caso, el usuario habría simplemente presionado la
+              // tienda que está viendo actualmente.
+              showBranchPromos(slider.getCurrentView().getId());
+            }
+            break;
+        }
+
+        return true;
+      }
+    });
+  }
+
+  public void setCurrentMarkerForSlider() {
+    currentMarker = getBranchMarker(slider.getCurrentView().getId());
+    isInfoWindowShown = true;
   }
 
   public void verifyLocationProviders() {
@@ -262,50 +331,14 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
   // Este método se encarga de poner todas las promociones en el mapa y
   // guardarlas los establecimientos localmente.
   public void putMarkerAndSaveBranch(Branch branch) {
-    View bubbleMarker =
-            ((LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE))
-            .inflate(R.layout.bubble_marker, null);
-    TextView promosCounter =
-            (TextView) bubbleMarker.findViewById(R.id.promos_counter);
-
-    // Se obtiene el número de promociones en la sucursal
-    int promosInBranch = branch.getPromosIds().size();
-    String promosInBranchText;
-    // Si son menos de 10 promociones se deja el texto, de lo contrario se
-    // indica que tiene más de 9 promociones (restringir el texto a máximo 2
-    // caracteres)
-    if (promosInBranch >= 10) promosInBranchText = "+9";
-    else promosInBranchText = String.valueOf(promosInBranch);
-    promosCounter.setText(promosInBranchText);
-
-    Bitmap markerIcon =
-            ImageDownloader.createBitmapFromView(this, bubbleMarker);
-
-    // Se muestra un marker (burbuja) sin logo inicialmente, hasta cargar
-    // la imagen.
     Marker branchMarker = map.addMarker(new MarkerOptions()
             .position(new LatLng(branch.getLatitude(), branch.getLongitude()))
             .title(branch.getStoreName() + " - " + branch.getName())
-            .icon(BitmapDescriptorFactory.fromBitmap(markerIcon)));
+            .icon(BitmapDescriptorFactory
+                  .fromResource(R.drawable.default_marker_icon)));
 
     // Se asocia cada establecimiento a un marcador diferente.
     branchesIdsMap.put(branchMarker, branch.getId());
-
-    // Se solicita obtener la imagen del establecimiento, una vez se obtenga,
-    // la clase ImageDownloader se encargará de reemplazar el ícono del marker
-    if (branch.getStoreLogoURL() != null) {
-      ImageDownloader imageDownloader
-      = new ImageDownloader(bubbleMarker, branchMarker, this,
-                            branch.getStoreLogoURL());
-      imageDownloader.execute();
-    }
-    else {
-      ImageView logoView =
-              (ImageView) bubbleMarker.findViewById(R.id.marker_logo);
-      logoView.setImageResource(R.drawable.nower_marker);
-      markerIcon = ImageDownloader.createBitmapFromView(this, bubbleMarker);
-      branchMarker.setIcon(BitmapDescriptorFactory.fromBitmap(markerIcon));
-    }
   }
 
   public void clearPreviousMarkers() {
@@ -313,6 +346,115 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
          : MapData.getBranchesIdsMap().entrySet()) {
       markerBranchId.getKey().remove();
     }
+  }
+
+  public void fillNavigationSlider() {
+    for (Map.Entry<Marker, Integer> branchesInNavSlider
+         : MapData.getBranchesIdsMap().entrySet()) {
+      LayoutInflater inflater = (LayoutInflater) this.getSystemService
+                                (Context.LAYOUT_INFLATER_SERVICE);
+      View view = inflater.inflate(R.layout.promo_item, null);
+
+      slider.addView(view);
+
+      TextView title = (TextView) view.findViewById(R.id.title);
+      TextView subtitle = (TextView) view.findViewById(R.id.subtitle);
+      ImageView icon = (ImageView) view.findViewById(R.id.icon);
+
+      int currentBranchId = branchesInNavSlider.getValue();
+      Branch currentBranch = MapData.getBranchesMap().get(currentBranchId);
+      view.setId(currentBranchId);
+      title.setText(currentBranch.getStoreName());
+      subtitle.setText(currentBranch.getName());
+      if (currentBranch.getStoreLogoURL() != null) {
+        ImageDownloader imageDownloader
+        = new ImageDownloader(icon, currentBranch.getStoreLogoURL());
+        imageDownloader.execute();
+      }
+    }
+  }
+
+  public void showMarkerAndSlider(int branchId) {
+    closeCurrentMarker();
+    Branch branch = MapData.getBranchesMap().get(branchId);
+    Marker branchMarker = getBranchMarker(branchId);
+    // Se abre la burbuja del marcador correspondiente.
+    setMarkerIcon(branch, branchMarker);
+    branchMarker.showInfoWindow();
+    currentMarker = branchMarker;
+    isInfoWindowShown = true;
+
+    slider.setDisplayedChild(slider.indexOfChild(findViewById(branchId)));
+    navigation.setVisibility(View.VISIBLE);
+  }
+
+  public void closeCurrentMarker() {
+    if (currentMarker != null) {
+      BitmapDescriptor icon = BitmapDescriptorFactory
+                              .fromResource(R.drawable.default_marker_icon);
+      currentMarker.setIcon(icon);
+      isInfoWindowShown = false;
+    }
+  }
+
+  public Marker getBranchMarker(int branchId) {
+    Marker branchMarker = null;
+    // Se identifica qué marcador está asociado a la tienda en cuestión.
+    for (Map.Entry<Marker, Integer> markerBranches
+         : MapData.getBranchesIdsMap().entrySet()) {
+      if (markerBranches.getValue() == branchId) {
+        branchMarker = markerBranches.getKey();
+        break;
+      }
+    }
+
+    return branchMarker;
+  }
+
+  public void setMarkerIcon(Branch branch, Marker branchMarker) {
+    View bubbleMarker = ((LayoutInflater)
+                        getSystemService(Context.LAYOUT_INFLATER_SERVICE))
+                        .inflate(R.layout.bubble_marker, null);
+    TextView promosCounter = (TextView)
+                             bubbleMarker.findViewById(R.id.promos_counter);
+
+    // Se obtiene el número de promociones en la sucursal.
+    int promosInBranch = branch.getPromosIds().size();
+    String promosInBranchText;
+    // Si son menos de 10 promociones se deja el texto, de lo contrario se
+    // indica que tiene más de 9 promociones (restringir el texto a máximo 2
+    // caracteres).
+    if (promosInBranch >= 10) promosInBranchText = "+9";
+    else promosInBranchText = String.valueOf(promosInBranch);
+    promosCounter.setText(promosInBranchText);
+
+    if (branch.getStoreLogoURL() != null) {
+      ImageDownloader imageDownloader
+      = new ImageDownloader(bubbleMarker, branchMarker, this,
+                            branch.getStoreLogoURL());
+      imageDownloader.execute();
+    }
+    else {
+      // La burbuja por defecto contiene el logo de castofo.
+      Bitmap defBubbleMarkerIcon = ImageDownloader
+                                   .createBitmapFromView(this, bubbleMarker);
+      branchMarker.setIcon(BitmapDescriptorFactory
+                           .fromBitmap(defBubbleMarkerIcon));
+    }
+  }
+
+  public void hideMarkerAndSlider() {
+    closeCurrentMarker();
+    currentMarker = null;
+    navigation.setVisibility(View.GONE);
+  }
+
+  public void showBranchPromos(int branchId) {
+    Intent showPromos = new Intent(NowerMap.this, PromoCardsAnimator.class);
+    showPromos.putExtra("action", SHOW_BRANCH_PROMOS);
+    showPromos.putExtra("branch_id", branchId);
+    showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    startActivity(showPromos);
   }
 
   protected void onActivityResult(int requestCode, int resultCode, Intent data)
@@ -463,6 +605,9 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
             MapData.clearPromosMap();
             MapData.setPromosMap(promosMap);
 
+            // Se incluyen las tiendas cercanas en el navigation-slider.
+            fillNavigationSlider();
+
             // Se hace para actualizar las promociones que el usuario ha
             // obtenido.
             sendRequest(UserPromosListFragment.ACTION_USER_REDEMPTIONS);
@@ -491,26 +636,32 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
   }
 
   @Override
+  public void onMapClick(LatLng latLng) {
+    hideMarkerAndSlider();
+  }
+
+  @Override
   public boolean onMarkerClick(Marker marker) {
     if (!marker.equals(userMarker)) {
-      if (currentMarker == null) {
-        marker.showInfoWindow();
-        currentMarker = marker;
-      }
+      int branchId = MapData.getBranchesIdsMap().get(marker);
+      if (currentMarker == null) showMarkerAndSlider(branchId);
       else {
         if (currentMarker.equals(marker)) {
-          marker.hideInfoWindow();
-          currentMarker = null;
+          if (isInfoWindowShown) {
+            marker.hideInfoWindow();
+            isInfoWindowShown = false;
+          }
+          else {
+            marker.showInfoWindow();
+            isInfoWindowShown = true;
+          }
         }
-        else {
-          currentMarker.hideInfoWindow();
-          marker.showInfoWindow();
-          currentMarker = marker;
-        }
+        else showMarkerAndSlider(branchId);
       }
 
       return true;
     }
+    hideMarkerAndSlider();
 
     return false;
   }
@@ -520,11 +671,7 @@ GoogleMap.OnMarkerClickListener, GoogleMap.OnInfoWindowClickListener {
     // Se activa el detector de gestos para animar las tarjetas de promociones.
     if (!marker.equals(userMarker)) {
       int branchId = MapData.getBranchesIdsMap().get(marker);
-      Intent showPromos = new Intent(NowerMap.this, PromoCardsAnimator.class);
-      showPromos.putExtra("action", SHOW_BRANCH_PROMOS);
-      showPromos.putExtra("branch_id", branchId);
-      showPromos.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-      startActivity(showPromos);
+      showBranchPromos(branchId);
     }
   }
 

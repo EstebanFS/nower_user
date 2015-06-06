@@ -30,4 +30,5 @@ dependencies {
   compile 'com.facebook.android:facebook-android-sdk:4.0.0'
   compile 'it.sephiroth.android.library.imagezoom:imagezoom:+'
   compile 'com.astuetz:pagerslidingtabstrip:1.0.1'
+  compile 'com.sothree.slidinguppanel:library:3.0.0'
 }

@@ -20,4 +20,5 @@
   <color name="aqua">#5EE8BF</color>
   <color name="light_gray">#7E7E7E</color>
   <color name="transparent_blue">#150000FF</color>
+  <color name="transparent">#00FFFFFF</color>
 </resources>
