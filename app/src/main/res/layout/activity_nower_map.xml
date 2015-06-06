@@ -8,6 +8,24 @@
     android:id="@+id/map"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_above="@+id/navigation"
     class="com.google.android.gms.maps.SupportMapFragment"/>
+
+  <LinearLayout
+    android:id="@+id/navigation"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:background="@color/white"
+    android:layout_alignParentBottom="true"
+    android:visibility="gone">
+
+    <ViewFlipper
+      android:id="@+id/slider"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content">
+    </ViewFlipper>
+
+  </LinearLayout>
 
 </RelativeLayout>

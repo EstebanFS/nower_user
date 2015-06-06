@@ -21,7 +21,8 @@
     android:layout_marginTop="10dp"
     android:adjustViewBounds="true"
     android:maxHeight="22dp"
-    android:maxWidth="32dp"/>
+    android:maxWidth="32dp"
+    android:src="@drawable/castofo_marker"/>
 
   <RelativeLayout
     android:layout_width="20dp"

@@ -10,7 +10,7 @@
 
     <ImageView
       android:id="@+id/icon"
-      android:src="@drawable/nower_marker"
+      android:src="@drawable/castofo_marker"
       android:layout_gravity="center_vertical"
       android:padding="5dp"
       android:layout_width="wrap_content"
