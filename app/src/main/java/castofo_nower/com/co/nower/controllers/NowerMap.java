@@ -183,18 +183,20 @@ GoogleMap.OnInfoWindowClickListener {
           case MotionEvent.ACTION_UP:
             float finalX = event.getX();
             if ((initX - finalX) > sensitivity) {
-              slider.setInAnimation(outLeft);
-              slider.setInAnimation(inRight);
-              setCurrentMarkerForSlider();
-              slider.showNext();
-              showMarkerAndSlider(slider.getCurrentView().getId());
+              if (slider.getChildCount() > 1) {
+                slider.setInAnimation(outLeft);
+                slider.setInAnimation(inRight);
+                slider.showNext();
+                showMarkerAndSlider(slider.getCurrentView().getId());
+              }
             }
             else if ((finalX - initX) > sensitivity) {
-              slider.setInAnimation(outRight);
-              slider.setInAnimation(inLeft);
-              setCurrentMarkerForSlider();
-              slider.showPrevious();
-              showMarkerAndSlider(slider.getCurrentView().getId());
+              if (slider.getChildCount() > 1) {
+                slider.setInAnimation(outRight);
+                slider.setInAnimation(inLeft);
+                slider.showPrevious();
+                showMarkerAndSlider(slider.getCurrentView().getId());
+              }
             }
             else {
               // En este caso, el usuario habría simplemente presionado la
@@ -207,11 +209,6 @@ GoogleMap.OnInfoWindowClickListener {
         return true;
       }
     });
-  }
-
-  public void setCurrentMarkerForSlider() {
-    currentMarker = getBranchMarker(slider.getCurrentView().getId());
-    isInfoWindowShown = true;
   }
 
   public void verifyLocationProviders() {
@@ -303,7 +300,7 @@ GoogleMap.OnInfoWindowClickListener {
       userMarker.setPosition(new LatLng(latitude, longitude));
       userRange.setCenter(new LatLng(latitude, longitude));
     }
-    userMarker.showInfoWindow();
+    if (!isInfoWindowShown) userMarker.showInfoWindow();
   }
 
   // Este método construye un mapa con los datos de la localización del usuario,
@@ -349,6 +346,7 @@ GoogleMap.OnInfoWindowClickListener {
   }
 
   public void fillNavigationSlider() {
+    slider.removeAllViews();
     for (Map.Entry<Marker, Integer> branchesInNavSlider
          : MapData.getBranchesIdsMap().entrySet()) {
       LayoutInflater inflater = (LayoutInflater) this.getSystemService
@@ -481,10 +479,12 @@ GoogleMap.OnInfoWindowClickListener {
       progressDialog.dismiss();
       progressDialog = null;
     }
+    if (MapData.userLat == NO_USER_LAT && MapData.userLong == NO_USER_LONG) {
+      animateCameraToPosition(latitude, longitude);
+    }
     // Se actualizan con la última localización del usuario obtenida.
     MapData.userLat = latitude;
     MapData.userLong = longitude;
-    animateCameraToPosition(latitude, longitude);
   }
 
   @Override
