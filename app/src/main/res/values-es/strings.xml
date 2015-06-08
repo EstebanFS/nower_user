@@ -35,8 +35,8 @@
   <string name="expand_reviews">VER COMENTARIOS Y PUNTUACIÓN</string>
   <string name="promo_description">DESCRIPCIÓN</string>
   <string name="promo_terms">TÉRMINOS Y CONDICIONES</string>
-  <string name="not_redeemed">POR REDIMIR</string>
-  <string name="redeemed">REDIMIDAS</string>
+  <string name="not_redeemed">Por redimir</string>
+  <string name="redeemed">Redimidas</string>
   <string name="obtaining_your_promos">Obteniendo tus promociones</string>
   <string name="empty_branches_list">No hay tiendas con promociones cercanas a tu ubicación</string>
   <string name="full_name">Nombre completo</string>

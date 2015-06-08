@@ -1,28 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-  <style name="AppTheme.TranslucentActionBar">
-    <item name="android:actionBarStyle">@style/Widget.ActionBar.Transparent</item>
-    <item name="android:windowActionBarOverlay">true</item>
-    <item name="android:windowContentOverlay">@null</item>
+  <style name="CustomToolbarTheme" parent="CustomAppTheme.Base">
+    <!-- Se puede customizar el tema acá. -->
   </style>
 
-  <style name="AppTheme.Light.TranslucentActionBar" parent="@android:style/Theme.Holo.Light">
-    <item name="android:actionBarStyle">@style/Widget.Light.ActionBar.Transparent</item>
-    <item name="android:windowActionBarOverlay">true</item>
-    <item name="android:windowContentOverlay">@null</item>
-  </style>
-
-  <style name="CustomActionBarTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-    <item name="android:actionBarStyle">@style/NowerActionBar</item>
-    <!-- Compatibilidad con Support library -->
-    <item name="actionBarStyle">@style/NowerActionBar</item>
-  </style>
-
-  <style name="NowerActionBar" parent="@style/Widget.AppCompat.Light.ActionBar.Solid.Inverse">
-    <item name="android:background">@drawable/app_background</item>
-    <!-- Compatibilidad con Support library compatibility -->
-    <item name="background">@drawable/app_background</item>
+  <style name="CustomAppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="colorPrimary">@color/dark_red_2</item>
+    <item name="colorPrimaryDark">@color/dark_red</item>
+    <item name="colorAccent">@color/white</item>
   </style>
 
 </resources>

@@ -1,38 +1,53 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  tools:context="castofo_nower.com.co.nower.controllers.PromoCardsAnimator"
-  android:orientation="vertical">
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="castofo_nower.com.co.nower.controllers.PromoCardsAnimator">
 
-  <android.support.v4.view.ViewPager
+  <include
+    android:id="@+id/tool_bar"
+    layout="@layout/custom_tool_bar"/>
+
+  <FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.view.ViewPager
       android:id="@+id/promos_flipper"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:visibility="visible">
-  </android.support.v4.view.ViewPager>
+    </android.support.v4.view.ViewPager>
 
-  <LinearLayout
-    android:id="@+id/empty_promos_message"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:visibility="gone"
-    android:orientation="vertical">
-
-    <castofo_nower.com.co.nower.support.WideImageView
-      android:layout_width="match_parent"
-      android:layout_height="150dp"
-      android:adjustViewBounds="true"
-      android:src="@drawable/promo_placeholder"/>
-
-    <TextView
+    <LinearLayout
+      android:id="@+id/empty_promos_message"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:textAppearance="?android:attr/textAppearanceLarge"
-      android:text="@string/no_available_promos"
-      android:gravity="center"
-      android:textStyle="bold"
-      android:textColor="@color/gray"
-      android:layout_gravity="center"/>
-  </LinearLayout>
+      android:orientation="vertical"
+      android:visibility="gone">
+
+      <castofo_nower.com.co.nower.support.WideImageView
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/promo_placeholder"/>
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="@string/no_available_promos"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/gray"
+        android:textStyle="bold"/>
+    </LinearLayout>
+
+    <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:foreground="@drawable/toolbar_shadow"/>
+
+  </FrameLayout>
 </LinearLayout>

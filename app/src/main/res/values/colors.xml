@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <color name="green">#67A037</color>
+  <color name="green">#8BC34A</color>
   <color name="green_opaque">#ACC794</color>
   <color name="light_green">#DBEDC7</color>
   <color name="light_orange">#76FFC369</color>
   <color name="white">#FFFFFF</color>
   <color name="dark_white">#DDD8E8</color>
+  <color name="white_opaque">#AAFFFFFF</color>
   <color name="black">#000000</color>
   <color name="gray">#FFA9A9A9</color>
-  <color name="dark_gray">#333333</color>
+  <color name="dark_gray">#89000000</color>
   <color name="red">#FF0000</color>
   <color name="dark_red">#FFDB1300</color>
   <color name="dark_red_2">#FFE80B00</color>
@@ -19,6 +20,12 @@
   <color name="light_blue">#7AB5E8</color>
   <color name="aqua">#5EE8BF</color>
   <color name="light_gray">#7E7E7E</color>
+  <color name="light_gray_2">#1E000000</color>
   <color name="transparent_blue">#150000FF</color>
   <color name="transparent">#00FFFFFF</color>
+
+  <!-- Just overriding this 'background_tab_pressed' we can change the color
+  of the tab when it is pressed, look at this:
+  https://github.com/astuetz/PagerSlidingTabStrip/issues/67 -->
+  <color name="background_tab_pressed">#50FFFFFF</color>
 </resources>
