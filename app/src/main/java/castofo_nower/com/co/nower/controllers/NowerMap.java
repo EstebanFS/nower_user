@@ -62,19 +62,17 @@ import castofo_nower.com.co.nower.models.Promo;
 
 public class NowerMap extends ActionBarActivity implements SubscribedActivities,
 GeolocationInterface, AlertDialogsResponse, ParsedErrors,
-GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener,
-GoogleMap.OnInfoWindowClickListener {
+GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
   private Toolbar toolbar;
 
   private GoogleMap map;
-  private float ZOOM_LEVEL = 13.1f;
+  private float ZOOM_LEVEL = 13.7f;
   private int TILT_LEVEL = 60;
-  private int RANGE_IN_METERS = 3100;
+  private int RANGE_IN_METERS = 2100;
   private Geolocation geolocation;
   public Marker userMarker = null;
   public Marker currentMarker = null;
-  public boolean isInfoWindowShown = false;
   public Circle userRange;
 
   // Atributos necesarios para la navegación a través de los marcadores.
@@ -167,7 +165,6 @@ GoogleMap.OnInfoWindowClickListener {
   public void setMapListeners() {
     map.setOnMapClickListener(this);
     map.setOnMarkerClickListener(this);
-    map.setOnInfoWindowClickListener(this);
   }
 
   public void setUpNavigationSlider() {
@@ -310,7 +307,7 @@ GoogleMap.OnInfoWindowClickListener {
       userMarker.setPosition(new LatLng(latitude, longitude));
       userRange.setCenter(new LatLng(latitude, longitude));
     }
-    if (!isInfoWindowShown) userMarker.showInfoWindow();
+    userMarker.showInfoWindow();
   }
 
   // Este método construye un mapa con los datos de la localización del usuario,
@@ -340,7 +337,8 @@ GoogleMap.OnInfoWindowClickListener {
   public void putMarkerAndSaveBranch(Branch branch) {
     Marker branchMarker = map.addMarker(new MarkerOptions()
             .position(new LatLng(branch.getLatitude(), branch.getLongitude()))
-            .title(branch.getStoreName() + " - " + branch.getName())
+            .title(branch.getStoreName())
+            .snippet(branch.getName())
             .icon(BitmapDescriptorFactory
                   .fromResource(R.drawable.default_marker_icon)));
 
@@ -388,9 +386,7 @@ GoogleMap.OnInfoWindowClickListener {
     Marker branchMarker = getBranchMarker(branchId);
     // Se abre la burbuja del marcador correspondiente.
     setMarkerIcon(branch, branchMarker);
-    branchMarker.showInfoWindow();
     currentMarker = branchMarker;
-    isInfoWindowShown = true;
 
     slider.setDisplayedChild(slider.indexOfChild(findViewById(branchId)));
     navigation.setVisibility(View.VISIBLE);
@@ -401,7 +397,6 @@ GoogleMap.OnInfoWindowClickListener {
       BitmapDescriptor icon = BitmapDescriptorFactory
                               .fromResource(R.drawable.default_marker_icon);
       currentMarker.setIcon(icon);
-      isInfoWindowShown = false;
     }
   }
 
@@ -656,16 +651,7 @@ GoogleMap.OnInfoWindowClickListener {
       int branchId = MapData.getBranchesIdsMap().get(marker);
       if (currentMarker == null) showMarkerAndSlider(branchId);
       else {
-        if (currentMarker.equals(marker)) {
-          if (isInfoWindowShown) {
-            marker.hideInfoWindow();
-            isInfoWindowShown = false;
-          }
-          else {
-            marker.showInfoWindow();
-            isInfoWindowShown = true;
-          }
-        }
+        if (currentMarker.equals(marker)) showBranchPromos(branchId);
         else showMarkerAndSlider(branchId);
       }
 
@@ -674,15 +660,6 @@ GoogleMap.OnInfoWindowClickListener {
     hideMarkerAndSlider();
 
     return false;
-  }
-
-  @Override
-  public void onInfoWindowClick(Marker marker) {
-    // Se activa el detector de gestos para animar las tarjetas de promociones.
-    if (!marker.equals(userMarker)) {
-      int branchId = MapData.getBranchesIdsMap().get(marker);
-      showBranchPromos(branchId);
-    }
   }
 
   @Override
