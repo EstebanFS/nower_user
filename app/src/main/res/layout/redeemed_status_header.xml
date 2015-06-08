@@ -2,16 +2,17 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:orientation="vertical"
   android:layout_width="match_parent"
-  android:layout_height="match_parent">
+  android:layout_height="48dp"
+  android:gravity="center_vertical">
 
   <TextView
     android:id="@+id/redeemed_status_title"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:textColor="@color/gray"
-    android:background="@color/dark_gray"
-    android:textSize="18sp"
-    android:textStyle="bold"
+    android:textColor="@color/dark_gray"
+    android:textSize="14sp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginStart="16dp"
     android:singleLine="true"/>
 
 </LinearLayout>

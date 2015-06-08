@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -63,6 +64,8 @@ public class NowerMap extends ActionBarActivity implements SubscribedActivities,
 GeolocationInterface, AlertDialogsResponse, ParsedErrors,
 GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
+  private Toolbar toolbar;
+
   private GoogleMap map;
   private float ZOOM_LEVEL = 13.7f;
   private int TILT_LEVEL = 60;
@@ -107,6 +110,8 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_nower_map);
 
+    initToolbar();
+
     geolocation = new Geolocation(NowerMap.this);
     // Se indica a Geolocation la actividad que estará esperando el aviso de
     // cambio de localización.
@@ -139,6 +144,11 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
                        getResources().getString(R.string.error_loading_map),
                        R.string.exit, UserFeedback.NO_BUTTON_TO_SHOW, NO_MAP);
     }
+  }
+
+  public void initToolbar() {
+    toolbar = (Toolbar) findViewById(R.id.tool_bar);
+    setSupportActionBar(toolbar);
   }
 
   public void setUpMap() {

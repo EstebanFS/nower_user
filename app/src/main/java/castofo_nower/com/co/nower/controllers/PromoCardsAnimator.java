@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -54,6 +55,8 @@ import castofo_nower.com.co.nower.support.WideImageView;
 
 public class PromoCardsAnimator extends ActionBarActivity implements
 SubscribedActivities, AlertDialogsResponse, ParsedErrors {
+
+  private Toolbar toolbar;
 
   private HttpHandler httpHandler = new HttpHandler();
   public static final String ACTION_PROMOS_DETAILS = "/promos/details";
@@ -104,6 +107,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     initView();
+    initToolbar();
 
     // Se indica al HttpHandler la actividad que estará esperando la respuesta
     // a la petición.
@@ -130,9 +134,14 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
     }
   }
 
+  public void initToolbar() {
+    toolbar = (Toolbar) findViewById(R.id.tool_bar);
+    setSupportActionBar(toolbar);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+  }
+
   public void initView() {
     setContentView(R.layout.activity_promo_cards_animator);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
     promoCards.clear();
     promosFlipper = (ViewPager) findViewById(R.id.promos_flipper);
     promosFlipper.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {

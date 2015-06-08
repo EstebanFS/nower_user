@@ -1,8 +1,9 @@
 package castofo_nower.com.co.nower.controllers;
 
-import android.app.Activity;
 import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,8 +14,9 @@ import castofo_nower.com.co.nower.support.ImageDownloader;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
-public class PromoPictureViewer extends Activity {
+public class PromoPictureViewer extends ActionBarActivity {
 
+  private Toolbar toolbar;
   private ImageViewTouch promoPicture;
   private ProgressBar progressBar;
   private String imageURL;
@@ -23,8 +25,7 @@ public class PromoPictureViewer extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_promo_picture_viewer);
-    getActionBar().setDisplayHomeAsUpEnabled(true);
-    getActionBar().setHomeButtonEnabled(true);
+    initToolbar();
 
     promoPicture = (ImageViewTouch) findViewById(R.id.promo_picture);
     promoPicture.setDisplayType(ImageViewTouchBase.DisplayType.FIT_TO_SCREEN);
@@ -37,6 +38,12 @@ public class PromoPictureViewer extends Activity {
       imageURL = extras.getString("image_url");
     }
     loadImage();
+  }
+
+  public void initToolbar() {
+    toolbar = (Toolbar) findViewById(R.id.tool_bar);
+    setSupportActionBar(toolbar);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
   }
 
   private void loadImage() {

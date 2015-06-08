@@ -58,6 +58,13 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
     String titleText = "";
     String subtitleText = "";
 
+    // Se cambia el tipo de letra para Roboto (Según especificaciones de
+    // Material Design)
+    Typeface customFont = Typeface
+            .createFromAsset(context.getAssets(),"fonts/Roboto-Regular.ttf");
+    title.setTypeface(customFont);
+    subtitle.setTypeface(customFont);
+
     switch (action) {
       case UserPromosListFragment.LIST_USER_PROMOS:
         // Se obtiene el título de la promoción actual.
@@ -69,6 +76,11 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
           item = inflater.inflate(R.layout.redeemed_status_header, parent,
                                   false);
           title = (TextView) item.findViewById(R.id.redeemed_status_title);
+          // Los encabezados debe tener Roboto Medium según especificaciones de
+          // Material Design
+          Typeface customFontHeader = Typeface
+              .createFromAsset(context.getAssets(), "fonts/Roboto-Medium.ttf");
+          title.setTypeface(customFontHeader);
           // Se trata del encabezado de promociones no redimidas.
           if (redemption.getCode().equals("0")) {
             titleText = context.getResources().getString(R.string.not_redeemed);

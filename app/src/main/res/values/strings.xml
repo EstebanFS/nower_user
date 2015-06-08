@@ -16,7 +16,7 @@
   <string name="enable_gps_suggestion">GPS needs to be enabled to access the promos.</string>
   <string name="yes">Yes</string>
   <string name="no_thanks">No, thanks</string>
-  <string name="internet_connection_required">You need an Internet conection to use Nower.</string>
+  <string name="internet_connection_required">You need an Internet connection to use Nower.</string>
   <string name="loading_promos">Loading nearby promos</string>
   <string name="you_are_here">You are here!</string>
   <string name="obtaining_promo_code">Obtaining promo code</string>
@@ -35,8 +35,8 @@
   <string name="expand_reviews">SEE RATING AND COMMENTS</string>
   <string name="promo_description">DESCRIPTION</string>
   <string name="promo_terms">TERMS AND CONDITIONS</string>
-  <string name="not_redeemed">TO REDEEM</string>
-  <string name="redeemed">REDEEMED</string>
+  <string name="not_redeemed">To redeem</string>
+  <string name="redeemed">Redeemed</string>
   <string name="obtaining_your_promos">Obtaining your promos</string>
   <string name="empty_branches_list">There aren\'t any stores with promos near your location</string>
   <string name="full_name">Full name</string>
@@ -66,7 +66,7 @@
   <string name="obtaining_your_location">Obtaining your location</string>
   <string name="go_to_my_promos">Go to My promos</string>
   <string name="no_available_promos">This store doesn\'t have any available promos at the moment</string>
-  <string name="internet_connection">Internet conection</string>
+  <string name="internet_connection">Internet connection</string>
   <string name="got_it">I got it</string>
   <string name="never">Never</string>
   <string name="sorry">Sorry</string>

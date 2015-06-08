@@ -1,31 +1,53 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-  xmlns:tools="http://schemas.android.com/tools"
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  tools:context="castofo_nower.com.co.nower.controllers.NowerMap">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              tools:context="castofo_nower.com.co.nower.controllers.NowerMap">
 
-  <fragment
-    android:id="@+id/map"
+  <include
+    android:id="@+id/tool_bar"
+    layout="@layout/custom_tool_bar"/>
+
+  <FrameLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:layout_above="@+id/navigation"
-    class="com.google.android.gms.maps.SupportMapFragment"/>
+    android:layout_height="match_parent">
 
-  <LinearLayout
-    android:id="@+id/navigation"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:background="@color/white"
-    android:layout_alignParentBottom="true"
-    android:visibility="gone">
+    <RelativeLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent">
 
-    <ViewFlipper
-      android:id="@+id/slider"
-      android:layout_width="fill_parent"
-      android:layout_height="wrap_content">
-    </ViewFlipper>
+      <fragment
+        android:id="@+id/map"
+        class="com.google.android.gms.maps.SupportMapFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/navigation"/>
 
-  </LinearLayout>
+      <LinearLayout
+        android:id="@+id/navigation"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/white"
+        android:orientation="horizontal"
+        android:visibility="gone">
 
-</RelativeLayout>
+        <ViewFlipper
+          android:id="@+id/slider"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content">
+        </ViewFlipper>
+
+      </LinearLayout>
+
+    </RelativeLayout>
+
+    <FrameLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:foreground="@drawable/toolbar_shadow"/>
+
+  </FrameLayout>
+
+</LinearLayout>

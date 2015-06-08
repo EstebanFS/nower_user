@@ -62,46 +62,20 @@
       android:configChanges="orientation|screenSize"
       android:label="@string/app_name"
       android:launchMode="singleTop"
-      android:theme="@style/CustomActionBarTheme">
+      android:theme="@style/CustomToolbarTheme">
     </activity>
     <activity
       android:name=".controllers.PromoCardsAnimator"
       android:label="@string/promo"
       android:screenOrientation="portrait"
-      android:theme="@style/CustomActionBarTheme">
-    </activity>
-    <activity
-      android:name=".controllers.UserPromosList"
-      android:label="@string/title_activity_user_promo_list"
-      android:launchMode="singleTop"
-      android:screenOrientation="portrait"
-      android:theme="@style/CustomActionBarTheme">
-      <intent-filter>
-        <action android:name="android.intent.action.SEARCH"/>
-      </intent-filter>
-      <meta-data
-        android:name="android.app.searchable"
-        android:resource="@xml/searchable"/>
-    </activity>
-    <activity
-      android:name=".controllers.BranchesList"
-      android:label="@string/title_activity_branches_list"
-      android:launchMode="singleTop"
-      android:screenOrientation="portrait"
-      android:theme="@style/CustomActionBarTheme">
-      <intent-filter>
-        <action android:name="android.intent.action.SEARCH"/>
-      </intent-filter>
-      <meta-data
-        android:name="android.app.searchable"
-        android:resource="@xml/searchable"/>
+      android:theme="@style/CustomToolbarTheme">
     </activity>
     <activity
       android:name=".controllers.TabsHandler"
       android:label="@string/go_to_map"
       android:launchMode="singleTop"
       android:screenOrientation="portrait"
-      android:theme="@style/CustomActionBarTheme">
+      android:theme="@style/CustomToolbarTheme">
       <intent-filter>
         <action android:name="android.intent.action.SEARCH"/>
       </intent-filter>
@@ -125,7 +99,8 @@
     </activity>
     <activity
       android:name=".controllers.PromoPictureViewer"
-      android:label="@string/title_activity_promo_picture_viewer">
+      android:label="@string/title_activity_promo_picture_viewer"
+      android:theme="@style/CustomToolbarTheme">
     </activity>
     <activity
       android:name="com.facebook.FacebookActivity"

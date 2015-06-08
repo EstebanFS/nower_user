@@ -9,9 +9,12 @@ import android.support.v4.view.ViewPager;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.astuetz.PagerSlidingTabStrip;
 
@@ -24,6 +27,7 @@ import castofo_nower.com.co.nower.support.TabsAdapter;
 
 public class TabsHandler extends ActionBarActivity {
 
+  private Toolbar toolbar;
   private ViewPager viewPager;
   private PagerSlidingTabStrip tabs;
 
@@ -37,9 +41,15 @@ public class TabsHandler extends ActionBarActivity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_tabs_handler);
-    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    initToolbar();
     initTabs();
     handleWithExtras();
+  }
+
+  public void initToolbar() {
+    toolbar = (Toolbar) findViewById(R.id.tool_bar);
+    setSupportActionBar(toolbar);
+    getSupportActionBar().setDisplayHomeAsUpEnabled(true);
   }
 
   public void initTabs() {
@@ -54,6 +64,23 @@ public class TabsHandler extends ActionBarActivity {
       @Override
       public void onPageSelected(int position) { changeTab(position); }
     });
+    setupSelectedTabColor(0);
+  }
+
+  private void setupSelectedTabColor(int selectedPosition) {
+    if (tabs != null) {
+      LinearLayout tabsLayout = ((LinearLayout) tabs.getChildAt(0));
+      for (int i = 0; i < tabsLayout.getChildCount(); i++) {
+        TextView currentTab = (TextView) tabsLayout.getChildAt(i);
+        if (i == selectedPosition) {
+          currentTab.setTextColor(getResources().getColor(R.color.white));
+        }
+        else {
+          int opaqueWhite = getResources().getColor(R.color.white_opaque);
+          currentTab.setTextColor(opaqueWhite);
+        }
+      }
+    }
   }
 
   public void changeTab(int position) {
@@ -65,6 +92,7 @@ public class TabsHandler extends ActionBarActivity {
     // respectiva lista.
     closeSearchView();
     prepareSearchForTabAt(position);
+    setupSelectedTabColor(position);
   }
 
   private void handleWithExtras() {
