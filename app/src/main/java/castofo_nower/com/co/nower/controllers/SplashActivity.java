@@ -32,9 +32,11 @@ public class SplashActivity extends Activity {
         case UserPromosListFragment.USER_NEEDS_TO_REGISTER:
           // El usuario necesita registrarse o iniciar sesión para poder
           // acceder a las promociones.
-          requestedAction = new Intent(SplashActivity.this, Register.class);
+          //requestedAction = new Intent(SplashActivity.this, Register.class);
+          requestedAction = new Intent(SplashActivity.this,
+                                       AuthenticationHandler.class);
           break;
-        case Login.OPEN_MAP:
+        case LoginFragment.OPEN_MAP:
           // El usuario acaba de registrarse o de iniciar sesión.
           requestedAction = new Intent(SplashActivity.this, TabsHandler.class);
           requestedAction.putExtra("source",
@@ -108,7 +110,7 @@ public class SplashActivity extends Activity {
 
   public static void handleRequest(Context context, String action) {
     boolean isNecessaryToClearStack = false;
-    if (action.equals(NowerMap.NO_MAP) || action.equals(Login.OPEN_MAP)
+    if (action.equals(NowerMap.NO_MAP) || action.equals(LoginFragment.OPEN_MAP)
         || action.equals(UserPromosListFragment.LOG_OUT)) {
       isNecessaryToClearStack = true;
     }

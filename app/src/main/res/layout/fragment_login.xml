@@ -4,11 +4,11 @@
             android:layout_height="match_parent"
             android:background="@drawable/login_background"
             android:fillViewport="true"
-            tools:context="castofo_nower.com.co.nower.controllers.Login">
+            tools:context="castofo_nower.com.co.nower.controllers.LoginFragment">
 
   <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
 
     <LinearLayout
@@ -37,6 +37,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/login_field_background"
         android:drawableLeft="@drawable/ic_email_light"
+        android:drawableStart="@drawable/ic_email_light"
         android:drawablePadding="20dp"
         android:hint="@string/email"
         android:inputType="textEmailAddress"
@@ -54,6 +55,7 @@
         android:layout_marginTop="20dp"
         android:background="@drawable/login_field_background"
         android:drawableLeft="@drawable/ic_password_light"
+        android:drawableStart="@drawable/ic_password_light"
         android:drawablePadding="20dp"
         android:hint="@string/password"
         android:inputType="textPassword"
@@ -71,7 +73,7 @@
         android:background="@drawable/green_button_background"
         android:onClick="onLoginClicked"
         android:text="@string/log_in"
-        android:textColor="@color/dark_white"
+        android:textColor="@color/white"
         android:textSize="15sp"
         android:textStyle="bold"/>
 

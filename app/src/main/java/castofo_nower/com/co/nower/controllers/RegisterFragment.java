@@ -5,18 +5,20 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Build;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.DatePicker;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -38,13 +40,13 @@ import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.FacebookLoginResponse;
 import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
+import castofo_nower.com.co.nower.support.DateManager;
 import castofo_nower.com.co.nower.support.FacebookHandler;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
-import castofo_nower.com.co.nower.support.UserFeedback;
-import castofo_nower.com.co.nower.support.DateManager;
 import castofo_nower.com.co.nower.support.SharedPreferencesManager;
+import castofo_nower.com.co.nower.support.UserFeedback;
 
-public class Register extends FragmentActivity implements SubscribedActivities,
+public class RegisterFragment extends Fragment implements SubscribedActivities,
 ParsedErrors, FacebookLoginResponse {
 
   private TextView nameView;
@@ -74,14 +76,16 @@ ParsedErrors, FacebookLoginResponse {
   private Map<String, String> params = new HashMap<String, String>();
 
   private RequestErrorsHandler requestErrorsHandler = new
-                                                      RequestErrorsHandler();
+          RequestErrorsHandler();
 
   public static final int NO_GENDER_SELECTED = -1;
 
+
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_register);
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                           Bundle savedInstanceState) {
+    View layout = inflater.inflate(R.layout.fragment_register, container,
+                                            false);
 
     httpHandler.addListeningActivity(this);
 
@@ -89,48 +93,43 @@ ParsedErrors, FacebookLoginResponse {
 
     facebookHandler.addListeningActivity(this);
 
-    SharedPreferencesManager.setup(this);
+    SharedPreferencesManager.setup(getActivity());
 
-    TextView title = (TextView) findViewById(R.id.register_header);
-    Typeface headerFont = Typeface.createFromAsset(getAssets(),
-                                                   "fonts/exo2_extra_bold.otf");
+    TextView title = (TextView) layout.findViewById(R.id.register_header);
+    Typeface headerFont = Typeface.createFromAsset(getActivity().getAssets(),
+            "fonts/exo2_extra_bold.otf");
     title.setTypeface(headerFont);
 
-    nameView = (TextView) findViewById(R.id.name);
-    emailView = (TextView) findViewById(R.id.email);
-    passwordView = (TextView) findViewById(R.id.password);
+    nameView = (TextView) layout.findViewById(R.id.name);
+    emailView = (TextView) layout.findViewById(R.id.email);
+    passwordView = (TextView) layout.findViewById(R.id.password);
     passwordConfirmationView = (TextView)
-                               findViewById(R.id.password_confirmation);
-    birthdayView = (TextView) findViewById(R.id.birthday);
-    genderRadio = (RadioGroup) findViewById(R.id.gender);
+            layout.findViewById(R.id.password_confirmation);
+    birthdayView = (TextView) layout.findViewById(R.id.birthday);
+    genderRadio = (RadioGroup) layout.findViewById(R.id.gender);
 
-    if (getIntent().hasExtra("email")) {
+    /*if (getIntent().hasExtra("email")) {
       String emailFromLogin = getIntent().getExtras().getString("email");
       emailView.setText(emailFromLogin);
-    }
-    initializeFacebookUI();
+    }*/
+    initializeFacebookUI(layout);
+    return layout;
   }
 
-  private void initializeFacebookUI() {
+  private void initializeFacebookUI(View layout) {
     // Inicializar el SDK de Facebook.
-    FacebookSdk.sdkInitialize(getApplicationContext());
+    FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
 
     callbackManager = facebookHandler.getCallbackManagerInstance();
 
-    loginButton = (LoginButton) findViewById(R.id.login_button);
+    loginButton = (LoginButton) layout.findViewById(R.id.login_button);
     loginButton.setReadPermissions("public_profile, email");
+    loginButton.setFragment(this);
     loginButton.registerCallback
-    (callbackManager, facebookHandler.getLoginCallback());
+            (callbackManager, facebookHandler.getLoginCallback());
   }
 
-  public void onAlreadyHaveAccountClicked(View v) {
-    Intent intent = new Intent(Register.this, Login.class);
-    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    intent.putExtra("email", emailView.getText().toString());
-    startActivity(intent);
-  }
-
-  public void onRegisterClicked(View v) {
+  public void onRegisterClicked() {
     boolean everythingOkToRegister = true;
 
     name = nameView.getText().toString().trim();
@@ -149,24 +148,23 @@ ParsedErrors, FacebookLoginResponse {
     }
     if (password.isEmpty()) {
       passwordView.setError(getResources()
-                            .getString(R.string.write_your_password));
+              .getString(R.string.write_your_password));
       everythingOkToRegister = false;
     }
     if (passwordConfirmation.isEmpty()) {
       passwordConfirmationView.setError
-      (getResources().getString(R.string.write_your_password_again));
+              (getResources().getString(R.string.write_your_password_again));
       everythingOkToRegister = false;
     }
     if (birthday == null) {
       birthdayView.setError(getResources()
-                            .getString(R.string.select_your_birthday));
+              .getString(R.string.select_your_birthday));
       everythingOkToRegister = false;
     }
     if (!isGenderSelected) {
-      UserFeedback
-      .showToastMessage(getApplicationContext(), getResources()
-                        .getString(R.string.select_your_gender),
-                        Toast.LENGTH_SHORT);
+      UserFeedback.showToastMessage(getActivity().getApplicationContext(),
+              getResources().getString(R.string.select_your_gender),
+              Toast.LENGTH_SHORT);
       everythingOkToRegister = false;
     }
 
@@ -175,10 +173,9 @@ ParsedErrors, FacebookLoginResponse {
         setParamsForRegister();
       }
       else {
-        UserFeedback
-        .showToastMessage(getApplicationContext(), getResources()
-                          .getString(R.string.passwords_not_matching),
-                          Toast.LENGTH_SHORT);
+        UserFeedback.showToastMessage(getActivity().getApplicationContext(),
+                getResources().getString(R.string.passwords_not_matching),
+                Toast.LENGTH_SHORT);
       }
     }
   }
@@ -199,18 +196,24 @@ ParsedErrors, FacebookLoginResponse {
     return true;
   }
 
-  public void showDatePickerDialog(View v) {
-    DialogFragment newFragment = new DatePickerFragment();
-    newFragment.show(getSupportFragmentManager(), "datePicker");
+  public void showDatePickerDialog() {
+    DatePickerFragment newFragment = new DatePickerFragment();
+    newFragment.setRegisterFragment(this);
+    newFragment.show(getActivity().getSupportFragmentManager(), "datePicker");
   }
 
   public static class DatePickerFragment extends DialogFragment implements
-  DatePickerDialog.OnDateSetListener {
+          DatePickerDialog.OnDateSetListener {
 
     public static final int MAX_AGE = 100;
     public static final int MIN_AGE = 12;
     public static final int MAX_DAY = 31;
     public static final int MIN_DAY = 1;
+    private RegisterFragment registerFragment;
+
+    public void setRegisterFragment(RegisterFragment registerFragment) {
+      this.registerFragment = registerFragment;
+    }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -221,8 +224,8 @@ ParsedErrors, FacebookLoginResponse {
 
       // Se crea una nueva instancia de DatePickerDialog.
       DatePickerDialog datePickerDialog = new DatePickerDialog
-                                          (getActivity(), this, year, month,
-                                           day);
+              (getActivity(), this, year, month,
+                      day);
 
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
         DatePicker datePicker = datePickerDialog.getDatePicker();
@@ -241,20 +244,19 @@ ParsedErrors, FacebookLoginResponse {
 
       if (birthday != null) {
         datePickerDialog.updateDate(birthday.get(Calendar.YEAR),
-                                    birthday.get(Calendar.MONTH),
-                                    birthday.get(Calendar.DAY_OF_MONTH));
+                birthday.get(Calendar.MONTH),
+                birthday.get(Calendar.DAY_OF_MONTH));
       }
-
       return datePickerDialog;
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
-      Calendar birthday = ((Register) getActivity()).getBirthday();
+      Calendar birthday = registerFragment.getBirthday();
       if (birthday == null) birthday = Calendar.getInstance();
       birthday.set(Calendar.YEAR, year);
       birthday.set(Calendar.MONTH, month);
       birthday.set(Calendar.DAY_OF_MONTH, day);
-      ((Register) getActivity()).setBirthday(birthday);
+      registerFragment.setBirthday(birthday);
     }
   }
 
@@ -285,18 +287,17 @@ ParsedErrors, FacebookLoginResponse {
   public void sendRequest(String request) {
     if (request.equals(ACTION_REGISTER)) {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_REGISTER, "",
-                              params, new HttpPost(), Register.this);
+              params, new HttpPost(), getActivity());
     }
-    else if (request.equals(Login.ACTION_FACEBOOK_LOGIN)) {
+    else if (request.equals(LoginFragment.ACTION_FACEBOOK_LOGIN)) {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE,
-                              Login.ACTION_FACEBOOK_LOGIN, "", params,
-                              new HttpPost(), Register.this);
+              LoginFragment.ACTION_FACEBOOK_LOGIN, "", params,
+              new HttpPost(), getActivity());
     }
   }
 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data)
-  {
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     callbackManager.onActivityResult(requestCode, resultCode, data);
   }
@@ -320,30 +321,30 @@ ParsedErrors, FacebookLoginResponse {
               break;
             case "password_confirmation":
               passwordConfirmationView.setError(errorsMessages
-                                                .get("password_confirmation"));
+                      .get("password_confirmation"));
               break;
             case "birthday":
               birthdayView.setError(errorsMessages.get("birthday"));
               break;
             case "gender":
-              UserFeedback.showToastMessage(getApplicationContext(),
-                                            errorsMessages.get("gender"),
-                                            Toast.LENGTH_SHORT);
+              UserFeedback.showToastMessage(getActivity()
+                              .getApplicationContext(),
+                      errorsMessages.get("gender"), Toast.LENGTH_SHORT);
               break;
           }
         }
         break;
-      case Login.ACTION_FACEBOOK_LOGIN:
+      case LoginFragment.ACTION_FACEBOOK_LOGIN:
         // Cerrar la sesión de Facebook.
         facebookHandler.logout();
         // Mostrar el primer mensaje de error que llegue.
         for (Map.Entry<String, String> errorMessage : errorsMessages.entrySet())
         {
           UserFeedback
-          .showAlertDialog(Register.this, R.string.sorry,
-                           errorMessage.getValue(), R.string.got_it,
-                           UserFeedback.NO_BUTTON_TO_SHOW,
-                           Login.ACTION_FACEBOOK_LOGIN);
+                  .showAlertDialog(getActivity(), R.string.sorry,
+                          errorMessage.getValue(), R.string.got_it,
+                          UserFeedback.NO_BUTTON_TO_SHOW,
+                          LoginFragment.ACTION_FACEBOOK_LOGIN);
           break;
         }
         break;
@@ -363,10 +364,9 @@ ParsedErrors, FacebookLoginResponse {
       String facebookId = object.getString("id");
       Date expires = accessToken.getExpires();
       JSONObject ageRange = object.getJSONObject("age_range");
-      params = Login.setParamsForFacebookLogin(params, name, email, gender,
-                                               authToken, facebookId, expires,
-                                               ageRange);
-      sendRequest(Login.ACTION_FACEBOOK_LOGIN);
+      params = LoginFragment.setParamsForFacebookLogin(params, name, email,
+              gender, authToken, facebookId, expires, ageRange);
+      sendRequest(LoginFragment.ACTION_FACEBOOK_LOGIN);
     }
     catch (JSONException e) {
 
@@ -382,30 +382,30 @@ ParsedErrors, FacebookLoginResponse {
         switch (responseStatusCode) {
           case HttpHandler.CREATED:
             if (responseJson.getBoolean("success")) {
-              Login.startSession(Register.this, responseJson);
+              LoginFragment.startSession(getActivity(), responseJson);
             }
             break;
           case HttpHandler.UNPROCESSABLE_ENTITY:
             RequestErrorsHandler
-            .parseErrors(action, responseJson.getJSONObject("errors"));
+                    .parseErrors(action, responseJson.getJSONObject("errors"));
             break;
         }
       }
-      else if (action.equals(Login.ACTION_FACEBOOK_LOGIN)) {
+      else if (action.equals(LoginFragment.ACTION_FACEBOOK_LOGIN)) {
         switch (responseStatusCode) {
           case HttpHandler.OK:
             if (responseJson.getBoolean("success")) {
-              Login.startSession(this, responseJson);
+              LoginFragment.startSession(getActivity(), responseJson);
             }
             break;
           case HttpHandler.CREATED:
             if (responseJson.getBoolean("success")) {
-              Login.startSession(this, responseJson);
+              LoginFragment.startSession(getActivity(), responseJson);
             }
             break;
           case HttpHandler.BAD_REQUEST:
             RequestErrorsHandler
-            .parseErrors(action, responseJson.getJSONObject("errors"));
+                    .parseErrors(action, responseJson.getJSONObject("errors"));
             break;
         }
       }
@@ -419,10 +419,10 @@ ParsedErrors, FacebookLoginResponse {
   }
 
   @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
+  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_register, menu);
-    return true;
+    inflater.inflate(R.menu.menu_register, menu);
+    super.onCreateOptionsMenu(menu, inflater);
   }
 
   @Override

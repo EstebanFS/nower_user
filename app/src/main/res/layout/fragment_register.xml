@@ -4,7 +4,7 @@
             android:layout_height="match_parent"
             android:background="@drawable/login_background"
             android:fillViewport="true"
-            tools:context="castofo_nower.com.co.nower.controllers.Register">
+            tools:context="castofo_nower.com.co.nower.controllers.RegisterFragment">
 
   <LinearLayout
     android:layout_width="match_parent"
@@ -151,7 +151,7 @@
       android:background="@drawable/green_button_background"
       android:onClick="onRegisterClicked"
       android:text="@string/register"
-      android:textColor="@color/dark_white"
+      android:textColor="@color/white"
       android:textSize="15sp"
       android:textStyle="bold"/>
 
