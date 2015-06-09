@@ -12,15 +12,28 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <TextView
-      android:id="@+id/register_header"
-      android:layout_width="wrap_content"
+    <LinearLayout
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_marginBottom="20dp"
       android:layout_marginTop="70dp"
-      android:text="@string/app_name"
-      android:textColor="@color/white"
-      android:textSize="50sp"
-      android:textStyle="bold"/>
+      android:gravity="center"
+      android:orientation="horizontal">
+
+      <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/logo_sand_clock"/>
+
+      <ImageView
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/logo_text"/>
+    </LinearLayout>
 
     <EditText
       android:id="@+id/name"

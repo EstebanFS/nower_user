@@ -95,11 +95,6 @@ ParsedErrors, FacebookLoginResponse {
 
     SharedPreferencesManager.setup(getActivity());
 
-    TextView title = (TextView) layout.findViewById(R.id.register_header);
-    Typeface headerFont = Typeface.createFromAsset(getActivity().getAssets(),
-            "fonts/exo2_extra_bold.otf");
-    title.setTypeface(headerFont);
-
     nameView = (TextView) layout.findViewById(R.id.name);
     emailView = (TextView) layout.findViewById(R.id.email);
     passwordView = (TextView) layout.findViewById(R.id.password);
@@ -108,10 +103,6 @@ ParsedErrors, FacebookLoginResponse {
     birthdayView = (TextView) layout.findViewById(R.id.birthday);
     genderRadio = (RadioGroup) layout.findViewById(R.id.gender);
 
-    /*if (getIntent().hasExtra("email")) {
-      String emailFromLogin = getIntent().getExtras().getString("email");
-      emailView.setText(emailFromLogin);
-    }*/
     initializeFacebookUI(layout);
     return layout;
   }

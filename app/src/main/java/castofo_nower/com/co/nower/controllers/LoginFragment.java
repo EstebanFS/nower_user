@@ -79,18 +79,9 @@ ParsedErrors, FacebookLoginResponse {
 
     SharedPreferencesManager.setup(getActivity());
 
-    TextView title = (TextView) layout.findViewById(R.id.login_header);
-    Typeface headerFont = Typeface.createFromAsset(getActivity().getAssets(),
-            "fonts/exo2_extra_bold.otf");
-    title.setTypeface(headerFont);
-
     emailView = (TextView) layout.findViewById(R.id.email);
     passwordView = (TextView) layout.findViewById(R.id.password);
 
-    /*if (getIntent().hasExtra("email")) {
-      String emailFromRegister = getIntent().getExtras().getString("email");
-      emailView.setText(emailFromRegister);
-    }*/
     initializeFacebookUI(layout);
     return layout;
   }
