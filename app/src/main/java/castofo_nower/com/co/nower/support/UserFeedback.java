@@ -3,6 +3,7 @@ package castofo_nower.com.co.nower.support;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.widget.Toast;
+import android.support.v7.app.AlertDialog;
 
 import castofo_nower.com.co.nower.connection.HttpHandler;
 import castofo_nower.com.co.nower.helpers.AlertDialogsResponse;
@@ -23,8 +24,8 @@ public class UserFeedback {
   (final Context context, int titleId, String message,
    final int positiveButtonId, final int negativeButtonId, final String action)
   {
-    android.app.AlertDialog.Builder builder = new android.app.AlertDialog
-                                              .Builder(context);
+
+    AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
     builder.setTitle(context.getResources().getString(titleId));
     builder.setMessage(message);
@@ -56,8 +57,9 @@ public class UserFeedback {
                                 });
     }
 
-    final android.app.AlertDialog alertDialog = builder.create();
+    final AlertDialog alertDialog = builder.create();
 
+    alertDialog.setCanceledOnTouchOutside(false);
     alertDialog.show();
   }
 

@@ -23,6 +23,7 @@
   <color name="light_gray_2">#1E000000</color>
   <color name="transparent_blue">#150000FF</color>
   <color name="transparent">#00FFFFFF</color>
+  <color name="teal">#009688</color>
 
   <!-- Just overriding this 'background_tab_pressed' we can change the color
   of the tab when it is pressed, look at this:

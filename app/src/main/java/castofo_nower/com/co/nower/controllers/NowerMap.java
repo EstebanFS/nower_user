@@ -1,6 +1,5 @@
 package castofo_nower.com.co.nower.controllers;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -23,6 +22,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -86,7 +86,8 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
   public static final String ACTION_PROMOS = "/promos/locations";
   private Map<String, String> params = new HashMap<String, String>();
 
-  private ProgressDialog progressDialog = null;
+  private MaterialDialog.Builder builder;
+  private MaterialDialog progressDialog;
 
   private UserFeedback userFeedback = new UserFeedback();
 
@@ -238,9 +239,10 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
     if (MapData.userLat == NO_USER_LAT && MapData.userLong == NO_USER_LONG) {
       // Se muestra un mensaje de progreso al usuario si aún no se tenía una
       // localización previa.
-      progressDialog = new ProgressDialog(this);
-      progressDialog.setMessage(getResources()
-                                .getString(R.string.obtaining_your_location));
+      builder = new MaterialDialog.Builder(this);
+      builder.content(getResources().getString(R.string.obtaining_your_location));
+      builder.progress(true, 0);
+      progressDialog = builder.build();
       progressDialog.setCanceledOnTouchOutside(false);
       progressDialog.show();
     }
