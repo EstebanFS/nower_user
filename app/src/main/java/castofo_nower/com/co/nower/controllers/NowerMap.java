@@ -16,6 +16,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -76,6 +77,7 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
   public Circle userRange;
 
   // Atributos necesarios para la navegación a través de los marcadores.
+  private FrameLayout navigationShadow;
   private LinearLayout navigation;
   private ViewFlipper slider;
   private float initX;
@@ -168,6 +170,7 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
   }
 
   public void setUpNavigationSlider() {
+    navigationShadow = (FrameLayout) findViewById(R.id.navigation_shadow);
     navigation = (LinearLayout) findViewById(R.id.navigation);
     slider = (ViewFlipper) navigation.findViewById(R.id.slider);
 
@@ -390,6 +393,7 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
     slider.setDisplayedChild(slider.indexOfChild(findViewById(branchId)));
     navigation.setVisibility(View.VISIBLE);
+    navigationShadow.setVisibility(View.VISIBLE);
   }
 
   public void closeCurrentMarker() {
@@ -450,6 +454,7 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
     closeCurrentMarker();
     currentMarker = null;
     navigation.setVisibility(View.GONE);
+    navigationShadow.setVisibility(View.GONE);
   }
 
   public void showBranchPromos(int branchId) {

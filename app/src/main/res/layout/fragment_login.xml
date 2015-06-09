@@ -1,0 +1,155 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:nower="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/login_background"
+            android:fillViewport="true"
+            tools:context="castofo_nower.com.co.nower.controllers.LoginFragment">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="4"
+      android:gravity="center"
+      android:orientation="vertical">
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="70dp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <ImageView
+          android:layout_width="wrap_content"
+          android:layout_height="60dp"
+          android:layout_marginEnd="20dp"
+          android:layout_marginRight="20dp"
+          android:adjustViewBounds="true"
+          android:src="@drawable/logo_sand_clock"/>
+
+        <ImageView
+          android:layout_width="200dp"
+          android:layout_height="wrap_content"
+          android:adjustViewBounds="true"
+          android:src="@drawable/logo_text"/>
+      </LinearLayout>
+
+      <EditText
+        android:id="@+id/email"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/login_field_background"
+        android:drawableLeft="@drawable/ic_email_light"
+        android:drawablePadding="20dp"
+        android:drawableStart="@drawable/ic_email_light"
+        android:hint="@string/email"
+        android:inputType="textEmailAddress"
+        android:paddingLeft="10dp"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textColorHint="@color/dark_white"/>
+
+      <EditText
+        android:id="@+id/password"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/login_field_background"
+        android:drawableLeft="@drawable/ic_password_light"
+        android:drawablePadding="20dp"
+        android:drawableStart="@drawable/ic_password_light"
+        android:hint="@string/password"
+        android:inputType="textPassword"
+        android:paddingLeft="10dp"
+        android:singleLine="true"
+        android:textColor="@color/white"
+        android:textColorHint="@color/dark_white"/>
+
+      <com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView
+        style="@style/ms9_DefaultShadowStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="20dp"
+        nower:ms9_shadowElevation="4dp"
+        nower:ms9_shadowTranslationZ="2dp">
+
+        <Button
+          android:layout_width="match_parent"
+          android:layout_height="50dp"
+          android:layout_marginBottom="8dp"
+          android:layout_marginLeft="8dp"
+          android:layout_marginRight="8dp"
+          android:background="@drawable/green_button_background"
+          android:onClick="onLoginClicked"
+          android:text="@string/log_in"
+          android:textColor="@color/white"
+          android:textSize="15sp"
+          android:textStyle="bold"/>
+      </com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView>
+
+      <com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView
+        style="@style/ms9_DefaultShadowStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="12dp"
+        android:layout_marginRight="12dp"
+        android:layout_marginTop="20dp"
+        nower:ms9_shadowElevation="4dp"
+        nower:ms9_shadowTranslationZ="2dp">
+
+        <com.facebook.login.widget.LoginButton
+          android:id="@+id/login_button"
+          xmlns:fb="http://schemas.android.com/apk/res-auto"
+          android:layout_width="match_parent"
+          android:layout_height="50dp"
+          android:layout_gravity="center_horizontal"
+          android:layout_marginBottom="8dp"
+          android:layout_marginLeft="8dp"
+          android:layout_marginRight="8dp"
+          android:textSize="15sp"
+          fb:login_text="@string/login_with_facebook"
+          fb:logout_text="@string/logout_with_facebook"/>
+      </com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView>
+
+    </LinearLayout>
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="0dp"
+      android:layout_weight="1"
+      android:gravity="center|bottom">
+
+      <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="35dp"
+        android:layout_marginRight="35dp"
+        android:clickable="true"
+        android:gravity="center"
+        android:onClick="onDontHaveAccountClicked"
+        android:padding="25dp"
+        android:text="@string/dont_have_account"
+        android:textColor="@color/white"
+        android:textSize="17sp"
+        android:textStyle="bold"/>
+
+    </LinearLayout>
+
+  </LinearLayout>
+
+</ScrollView>

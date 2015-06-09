@@ -24,12 +24,20 @@
         android:layout_height="match_parent"
         android:layout_above="@+id/navigation"/>
 
+      <FrameLayout
+        android:id="@+id/navigation_shadow"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/navigation"
+        android:foreground="@drawable/dark_shadow"
+        android:visibility="gone"/>
+
       <LinearLayout
         android:id="@+id/navigation"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@color/white"
+        android:background="@color/white_opaque"
         android:orientation="horizontal"
         android:visibility="gone">
 

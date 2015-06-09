@@ -84,17 +84,10 @@
         android:resource="@xml/searchable"/>
     </activity>
     <activity
-      android:name=".controllers.Login"
+      android:name=".controllers.AuthenticationHandler"
       android:label="@string/log_in"
       android:screenOrientation="portrait"
-      android:theme="@style/AppTheme.NoActionBar"
-      android:windowSoftInputMode="adjustResize|stateHidden">
-    </activity>
-    <activity
-      android:name=".controllers.Register"
-      android:label="@string/register"
-      android:screenOrientation="portrait"
-      android:theme="@style/AppTheme.CustomWhiteRadioButton"
+      android:theme="@style/CustomRadioButton"
       android:windowSoftInputMode="adjustResize|stateHidden">
     </activity>
     <activity

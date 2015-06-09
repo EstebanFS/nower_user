@@ -27,10 +27,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import castofo_nower.com.co.nower.R;
-import castofo_nower.com.co.nower.controllers.Login;
+import castofo_nower.com.co.nower.controllers.LoginFragment;
 import castofo_nower.com.co.nower.controllers.NowerMap;
 import castofo_nower.com.co.nower.controllers.PromoCardsAnimator;
-import castofo_nower.com.co.nower.controllers.Register;
+import castofo_nower.com.co.nower.controllers.RegisterFragment;
 import castofo_nower.com.co.nower.controllers.TabsHandler;
 import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
@@ -188,7 +188,7 @@ public class HttpHandler {
     try {
       // Servicio a ejecutar según el parámetro action.
       switch (action) {
-        case Register.ACTION_REGISTER:
+        case RegisterFragment.ACTION_REGISTER:
           internJson.put("email", encodeString(params.get("email")));
           internJson.put("name", encodeString(params.get("name")));
           internJson.put("gender", params.get("gender"));
@@ -198,12 +198,12 @@ public class HttpHandler {
                          encodeString(params.get("password_confirmation")));
           json.put("user", internJson);
           break;
-        case Login.ACTION_LOGIN:
+        case LoginFragment.ACTION_LOGIN:
           internJson.put("email", encodeString(params.get("email")));
           internJson.put("password", encodeString(params.get("password")));
           json.put("user", internJson);
           break;
-        case Login.ACTION_FACEBOOK_LOGIN:
+        case LoginFragment.ACTION_FACEBOOK_LOGIN:
           internJson.put("name", encodeString(params.get("name")));
           internJson.put("email", encodeString(params.get("email")));
           internJson.put("gender", params.get("gender"));
@@ -293,13 +293,13 @@ public class HttpHandler {
       progressDialog = new ProgressDialog(context);
 
       switch (action) {
-        case Register.ACTION_REGISTER:
+        case RegisterFragment.ACTION_REGISTER:
           progressDialog.setMessage(context.getString(R.string.registering));
           break;
-        case Login.ACTION_LOGIN:
+        case LoginFragment.ACTION_LOGIN:
           progressDialog.setMessage(context.getString(R.string.logging_in));
           break;
-        case Login.ACTION_FACEBOOK_LOGIN:
+        case LoginFragment.ACTION_FACEBOOK_LOGIN:
           progressDialog.setMessage(context.getString(R.string.logging_in));
           break;
         case NowerMap.ACTION_PROMOS:
