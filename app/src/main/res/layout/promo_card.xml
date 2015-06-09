@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:nower="http://schemas.android.com/apk/res-auto"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fillViewport="true">
@@ -38,8 +39,8 @@
       <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="10dp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="10dp">
 
         <LinearLayout
           android:id="@+id/promo_header"
@@ -51,10 +52,10 @@
             android:id="@+id/image_layout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:orientation="vertical"
             android:layout_gravity="center"
-            android:gravity="center">
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
 
             <ProgressBar
               android:id="@+id/store_logo_progress"
@@ -65,11 +66,11 @@
               android:id="@+id/store_logo"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
+              android:adjustViewBounds="true"
               android:maxHeight="60dp"
               android:maxWidth="60dp"
-              android:minWidth="60dp"
               android:minHeight="60dp"
-              android:adjustViewBounds="true"
+              android:minWidth="60dp"
               android:src="@drawable/castofo_marker"
               android:visibility="gone"/>
 
@@ -87,8 +88,8 @@
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
               android:text="Combo Whopper grande $12.500"
-              android:textStyle="bold"
-              android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"/>
+              android:textAppearance="@style/Base.TextAppearance.AppCompat.Title"
+              android:textStyle="bold"/>
 
             <TextView
               android:id="@+id/promo_store_name"
@@ -108,26 +109,38 @@
           android:layout_marginTop="15dp"
           android:orientation="vertical">
 
-          <Button
-            android:id="@+id/now_button"
+          <com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView
+            style="@style/ms9_DefaultShadowStyle"
             android:layout_width="match_parent"
-            android:layout_height="40dp"
-            android:background="@drawable/green_button_background"
-            android:textColor="@color/white"
-            android:text="@string/now"
-            android:textStyle="bold"
-            android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
-            android:onClick="now"
-            android:visibility="visible"/>
+            android:layout_height="wrap_content"
+            nower:ms9_shadowElevation="4dp"
+            nower:ms9_shadowTranslationZ="2dp">
+
+            <Button
+              android:id="@+id/now_button"
+              android:layout_width="match_parent"
+              android:layout_height="40dp"
+              android:layout_marginBottom="6dp"
+              android:layout_marginRight="2dp"
+              android:layout_marginEnd="2dp"
+              android:background="@drawable/green_button_background"
+              android:onClick="now"
+              android:text="@string/now"
+              android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
+              android:textColor="@color/white"
+              android:textStyle="bold"
+              android:visibility="visible"/>
+
+          </com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView>
 
           <TextView
             android:id="@+id/redemption_code"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:text="63A6C9"
             android:textSize="50sp"
             android:textStyle="bold"
-            android:text="63A6C9"
             android:typeface="monospace"
             android:visibility="gone"/>
 
@@ -136,8 +149,8 @@
         <View
           android:layout_width="match_parent"
           android:layout_height="1dp"
-          android:layout_marginTop="10dp"
           android:layout_marginBottom="10dp"
+          android:layout_marginTop="10dp"
           android:background="@color/gray"/>
 
         <LinearLayout
@@ -160,10 +173,10 @@
               <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:minHeight="40dp"
                 android:minWidth="40dp"
-                android:src="@drawable/ic_expiration_date"
-                android:gravity="center"/>
+                android:src="@drawable/ic_expiration_date"/>
 
             </LinearLayout>
 
@@ -177,14 +190,14 @@
                 android:id="@+id/promo_expiration_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="start"
                 android:paddingLeft="20dp"
-                android:text="04:06:31"
-                android:textColor="@color/red"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
-                android:textSize="25sp"
-                android:textStyle="bold"
                 android:singleLine="true"
-                android:ellipsize="start"/>
+                android:text="04:06:31"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
+                android:textColor="@color/red"
+                android:textSize="25sp"
+                android:textStyle="bold"/>
 
             </LinearLayout>
 
@@ -206,10 +219,10 @@
                 android:id="@+id/available_redemptions_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:gravity="center"
                 android:minHeight="40dp"
                 android:minWidth="40dp"
-                android:src="@drawable/ic_people_limit"
-                android:gravity="center"/>
+                android:src="@drawable/ic_people_limit"/>
 
             </LinearLayout>
 
@@ -223,37 +236,38 @@
                 android:id="@+id/promo_available_redemptions"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="start"
                 android:paddingLeft="20dp"
-                android:text="618"
-                android:textColor="@color/red"
-                android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
-                android:textSize="25sp"
-                android:textStyle="bold"
                 android:singleLine="true"
-                android:ellipsize="start"/>
+                android:text="618"
+                android:textAppearance="@style/Base.TextAppearance.AppCompat.Widget.ActionBar.Title"
+                android:textColor="@color/red"
+                android:textSize="25sp"
+                android:textStyle="bold"/>
 
             </LinearLayout>
           </LinearLayout>
         </LinearLayout>
+
         <View
           android:layout_width="match_parent"
           android:layout_height="1dp"
-          android:layout_marginTop="10dp"
           android:layout_marginBottom="10dp"
+          android:layout_marginTop="10dp"
           android:background="@color/gray"/>
 
         <LinearLayout
-          android:padding="10dp"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="vertical">
+          android:orientation="vertical"
+          android:padding="10dp">
 
           <TextView
-            android:text="@string/promo_description"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:text="@string/promo_description"
+            android:textStyle="bold"/>
 
           <LinearLayout
             android:layout_width="match_parent"
@@ -264,9 +278,9 @@
               android:id="@+id/promo_description"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
               android:layout_margin="15dp"
-              android:text="Hola."/>
+              android:text="Hola."
+              android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
             <!--android:text="¡Sólo por hoy! lleva un Combo Whopper grande por tan solo $12.500. ¡Disfruta esta grandiosa oportunidad acompañado de tus mejores amigos y familia!
                          \nLa promoción contiene Hamburguesa Whopper grande, papas grandes y bebida grande."/>-->
 
@@ -277,22 +291,22 @@
         <View
           android:layout_width="match_parent"
           android:layout_height="1dp"
-          android:layout_marginTop="10dp"
           android:layout_marginBottom="10dp"
+          android:layout_marginTop="10dp"
           android:background="@color/gray"/>
 
         <LinearLayout
-          android:padding="10dp"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:orientation="vertical">
+          android:orientation="vertical"
+          android:padding="10dp">
 
           <TextView
-            android:text="@string/promo_terms"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textStyle="bold"
-            android:gravity="center"/>
+            android:gravity="center"
+            android:text="@string/promo_terms"
+            android:textStyle="bold"/>
 
           <LinearLayout
             android:layout_width="match_parent"
@@ -303,9 +317,9 @@
               android:id="@+id/promo_terms"
               android:layout_width="wrap_content"
               android:layout_height="wrap_content"
-              android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"
               android:layout_margin="15dp"
-              android:text="Hola2"/>
+              android:text="Hola2"
+              android:textAppearance="@style/Base.TextAppearance.AppCompat.Subhead"/>
             <!--android:text="¡Sólo por hoy! lleva un Combo Whopper grande por tan solo $12.500. ¡Disfruta esta grandiosa oportunidad acompañado de tus mejores amigos y familia!
             \nLa promoción contiene Hamburguesa Whopper grande, papas grandes y bebida grande."/>-->
 
@@ -330,11 +344,11 @@
         <TextView
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
+          android:layout_gravity="center"
           android:gravity="center"
           android:text="@string/expand_reviews"
-          android:textColor="@color/green"
           android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"
-          android:layout_gravity="center"/>
+          android:textColor="@color/green"/>
       </LinearLayout>
     </LinearLayout>
   </RelativeLayout>
