@@ -94,7 +94,7 @@
           android:layout_marginBottom="8dp"
           android:layout_marginLeft="8dp"
           android:layout_marginRight="8dp"
-          android:background="@drawable/green_button_background"
+          android:background="@drawable/teal_button_background"
           android:onClick="onLoginClicked"
           android:text="@string/log_in"
           android:textColor="@color/white"
@@ -121,6 +121,7 @@
           android:layout_marginBottom="8dp"
           android:layout_marginLeft="8dp"
           android:layout_marginRight="8dp"
+          android:textAllCaps="true"
           android:textSize="15sp"
           fb:login_text="@string/login_with_facebook"
           fb:logout_text="@string/logout_with_facebook"/>

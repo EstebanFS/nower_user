@@ -8,11 +8,17 @@
   <style name="CustomAppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
     <item name="colorPrimary">@color/dark_red_2</item>
     <item name="colorPrimaryDark">@color/dark_red</item>
-    <item name="colorAccent">@color/white</item>
+    <item name="colorAccent">@color/teal</item>
+    <item name="alertDialogTheme">@style/AppCompatAlertDialogStyle</item>
   </style>
 
   <style name="CustomRadioButton" parent="Theme.AppCompat.Light.NoActionBar">
     <item name="android:listChoiceIndicatorSingle">@drawable/custom_radio_button</item>
+  </style>
+
+  <style name="AppCompatAlertDialogStyle" parent="Theme.AppCompat.Light.Dialog.Alert">
+    <item name="android:textStyle">bold</item>
+    <item name="colorAccent">@color/teal</item>
   </style>
 
 </resources>

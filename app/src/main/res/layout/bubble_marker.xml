@@ -32,7 +32,7 @@
     <View
       android:layout_width="match_parent"
       android:layout_height="match_parent"
-      android:background="@drawable/promos_counter_background"/>
+      android:background="@drawable/promos_red_counter_background"/>
 
     <TextView
       android:id="@+id/promos_counter"

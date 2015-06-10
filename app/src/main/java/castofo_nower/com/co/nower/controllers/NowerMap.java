@@ -1,6 +1,5 @@
 package castofo_nower.com.co.nower.controllers;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -21,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -86,7 +86,8 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
   public static final String ACTION_PROMOS = "/promos/locations";
   private Map<String, String> params = new HashMap<String, String>();
 
-  private ProgressDialog progressDialog = null;
+  private MaterialDialog.Builder builder;
+  private MaterialDialog progressDialog;
 
   private UserFeedback userFeedback = new UserFeedback();
 
@@ -203,9 +204,10 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
     if (MapData.userLat == NO_USER_LAT && MapData.userLong == NO_USER_LONG) {
       // Se muestra un mensaje de progreso al usuario si aún no se tenía una
       // localización previa.
-      progressDialog = new ProgressDialog(this);
-      progressDialog.setMessage(getResources()
-                                .getString(R.string.obtaining_your_location));
+      builder = new MaterialDialog.Builder(this);
+      builder.content(getResources().getString(R.string.obtaining_your_location));
+      builder.progress(true, 0);
+      progressDialog = builder.build();
       progressDialog.setCanceledOnTouchOutside(false);
       progressDialog.show();
     }
@@ -337,10 +339,14 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
       TextView title = (TextView) view.findViewById(R.id.title);
       TextView subtitle = (TextView) view.findViewById(R.id.subtitle);
       ImageView icon = (ImageView) view.findViewById(R.id.icon);
+      TextView promosCounter = (TextView) view
+              .findViewById(R.id.promos_counter);
 
       Branch currentBranch = MapData.getBranchesMap().get(currentBranchId);
       title.setText(currentBranch.getStoreName());
       subtitle.setText(currentBranch.getName());
+      int promosInBranch = currentBranch.getPromosIds().size();
+      promosCounter.setText(formatPromosCount(promosInBranch));
       if (currentBranch.getStoreLogoURL() != null) {
         ImageDownloader imageDownloader
         = new ImageDownloader(icon, currentBranch.getStoreLogoURL());
@@ -411,13 +417,7 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
     // Se obtiene el número de promociones en la sucursal.
     int promosInBranch = branch.getPromosIds().size();
-    String promosInBranchText;
-    // Si son menos de 10 promociones se deja el texto, de lo contrario se
-    // indica que tiene más de 9 promociones (restringir el texto a máximo 2
-    // caracteres).
-    if (promosInBranch >= 10) promosInBranchText = "+9";
-    else promosInBranchText = String.valueOf(promosInBranch);
-    promosCounter.setText(promosInBranchText);
+    promosCounter.setText(formatPromosCount(promosInBranch));
 
     if (branch.getStoreLogoURL() != null) {
       ImageDownloader imageDownloader
@@ -432,6 +432,16 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
       branchMarker.setIcon(BitmapDescriptorFactory
                            .fromBitmap(defBubbleMarkerIcon));
     }
+  }
+
+  public static String formatPromosCount(int promosCount) {
+    // Si son menos de 10 promociones se deja el texto, de lo contrario se
+    // indica que tiene más de 9 promociones (restringir el texto a máximo 2
+    // caracteres).
+    String promosInBranchText;
+    if (promosCount >= 10) promosInBranchText = "9+";
+    else promosInBranchText = String.valueOf(promosCount);
+    return promosInBranchText;
   }
 
   public void hideMarkerAndSlider() {

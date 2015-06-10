@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.controllers.BranchesListFragment;
+import castofo_nower.com.co.nower.controllers.NowerMap;
 import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.MapData;
@@ -125,6 +126,10 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
             = new ImageDownloader(icon, redemption.getStoreLogoURL());
             imageDownloader.execute();
           }
+
+          // Se esconde el indicador de cantidad de promociones.
+          View indicator = item.findViewById(R.id.promos_counter_indicator);
+          indicator.setVisibility(View.GONE);
         }
         break;
       case BranchesListFragment.LIST_BRANCHES:
@@ -146,6 +151,13 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
           = new ImageDownloader(icon, b.getStoreLogoURL());
           imageDownloader.execute();
         }
+
+        // Se establece el número de promociones que posee la sucursal en el
+        // indicador.
+        TextView promosCounter = (TextView) item
+                .findViewById(R.id.promos_counter);
+        int promosInBranch = b.getPromosIds().size();
+        promosCounter.setText(NowerMap.formatPromosCount(promosInBranch));
         break;
     }
 

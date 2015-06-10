@@ -1,10 +1,11 @@
 package castofo_nower.com.co.nower.connection;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.os.AsyncTask;
 import android.util.Log;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
@@ -286,46 +287,45 @@ public class HttpHandler {
 
   private class ServerConnection extends AsyncTask<Void, Void, JSONObject> {
 
-    private ProgressDialog progressDialog;
+    private MaterialDialog.Builder builder;
+    private MaterialDialog progressDialog;
 
     @Override
     protected void onPreExecute() {
-      progressDialog = new ProgressDialog(context);
+      builder = new MaterialDialog.Builder(context);
+      builder.progress(true, 0);
 
       switch (action) {
         case RegisterFragment.ACTION_REGISTER:
-          progressDialog.setMessage(context.getString(R.string.registering));
+          builder.content(context.getString(R.string.registering));
           break;
         case LoginFragment.ACTION_LOGIN:
-          progressDialog.setMessage(context.getString(R.string.logging_in));
+          builder.content(context.getString(R.string.logging_in));
           break;
         case LoginFragment.ACTION_FACEBOOK_LOGIN:
-          progressDialog.setMessage(context.getString(R.string.logging_in));
+          builder.content(context.getString(R.string.logging_in));
           break;
         case NowerMap.ACTION_PROMOS:
-          progressDialog.setMessage(context.getString(R.string.loading_promos));
+          builder.content(context.getString(R.string.loading_promos));
           break;
         case PromoCardsAnimator.ACTION_PROMOS_DETAILS:
           if (PromoCardsAnimator.action.equals(NowerMap.SHOW_BRANCH_PROMOS)) {
-            progressDialog.setMessage(context
-                                      .getString(R.string.obtaining_promos));
+            builder.content(context.getString(R.string.obtaining_promos));
           }
           else if (PromoCardsAnimator.action.equals(UserPromosListFragment
                                                     .SHOW_PROMO_TO_REDEEM)) {
-            progressDialog.setMessage(context
-                                      .getString(R.string.opening_promo));
+            builder.content(context.getString(R.string.opening_promo));
           }
           break;
         case UserPromosListFragment.ACTION_USER_REDEMPTIONS:
-          progressDialog.setMessage(context
-                                    .getString(R.string.obtaining_your_promos));
+          builder.content(context.getString(R.string.obtaining_your_promos));
           break;
         case PromoCardsAnimator.ACTION_NOW:
-          progressDialog.setMessage(context
-                                    .getString(R.string.obtaining_promo_code));
+          builder.content(context.getString(R.string.obtaining_promo_code));
           break;
       }
 
+      progressDialog = builder.build();
       progressDialog.setCanceledOnTouchOutside(false);
       // Los mensajes de los servicios cuando el usuario está en la vista del
       // mapa son frecuentes debido a la actualización de promociones y no

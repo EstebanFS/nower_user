@@ -373,8 +373,6 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   // promociones.
   public void changeNowToRegister(Button nowButton) {
     nowButton.setText(getResources().getString(R.string.register_or_log_in));
-    nowButton.setBackground(getResources()
-                            .getDrawable(R.drawable.blue_button_background));
   }
 
   public void changeButtonToCode(final Button nowButton) {

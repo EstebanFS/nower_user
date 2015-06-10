@@ -132,8 +132,7 @@ public class UserPromosListFragment extends ListFragment implements
       }
     });
     if (!isUserAbleToTakePromos) {
-      Button registerOrLogIn = (Button)
-              view.findViewById(R.id.register_or_login_button);
+      View registerOrLogIn = view.findViewById(R.id.register_or_login_button);
       registerOrLogIn.setVisibility(View.VISIBLE);
     }
   }
