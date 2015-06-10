@@ -1,10 +1,11 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:nower="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/login_background"
             android:fillViewport="true"
-            tools:context="castofo_nower.com.co.nower.controllers.Register">
+            tools:context="castofo_nower.com.co.nower.controllers.RegisterFragment">
 
   <LinearLayout
     android:layout_width="match_parent"
@@ -12,15 +13,28 @@
     android:gravity="center"
     android:orientation="vertical">
 
-    <TextView
-      android:id="@+id/register_header"
-      android:layout_width="wrap_content"
+    <LinearLayout
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
+      android:layout_marginBottom="20dp"
       android:layout_marginTop="70dp"
-      android:text="@string/app_name"
-      android:textColor="@color/white"
-      android:textSize="50sp"
-      android:textStyle="bold"/>
+      android:gravity="center"
+      android:orientation="horizontal">
+
+      <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="60dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginRight="20dp"
+        android:adjustViewBounds="true"
+        android:src="@drawable/logo_sand_clock"/>
+
+      <ImageView
+        android:layout_width="200dp"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:src="@drawable/logo_text"/>
+    </LinearLayout>
 
     <EditText
       android:id="@+id/name"
@@ -142,32 +156,53 @@
 
     </RadioGroup>
 
-    <Button
+    <com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView
+      style="@style/ms9_DefaultShadowStyle"
       android:layout_width="match_parent"
-      android:layout_height="50dp"
-      android:layout_marginLeft="20dp"
-      android:layout_marginRight="20dp"
-      android:layout_marginTop="30dp"
-      android:background="@drawable/green_button_background"
-      android:onClick="onRegisterClicked"
-      android:text="@string/register"
-      android:textColor="@color/dark_white"
-      android:textSize="15sp"
-      android:textStyle="bold"/>
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="12dp"
+      android:layout_marginRight="12dp"
+      android:layout_marginTop="20dp"
+      nower:ms9_shadowElevation="4dp"
+      nower:ms9_shadowTranslationZ="2dp">
 
-    <com.facebook.login.widget.LoginButton
-      android:id="@+id/login_button"
-      xmlns:fb="http://schemas.android.com/apk/res-auto"
+      <Button
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="@drawable/green_button_background"
+        android:onClick="onRegisterClicked"
+        android:text="@string/register"
+        android:textColor="@color/white"
+        android:textSize="15sp"
+        android:textStyle="bold"/>
+    </com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView>
+
+    <com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView
+      style="@style/ms9_DefaultShadowStyle"
       android:layout_width="match_parent"
-      android:layout_height="50dp"
-      android:layout_gravity="center_horizontal"
-      android:layout_marginBottom="30dp"
-      android:layout_marginLeft="20dp"
-      android:layout_marginRight="20dp"
-      android:layout_marginTop="30dp"
-      android:textSize="15sp"
-      fb:login_text="@string/login_with_facebook"
-      fb:logout_text="@string/logout_with_facebook"/>
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="12dp"
+      android:layout_marginRight="12dp"
+      android:layout_marginTop="20dp"
+      nower:ms9_shadowElevation="4dp"
+      nower:ms9_shadowTranslationZ="2dp">
+
+      <com.facebook.login.widget.LoginButton
+        android:id="@+id/login_button"
+        xmlns:fb="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:textSize="15sp"
+        fb:login_text="@string/login_with_facebook"
+        fb:logout_text="@string/logout_with_facebook"/>
+    </com.h6ah4i.android.materialshadowninepatch.MaterialShadowContainerView>
 
     <TextView
       android:layout_width="match_parent"

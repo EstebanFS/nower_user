@@ -54,7 +54,8 @@ public class TabsHandler extends ActionBarActivity {
 
   public void initTabs() {
     viewPager = (ViewPager) findViewById(R.id.view_pager);
-    viewPager.setAdapter(new TabsAdapter(getSupportFragmentManager(), this));
+    viewPager.setAdapter(new TabsAdapter(getSupportFragmentManager(), this,
+                         TabsAdapter.PROMOS_NAVIGATION));
 
     tabs = (PagerSlidingTabStrip) findViewById(R.id.tabs);
     // Se conectan las tabs al ViewPager.

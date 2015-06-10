@@ -5,10 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,10 +39,10 @@ import castofo_nower.com.co.nower.models.User;
 import castofo_nower.com.co.nower.support.DateManager;
 import castofo_nower.com.co.nower.support.FacebookHandler;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
-import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.SharedPreferencesManager;
+import castofo_nower.com.co.nower.support.UserFeedback;
 
-public class Login extends Activity implements SubscribedActivities,
+public class LoginFragment extends Fragment implements SubscribedActivities,
 ParsedErrors, FacebookLoginResponse {
 
   private TextView emailView;
@@ -57,14 +61,14 @@ ParsedErrors, FacebookLoginResponse {
   private Map<String, String> params = new HashMap<String, String>();
 
   private RequestErrorsHandler requestErrorsHandler = new
-                                                      RequestErrorsHandler();
+          RequestErrorsHandler();
 
   public static final String OPEN_MAP = "OPEN_MAP";
 
   @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_login);
+  public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                           Bundle savedInstanceState) {
+    View layout = inflater.inflate(R.layout.fragment_login, container, false);
 
     httpHandler.addListeningActivity(this);
 
@@ -73,57 +77,43 @@ ParsedErrors, FacebookLoginResponse {
     facebookHandler.addListeningActivity(this);
 
 
-    SharedPreferencesManager.setup(this);
+    SharedPreferencesManager.setup(getActivity());
 
-    TextView title = (TextView) findViewById(R.id.login_header);
-    Typeface headerFont = Typeface.createFromAsset(getAssets(),
-                                                   "fonts/exo2_extra_bold.otf");
-    title.setTypeface(headerFont);
+    emailView = (TextView) layout.findViewById(R.id.email);
+    passwordView = (TextView) layout.findViewById(R.id.password);
 
-    emailView = (TextView) findViewById(R.id.email);
-    passwordView = (TextView) findViewById(R.id.password);
-
-    if (getIntent().hasExtra("email")) {
-      String emailFromRegister = getIntent().getExtras().getString("email");
-      emailView.setText(emailFromRegister);
-    }
-    initializeFacebookUI();
+    initializeFacebookUI(layout);
+    return layout;
   }
 
-  private void initializeFacebookUI() {
+  private void initializeFacebookUI(View layout) {
     // Inicializar el SDK de Facebook.
-    FacebookSdk.sdkInitialize(getApplicationContext());
+    FacebookSdk.sdkInitialize(getActivity().getApplicationContext());
 
     callbackManager = facebookHandler.getCallbackManagerInstance();
 
-    loginButton = (LoginButton) findViewById(R.id.login_button);
+    loginButton = (LoginButton) layout.findViewById(R.id.login_button);
     loginButton.setReadPermissions("public_profile, email");
+    loginButton.setFragment(this);
     loginButton.registerCallback(callbackManager,
-                                 facebookHandler.getLoginCallback());
+            facebookHandler.getLoginCallback());
   }
 
-  public void onDontHaveAccountClicked(View v) {
-    Intent intent = new Intent(Login.this, Register.class);
-    intent.putExtra("email", emailView.getText().toString());
-    intent.setFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    startActivity(intent);
-  }
-
-  public void onLoginClicked(View v) {
+  public void onLoginClicked() {
     email = emailView.getText().toString().trim();
     password = passwordView.getText().toString().trim();
 
     if (email.isEmpty() && password.isEmpty()) {
       emailView.setError(getResources().getString(R.string.write_your_email));
       passwordView.setError(getResources()
-                            .getString(R.string.write_your_password));
+              .getString(R.string.write_your_password));
     }
     else if (email.isEmpty() && !password.isEmpty()) {
       emailView.setError(getResources().getString(R.string.write_your_email));
     }
     else if (!email.isEmpty() && password.isEmpty()) {
       passwordView.setError(getResources()
-                            .getString(R.string.write_your_password));
+              .getString(R.string.write_your_password));
     }
     else {
       setParamsForLogin();
@@ -137,8 +127,8 @@ ParsedErrors, FacebookLoginResponse {
   }
 
   public static Map<String, String> setParamsForFacebookLogin
-  (Map<String, String> params, String name, String email, String gender,
-   String authToken, String facebookId, Date expires, JSONObject ageRange) {
+      (Map<String, String> params, String name, String email, String gender,
+       String authToken, String facebookId, Date expires, JSONObject ageRange) {
     params.put("name", name);
     params.put("email", email);
     params.put("gender", gender);
@@ -152,35 +142,35 @@ ParsedErrors, FacebookLoginResponse {
   public void sendRequest(String request) {
     if (request.equals(ACTION_LOGIN)) {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_LOGIN, "", params,
-                              new HttpPost(), Login.this);
+              new HttpPost(), getActivity());
     }
     else if (request.equals(ACTION_FACEBOOK_LOGIN)) {
       httpHandler.sendRequest(HttpHandler.NAME_SPACE, ACTION_FACEBOOK_LOGIN, "",
-                              params, new HttpPost(), Login.this);
+              params, new HttpPost(), getActivity());
     }
   }
 
   public static void saveUserData
-  (int id, String email, String name, String gender, String birthday,
-   String facebookId) {
+          (int id, String email, String name, String gender, String birthday,
+           String facebookId) {
     // Se almacenan los datos del usuario que acaba de autenticarse.
     SharedPreferencesManager.saveIntegerValue(SharedPreferencesManager
-                                              .USER_ID, id);
+            .USER_ID, id);
     SharedPreferencesManager.saveStringValue(SharedPreferencesManager
-                                             .USER_EMAIL, email);
+            .USER_EMAIL, email);
     SharedPreferencesManager.saveStringValue(SharedPreferencesManager
-                                             .USER_NAME, name);
+            .USER_NAME, name);
     SharedPreferencesManager.saveStringValue(SharedPreferencesManager
-                                             .USER_GENDER, gender);
+            .USER_GENDER, gender);
     SharedPreferencesManager.saveStringValue(SharedPreferencesManager
-                                             .USER_BIRTHDAY, birthday);
+            .USER_BIRTHDAY, birthday);
     SharedPreferencesManager.saveStringValue(SharedPreferencesManager
-                                             .USER_FACEBOOK_ID, facebookId);
+            .USER_FACEBOOK_ID, facebookId);
     User.setUserData(id, email, name, gender, birthday, facebookId);
   }
 
   public static void startSession
-  (Context context, JSONObject responseJson) throws JSONException {
+          (Context context, JSONObject responseJson) throws JSONException {
     //String token = responseJson.getString("token");
     JSONObject user = responseJson.getJSONObject("user");
     int id = user.getInt("id");
@@ -197,8 +187,7 @@ ParsedErrors, FacebookLoginResponse {
   }
 
   @Override
-  protected void onActivityResult(int requestCode, int resultCode, Intent data)
-  {
+  public void onActivityResult(int requestCode, int resultCode, Intent data) {
     super.onActivityResult(requestCode, resultCode, data);
     callbackManager.onActivityResult(requestCode, resultCode, data);
   }
@@ -209,9 +198,9 @@ ParsedErrors, FacebookLoginResponse {
     switch (action) {
       case ACTION_LOGIN:
         if (errorsMessages.containsKey("login")) {
-          UserFeedback.showToastMessage(getApplicationContext(),
-                                        errorsMessages.get("login"),
-                                        Toast.LENGTH_SHORT);
+          UserFeedback.showToastMessage(getActivity().getApplicationContext(),
+                  errorsMessages.get("login"),
+                  Toast.LENGTH_SHORT);
         }
         break;
       case ACTION_FACEBOOK_LOGIN:
@@ -220,10 +209,10 @@ ParsedErrors, FacebookLoginResponse {
         // Mostrar el primer mensaje de error que llegue.
         for (Map.Entry<String, String> errorMessage : errorsMessages.entrySet())
         {
-          UserFeedback
-          .showAlertDialog(Login.this, R.string.sorry, errorMessage.getValue(),
-                           R.string.got_it, UserFeedback.NO_BUTTON_TO_SHOW,
-                           ACTION_FACEBOOK_LOGIN);
+          UserFeedback.showAlertDialog(getActivity(), R.string.sorry,
+                          errorMessage.getValue(),
+                          R.string.got_it, UserFeedback.NO_BUTTON_TO_SHOW,
+                          ACTION_FACEBOOK_LOGIN);
           // Solo mostrar el primer mensaje, no más.
           break;
         }
@@ -245,7 +234,7 @@ ParsedErrors, FacebookLoginResponse {
       Date expires = accessToken.getExpires();
       JSONObject ageRange = object.getJSONObject("age_range");
       params = setParamsForFacebookLogin(params, name, email, gender, authToken,
-                                         facebookId, expires, ageRange);
+              facebookId, expires, ageRange);
       sendRequest(ACTION_FACEBOOK_LOGIN);
     }
     catch (JSONException e) {
@@ -262,12 +251,12 @@ ParsedErrors, FacebookLoginResponse {
         switch (responseStatusCode) {
           case HttpHandler.OK:
             if (responseJson.getBoolean("success")) {
-              startSession(Login.this, responseJson);
+              startSession(getActivity(), responseJson);
             }
             break;
           case HttpHandler.BAD_REQUEST:
             RequestErrorsHandler
-            .parseErrors(action, responseJson.getJSONObject("errors"));
+                    .parseErrors(action, responseJson.getJSONObject("errors"));
             break;
         }
       }
@@ -275,17 +264,17 @@ ParsedErrors, FacebookLoginResponse {
         switch (responseStatusCode) {
           case HttpHandler.OK:
             if (responseJson.getBoolean("success")) {
-              startSession(this, responseJson);
+              startSession(getActivity(), responseJson);
             }
             break;
           case HttpHandler.CREATED:
             if (responseJson.getBoolean("success")) {
-              startSession(this, responseJson);
+              startSession(getActivity(), responseJson);
             }
             break;
           case HttpHandler.BAD_REQUEST:
             RequestErrorsHandler
-            .parseErrors(action, responseJson.getJSONObject("errors"));
+                    .parseErrors(action, responseJson.getJSONObject("errors"));
             break;
         }
       }
@@ -299,10 +288,10 @@ ParsedErrors, FacebookLoginResponse {
   }
 
   @Override
-  public boolean onCreateOptionsMenu(Menu menu) {
+  public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
     // Inflate the menu; this adds items to the action bar if it is present.
-    getMenuInflater().inflate(R.menu.menu_login, menu);
-    return true;
+    inflater.inflate(R.menu.menu_login, menu);
+    super.onCreateOptionsMenu(menu, inflater);
   }
 
   @Override

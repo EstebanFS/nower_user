@@ -9,6 +9,11 @@
     <item>@string/title_activity_user_promo_list</item>
   </string-array>
 
+  <string-array name="auth_titles">
+    <item>@string/register</item>
+    <item>@string/log_in</item>
+  </string-array>
+
   <string name="google_maps_api_key">AIzaSyAYqjc0sDA7WH8tKwzjEgZa9z6CtRbGaxM</string>
   <string name="facebook_app_id">863715703721005</string>
   <string name="title_activity_map">Mapa</string>
