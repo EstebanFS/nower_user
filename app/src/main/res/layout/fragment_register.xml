@@ -172,7 +172,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginRight="8dp"
-        android:background="@drawable/green_button_background"
+        android:background="@drawable/teal_button_background"
         android:onClick="onRegisterClicked"
         android:text="@string/register"
         android:textAllCaps="true"

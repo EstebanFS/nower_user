@@ -58,7 +58,7 @@
           <Button
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="@drawable/green_button_background"
+            android:background="@drawable/teal_button_background"
             android:onClick="goToRegister"
             android:text="@string/register_or_log_in"
             android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"

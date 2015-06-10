@@ -123,7 +123,7 @@
               android:layout_marginBottom="6dp"
               android:layout_marginRight="2dp"
               android:layout_marginEnd="2dp"
-              android:background="@drawable/green_button_background"
+              android:background="@drawable/teal_button_background"
               android:onClick="now"
               android:text="@string/now"
               android:textAppearance="@style/Base.TextAppearance.AppCompat.Button"

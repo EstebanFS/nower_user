@@ -180,13 +180,13 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
       public boolean onTouch(View v, MotionEvent event) {
         float sensitivity = 30f;
         Animation outLeft = AnimationUtils.loadAnimation(NowerMap.this,
-                                                         R.anim.slide_out_left);
+                R.anim.slide_out_left);
         Animation inRight = AnimationUtils.loadAnimation(NowerMap.this,
-                                                         R.anim.slide_in_right);
+                R.anim.slide_in_right);
         Animation outRight = AnimationUtils.loadAnimation
-                             (NowerMap.this, R.anim.slide_out_right);
+                (NowerMap.this, R.anim.slide_out_right);
         Animation inLeft = AnimationUtils.loadAnimation(NowerMap.this,
-                                                        R.anim.slide_in_left);
+                R.anim.slide_in_left);
         switch (event.getAction()) {
           case MotionEvent.ACTION_DOWN:
             initX = event.getX();
@@ -371,12 +371,16 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
       TextView title = (TextView) view.findViewById(R.id.title);
       TextView subtitle = (TextView) view.findViewById(R.id.subtitle);
       ImageView icon = (ImageView) view.findViewById(R.id.icon);
+      TextView promosCounter = (TextView) view
+              .findViewById(R.id.promos_counter);
 
       int currentBranchId = branchesInNavSlider.getValue();
       Branch currentBranch = MapData.getBranchesMap().get(currentBranchId);
       view.setId(currentBranchId);
       title.setText(currentBranch.getStoreName());
       subtitle.setText(currentBranch.getName());
+      int promosInBranch = currentBranch.getPromosIds().size();
+      promosCounter.setText(formatPromosCount(promosInBranch));
       if (currentBranch.getStoreLogoURL() != null) {
         ImageDownloader imageDownloader
         = new ImageDownloader(icon, currentBranch.getStoreLogoURL());
@@ -429,13 +433,7 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
     // Se obtiene el número de promociones en la sucursal.
     int promosInBranch = branch.getPromosIds().size();
-    String promosInBranchText;
-    // Si son menos de 10 promociones se deja el texto, de lo contrario se
-    // indica que tiene más de 9 promociones (restringir el texto a máximo 2
-    // caracteres).
-    if (promosInBranch >= 10) promosInBranchText = "+9";
-    else promosInBranchText = String.valueOf(promosInBranch);
-    promosCounter.setText(promosInBranchText);
+    promosCounter.setText(formatPromosCount(promosInBranch));
 
     if (branch.getStoreLogoURL() != null) {
       ImageDownloader imageDownloader
@@ -450,6 +448,16 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
       branchMarker.setIcon(BitmapDescriptorFactory
                            .fromBitmap(defBubbleMarkerIcon));
     }
+  }
+
+  public static String formatPromosCount(int promosCount) {
+    // Si son menos de 10 promociones se deja el texto, de lo contrario se
+    // indica que tiene más de 9 promociones (restringir el texto a máximo 2
+    // caracteres).
+    String promosInBranchText;
+    if (promosCount >= 10) promosInBranchText = "9+";
+    else promosInBranchText = String.valueOf(promosCount);
+    return promosInBranchText;
   }
 
   public void hideMarkerAndSlider() {
