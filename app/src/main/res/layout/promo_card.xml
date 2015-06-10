@@ -127,6 +127,7 @@
             android:gravity="center"
             android:textSize="50sp"
             android:textStyle="bold"
+            android:textColor="@color/black"
             android:text="63A6C9"
             android:typeface="monospace"
             android:visibility="gone"/>

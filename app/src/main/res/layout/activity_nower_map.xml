@@ -26,18 +26,19 @@
 
       <LinearLayout
         android:id="@+id/navigation"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="72dp"
         android:layout_alignParentBottom="true"
         android:background="@color/white"
         android:orientation="horizontal"
         android:visibility="gone">
 
-        <ViewFlipper
+        <android.support.v4.view.ViewPager
           android:id="@+id/slider"
-          android:layout_width="fill_parent"
-          android:layout_height="wrap_content">
-        </ViewFlipper>
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:overScrollMode="never">
+        </android.support.v4.view.ViewPager>
 
       </LinearLayout>
 

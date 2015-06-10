@@ -18,6 +18,7 @@ import java.io.InputStream;
 
 import castofo_nower.com.co.nower.R;
 import castofo_nower.com.co.nower.connection.HttpHandler;
+import castofo_nower.com.co.nower.controllers.NowerMap;
 
 public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
 
@@ -57,7 +58,7 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
   }
 
   public ImageDownloader(View bubbleMarker, Marker marker, Context context,
-                         String imageURL) {
+                         String imageURL, Marker currentVisibleMarker) {
     this.action = UPDATE_MARKER;
     this.bubbleMarker = bubbleMarker;
     this.imageURL = imageURL;
@@ -123,11 +124,15 @@ public class ImageDownloader extends AsyncTask<Void, Void, Bitmap> {
         imageView.setVisibility(View.VISIBLE);
         break;
       case UPDATE_MARKER:
-        ImageView logoView =
-                (ImageView) bubbleMarker.findViewById(R.id.marker_logo);
-        logoView.setImageBitmap(result);
-        Bitmap markerIcon = createBitmapFromView(context, bubbleMarker);
-        marker.setIcon(BitmapDescriptorFactory.fromBitmap(markerIcon));
+        // Se hace esta comparación para conseguir que solamente sea cambiado
+        // el ícono del mismo marcador que observa el usuario actualmente.
+        if (marker.equals(((NowerMap) context).currentMarker)) {
+          ImageView logoView = (ImageView) bubbleMarker
+                               .findViewById(R.id.marker_logo);
+          logoView.setImageBitmap(result);
+          Bitmap markerIcon = createBitmapFromView(context, bubbleMarker);
+          marker.setIcon(BitmapDescriptorFactory.fromBitmap(markerIcon));
+        }
     }
   }
 
