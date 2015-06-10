@@ -8,15 +8,15 @@ import java.util.ArrayList;
 
 public class PagerBuilder extends PagerAdapter {
 
-  private ArrayList<View> promoCards = new ArrayList<>();
+  private ArrayList<View> cards = new ArrayList<>();
 
   public PagerBuilder(ArrayList<View> promoCards) {
-    this.promoCards = promoCards;
+    this.cards = promoCards;
   }
 
   @Override
   public Object instantiateItem(ViewGroup container, int position) {
-    View promoView = promoCards.get(position);
+    View promoView = cards.get(position);
     promoView.setTag(position);
     container.addView(promoView);
 
@@ -30,7 +30,7 @@ public class PagerBuilder extends PagerAdapter {
 
   @Override
   public int getCount() {
-    return promoCards.size();
+    return cards.size();
   }
 
   @Override

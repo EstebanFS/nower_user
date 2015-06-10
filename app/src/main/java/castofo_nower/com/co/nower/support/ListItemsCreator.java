@@ -180,6 +180,9 @@ public class ListItemsCreator extends ArrayAdapter<Object> implements Filterable
     }
   }
 
+  @Override
+  public int getCount() { return listData.size(); }
+
   public void updateListData(ArrayList<Object> newData, boolean setAsOriginal) {
     this.listData.clear();
     this.listData.addAll(newData);

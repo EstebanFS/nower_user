@@ -3,7 +3,6 @@ package castofo_nower.com.co.nower.support;
 import android.content.Context;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.SearchView;
-import android.widget.EditText;
 
 import castofo_nower.com.co.nower.controllers.BranchesListFragment;
 import castofo_nower.com.co.nower.controllers.UserPromosListFragment;
@@ -70,9 +69,14 @@ public class SearchHandler {
 
       @Override
       public boolean onQueryTextChange(String query) {
-        String trimmedQuery = query.trim();
-        listToFilter.getFilter().filter(trimmedQuery);
-        return true;
+        if (listToFilter.getCount() > 0) {
+          String trimmedQuery = query.trim();
+          listToFilter.getFilter().filter(trimmedQuery);
+
+          return true;
+        }
+
+        return false;
       }
     });
   }

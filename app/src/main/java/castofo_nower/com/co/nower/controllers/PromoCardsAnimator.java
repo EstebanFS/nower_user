@@ -63,7 +63,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   public static final String ACTION_NOW = "/promo/now";
   private Map<String, String> params = new HashMap<String, String>();
 
-  private ViewPager promosFlipper;
+  private ViewPager promosPager;
   private ArrayList<View> promoCards = new ArrayList<>();
   private View requestingView;
 
@@ -143,33 +143,30 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   public void initView() {
     setContentView(R.layout.activity_promo_cards_animator);
     promoCards.clear();
-    promosFlipper = (ViewPager) findViewById(R.id.promos_flipper);
-    promosFlipper.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-      public void onPageScrollStateChanged(int state) { }
+    promosPager = (ViewPager) findViewById(R.id.promos_pager);
+
+    promosPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+      @Override
       public void onPageScrolled(int position, float positionOffset,
                                  int positionOffsetPixels) {
         int padding = 40;
-        // Si no hay ninguna vista.
-        if (promoCards.isEmpty()) {
-          promosFlipper.setPadding(0, 0, 0, 0);
+        // Si no hay ninguna vista o se trata de una única promoción.
+        if (promoCards.isEmpty() || promoCards.size() == 1) {
+          promosPager.setPadding(0, 0, 0, 0);
         }
         // Si la vista es la última.
         else if (position == promoCards.size() - 1) {
-          // Si existe algún elemento anterior se utiliza padding hacia la
-          // izquierda.
-          if (position - 1 >= 0) {
-            promosFlipper.setPadding(padding, 0, 0, 0);
-          }
-          // Si no existe elemento anterior, no se pone padding en ninguna
-          // dirección (acá se incluye cuando es un único elemento).
-          else {
-            promosFlipper.setPadding(0, 0, 0, 0);
-          }
+          promosPager.setPadding(padding, 0, 0, 0);
         }
-        // Si no es la última vista se pone padding a la derecha
-        else promosFlipper.setPadding(0, 0, padding, 0);
+        // Si no es la última vista se pone padding a la derecha.
+        else promosPager.setPadding(0, 0, padding, 0);
       }
+
+      @Override
       public void onPageSelected(int position) { }
+
+      @Override
+      public void onPageScrollStateChanged(int state) { }
     });
   }
 
@@ -240,11 +237,11 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
 
   public void showEmptyBranchMessage() {
     emptyPromosMessage = (LinearLayout) findViewById(R.id.empty_promos_message);
-    promosFlipper.setVisibility(View.GONE);
+    promosPager.setVisibility(View.GONE);
     emptyPromosMessage.setVisibility(View.VISIBLE);
   }
 
-  public void addPromosToFlipper() {
+  public void addPromosToPager() {
     if (!promos.isEmpty()) {
       promoCards.clear();
       for (int i = 0; i < promos.size(); ++i) {
@@ -269,8 +266,8 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
             if (imageHDURL != null) {
               Intent intent = new Intent(PromoCardsAnimator.this,
                       PromoPictureViewer.class);
-              Bitmap image = ((BitmapDrawable) ((WideImageView) v).getDrawable())
-                      .getBitmap();
+              Bitmap image = ((BitmapDrawable) ((WideImageView) v)
+                             .getDrawable()).getBitmap();
 
               Bundle extras = new Bundle();
               extras.putParcelable("promo_picture_bitmap", image);
@@ -434,8 +431,8 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   public void putPromoCards() {
     PagerAdapter adapter = new PagerBuilder(promoCards);
     // Se hacen visibles las tarjetas de promoción.
-    promosFlipper.setAdapter(adapter);
-    promosFlipper.setClipToPadding(false);
+    promosPager.setAdapter(adapter);
+    promosPager.setClipToPadding(false);
   }
 
   public void now(View v) {
@@ -454,8 +451,8 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
   }
 
   public View getPagerCurrentView() {
-    int promoTag = promosFlipper.getCurrentItem();
-    View promoView = promosFlipper.findViewWithTag(promoTag);
+    int promoTag = promosPager.getCurrentItem();
+    View promoView = promosPager.findViewWithTag(promoTag);
 
     return promoView;
   }
@@ -623,7 +620,7 @@ SubscribedActivities, AlertDialogsResponse, ParsedErrors {
            // cuestión.
            MapData.setPromosMap(promosMap);
 
-           addPromosToFlipper();
+           addPromosToPager();
            break;
          case HttpHandler.UNPROCESSABLE_ENTITY:
            RequestErrorsHandler

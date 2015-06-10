@@ -141,6 +141,7 @@
             android:text="63A6C9"
             android:textSize="50sp"
             android:textStyle="bold"
+            android:textColor="@color/black"
             android:typeface="monospace"
             android:visibility="gone"/>
 
