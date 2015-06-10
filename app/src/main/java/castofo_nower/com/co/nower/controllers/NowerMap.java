@@ -5,22 +5,20 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ViewFlipper;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -54,7 +52,9 @@ import castofo_nower.com.co.nower.helpers.ParsedErrors;
 import castofo_nower.com.co.nower.helpers.SubscribedActivities;
 import castofo_nower.com.co.nower.models.Branch;
 import castofo_nower.com.co.nower.models.User;
+import castofo_nower.com.co.nower.support.CircularViewPagerHandler;
 import castofo_nower.com.co.nower.support.ImageDownloader;
+import castofo_nower.com.co.nower.support.PagerBuilder;
 import castofo_nower.com.co.nower.support.RequestErrorsHandler;
 import castofo_nower.com.co.nower.support.UserFeedback;
 import castofo_nower.com.co.nower.support.Geolocation;
@@ -79,8 +79,8 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
   // Atributos necesarios para la navegación a través de los marcadores.
   private FrameLayout navigationShadow;
   private LinearLayout navigation;
-  private ViewFlipper slider;
-  private float initX;
+  private ViewPager slider;
+  private ArrayList<View> branchesViews;
 
   private HttpHandler httpHandler = new HttpHandler();
   public static final String ACTION_PROMOS = "/promos/locations";
@@ -173,51 +173,16 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
   public void setUpNavigationSlider() {
     navigationShadow = (FrameLayout) findViewById(R.id.navigation_shadow);
     navigation = (LinearLayout) findViewById(R.id.navigation);
-    slider = (ViewFlipper) navigation.findViewById(R.id.slider);
+    slider = (ViewPager) navigation.findViewById(R.id.slider);
+    branchesViews = new ArrayList<>();
 
-    slider.setOnTouchListener(new View.OnTouchListener() {
+    slider.setOnPageChangeListener(new CircularViewPagerHandler(slider, this));
+
+    slider.setPageTransformer(false, new ViewPager.PageTransformer() {
       @Override
-      public boolean onTouch(View v, MotionEvent event) {
-        float sensitivity = 30f;
-        Animation outLeft = AnimationUtils.loadAnimation(NowerMap.this,
-                R.anim.slide_out_left);
-        Animation inRight = AnimationUtils.loadAnimation(NowerMap.this,
-                R.anim.slide_in_right);
-        Animation outRight = AnimationUtils.loadAnimation
-                (NowerMap.this, R.anim.slide_out_right);
-        Animation inLeft = AnimationUtils.loadAnimation(NowerMap.this,
-                R.anim.slide_in_left);
-        switch (event.getAction()) {
-          case MotionEvent.ACTION_DOWN:
-            initX = event.getX();
-            break;
-          case MotionEvent.ACTION_UP:
-            float finalX = event.getX();
-            if ((initX - finalX) > sensitivity) {
-              if (slider.getChildCount() > 1) {
-                slider.setInAnimation(outLeft);
-                slider.setInAnimation(inRight);
-                slider.showNext();
-                showMarkerAndSlider(slider.getCurrentView().getId());
-              }
-            }
-            else if ((finalX - initX) > sensitivity) {
-              if (slider.getChildCount() > 1) {
-                slider.setInAnimation(outRight);
-                slider.setInAnimation(inLeft);
-                slider.showPrevious();
-                showMarkerAndSlider(slider.getCurrentView().getId());
-              }
-            }
-            else {
-              // En este caso, el usuario habría simplemente presionado la
-              // tienda que está viendo actualmente.
-              showBranchPromos(slider.getCurrentView().getId());
-            }
-            break;
-        }
-
-        return true;
+      public void transformPage(View page, float position) {
+        final float normalizedPosition = Math.abs(Math.abs(position) - 1);
+        page.setAlpha(normalizedPosition);
       }
     });
   }
@@ -360,13 +325,16 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
 
   public void fillNavigationSlider() {
     slider.removeAllViews();
+    branchesViews.clear();
     for (Map.Entry<Marker, Integer> branchesInNavSlider
          : MapData.getBranchesIdsMap().entrySet()) {
       LayoutInflater inflater = (LayoutInflater) this.getSystemService
                                 (Context.LAYOUT_INFLATER_SERVICE);
       View view = inflater.inflate(R.layout.promo_item, null);
 
-      slider.addView(view);
+      int currentBranchId = branchesInNavSlider.getValue();
+      view.setId(currentBranchId);
+      branchesViews.add(view);
 
       TextView title = (TextView) view.findViewById(R.id.title);
       TextView subtitle = (TextView) view.findViewById(R.id.subtitle);
@@ -374,9 +342,7 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
       TextView promosCounter = (TextView) view
               .findViewById(R.id.promos_counter);
 
-      int currentBranchId = branchesInNavSlider.getValue();
       Branch currentBranch = MapData.getBranchesMap().get(currentBranchId);
-      view.setId(currentBranchId);
       title.setText(currentBranch.getStoreName());
       subtitle.setText(currentBranch.getName());
       int promosInBranch = currentBranch.getPromosIds().size();
@@ -386,18 +352,35 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
         = new ImageDownloader(icon, currentBranch.getStoreLogoURL());
         imageDownloader.execute();
       }
+
+      // Al presionar click sobre una tienda en el sliding panel, el usuario
+      // será redireccionado hacia sus promociones.
+      view.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) { showBranchPromos(v.getId()); }
+      });
     }
+
+    PagerAdapter adapter = new PagerBuilder(branchesViews);
+    slider.setAdapter(adapter);
+
+    // Esto debe hacerse para que el ViewPager cargue todas las vistas desde
+    // el principio y sea posible acceder a ellas dando click en los marcadores.
+    slider.setOffscreenPageLimit(branchesViews.size());
   }
 
   public void showMarkerAndSlider(int branchId) {
     closeCurrentMarker();
     Branch branch = MapData.getBranchesMap().get(branchId);
     Marker branchMarker = getBranchMarker(branchId);
-    // Se abre la burbuja del marcador correspondiente.
-    setMarkerIcon(branch, branchMarker);
-    currentMarker = branchMarker;
 
-    slider.setDisplayedChild(slider.indexOfChild(findViewById(branchId)));
+    currentMarker = branchMarker;
+    // Se abre la burbuja del marcador correspondiente.
+    setMarkerIcon(branch, branchMarker, currentMarker);
+
+    // El false enviado como segundo parámetro impide que se vea la animación
+    // del scroll desde la vista actual hasta la deseada.
+    slider.setCurrentItem(slider.indexOfChild(findViewById(branchId)), false);
     navigation.setVisibility(View.VISIBLE);
     navigationShadow.setVisibility(View.VISIBLE);
   }
@@ -424,7 +407,8 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
     return branchMarker;
   }
 
-  public void setMarkerIcon(Branch branch, Marker branchMarker) {
+  public void setMarkerIcon(Branch branch, Marker branchMarker,
+                            Marker currentMarker) {
     View bubbleMarker = ((LayoutInflater)
                         getSystemService(Context.LAYOUT_INFLATER_SERVICE))
                         .inflate(R.layout.bubble_marker, null);
@@ -438,7 +422,7 @@ GoogleMap.OnMapClickListener, GoogleMap.OnMarkerClickListener {
     if (branch.getStoreLogoURL() != null) {
       ImageDownloader imageDownloader
       = new ImageDownloader(bubbleMarker, branchMarker, this,
-                            branch.getStoreLogoURL());
+                            branch.getStoreLogoURL(), currentMarker);
       imageDownloader.execute();
     }
     else {
